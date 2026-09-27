@@ -47,6 +47,9 @@ __screenshots__/
 .env.local
 .env.vercel-prod.bak
 
+# CertameCards — capturas de roteiros E2E: ficam desatualizadas rápido e só incham o histórico
+tasks/*/evidences/
+
 # System files
 .DS_Store
 Thumbs.db
