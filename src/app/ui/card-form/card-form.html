@@ -1,0 +1,67 @@
+<h2 class="font-display text-body">{{ title() }}</h2>
+
+<label class="mt-6 block font-mono text-label uppercase tracking-wider text-muted">
+  Frente
+  <div class="mt-2 normal-case tracking-normal">
+    <app-markable-field
+      #frontField
+      [(value)]="front"
+      [(marks)]="frontMarks"
+      [maxLength]="frontMax"
+      placeholder="Ex.: o mandato do prefeito é de quatro anos."
+      textClass="text-front"
+    />
+  </div>
+</label>
+@if (frontCounter(); as counter) {
+  <p class="mt-1 text-label text-muted">{{ counter }}</p>
+}
+
+<label class="mt-6 block font-mono text-label uppercase tracking-wider text-muted">
+  Verso
+  <div class="mt-2 normal-case tracking-normal">
+    <app-markable-field
+      [(value)]="back"
+      [(marks)]="backMarks"
+      [allowCloze]="false"
+      [maxLength]="backMax"
+      placeholder="Resposta"
+      textClass="text-body"
+    />
+  </div>
+</label>
+@if (backCounter(); as counter) {
+  <p class="mt-1 text-label text-muted">{{ counter }}</p>
+}
+
+<label class="mt-6 block font-mono text-label uppercase tracking-wider text-muted">
+  Notas
+  <div class="mt-2 normal-case tracking-normal">
+    <app-markable-field
+      [(value)]="notes"
+      [(marks)]="notesMarks"
+      [allowCloze]="false"
+      [minRows]="6"
+      [maxLength]="notesMax"
+      placeholder="Opcional"
+      textClass="text-body"
+    />
+  </div>
+</label>
+@if (notesCounter(); as counter) {
+  <p class="mt-1 text-label text-muted">{{ counter }}</p>
+}
+
+@if (error(); as message) {
+  <p class="mt-4 text-meta text-miss">{{ message }}</p>
+}
+
+<button
+  type="button"
+  (click)="submit()"
+  [disabled]="!ready() || saving()"
+  [attr.aria-busy]="saving()"
+  class="mt-6 w-full rounded-2xl bg-signal py-4 text-body font-medium text-on-signal transition hover:brightness-110 disabled:bg-surface disabled:text-muted"
+>
+  {{ saving() ? 'Salvando…' : submitLabel() }}
+</button>

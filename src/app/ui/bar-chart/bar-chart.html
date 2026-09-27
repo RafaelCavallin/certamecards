@@ -1,0 +1,32 @@
+<svg
+  [attr.width]="width"
+  [attr.height]="height"
+  [attr.viewBox]="'0 0 ' + width + ' ' + height"
+  role="img"
+  aria-label="Previsão de cartões vencendo nos próximos 14 dias"
+  class="w-full"
+>
+  @for (bar of bars(); track bar.day) {
+    <rect
+      [attr.x]="bar.x"
+      [attr.y]="height - 18 - bar.height"
+      [attr.width]="bar.width"
+      [attr.height]="bar.height"
+      rx="3"
+      [class]="bar.highlight ? 'fill-signal' : 'fill-line'"
+    >
+      <title>{{ barTitle(bar) }}</title>
+    </rect>
+    @if (bar.showLabel) {
+      <text
+        [attr.x]="bar.x + bar.width / 2"
+        [attr.y]="height - 4"
+        text-anchor="middle"
+        class="fill-muted font-mono"
+        style="font-size: 9px"
+      >
+        {{ bar.day }}
+      </text>
+    }
+  }
+</svg>

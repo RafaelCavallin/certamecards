@@ -1,0 +1,9 @@
+@for (segment of segments(); track segment.start) {
+  @if (segment.kind === 'emphasis') {
+    <strong class="font-semibold text-signal">{{ display(segment) }}</strong>
+  } @else if (segment.kind === 'cloze' && !hideCloze()) {
+    <span class="rounded bg-signal/15">{{ display(segment) }}</span>
+  } @else {
+    <span>{{ display(segment) }}</span>
+  }
+}

@@ -1,0 +1,9 @@
+<div class="mx-auto max-w-2xl px-5 py-8">
+  @if (savedCount(); as count) {
+    <p class="text-meta text-hit">
+      {{ count }} {{ count === 1 ? 'salvo' : 'salvos' }} nesta sessão
+    </p>
+  }
+
+  <app-card-form title="Novo cartão" submitLabel="Salvar e adicionar outro" [onSubmit]="save" />
+</div>

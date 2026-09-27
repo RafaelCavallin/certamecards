@@ -1,0 +1,20 @@
+<div class="mx-auto max-w-2xl px-5 py-8">
+  <button type="button" (click)="back()" class="font-mono text-label text-muted hover:text-text">
+    ← Voltar
+  </button>
+
+  @if (card() === undefined) {
+    <p class="mt-6 text-meta text-muted">Carregando…</p>
+  } @else if (card() === null) {
+    <p class="mt-6 text-meta text-muted">Cartão não encontrado.</p>
+  } @else {
+    <div class="mt-4">
+      <app-card-form
+        title="Editar cartão"
+        submitLabel="Salvar alterações"
+        [initial]="initial()"
+        [onSubmit]="save"
+      />
+    </div>
+  }
+</div>

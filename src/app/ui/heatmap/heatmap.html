@@ -1,0 +1,30 @@
+<figure #scrollHost class="overflow-x-auto">
+  <svg
+    [attr.width]="grid().width"
+    [attr.height]="height"
+    [attr.viewBox]="'0 0 ' + grid().width + ' ' + height"
+    role="img"
+    [attr.aria-label]="
+      'Revisões por dia nos últimos 10 meses. Melhor dia: ' + grid().max + ' revisões.'
+    "
+    class="min-w-full"
+  >
+    @for (mark of grid().monthMarks; track mark.label + mark.x) {
+      <text [attr.x]="mark.x" y="10" class="fill-muted font-mono" style="font-size: 9px">
+        {{ mark.label }}
+      </text>
+    }
+    @for (cell of grid().cells; track cell.key) {
+      <rect
+        [attr.x]="cell.x"
+        [attr.y]="cell.y + 16"
+        width="11"
+        height="11"
+        rx="2.5"
+        [class]="cellClass(cell.intensity)"
+      >
+        <title>{{ cellTitle(cell.count, cell.label) }}</title>
+      </rect>
+    }
+  </svg>
+</figure>

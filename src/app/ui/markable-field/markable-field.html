@@ -1,0 +1,34 @@
+<div class="relative rounded-xl border border-line bg-surface focus-within:border-signal">
+  <app-mark-backdrop
+    [text]="value()"
+    [marks]="allMarks()"
+    [textClass]="boxClass + ' ' + textClass()"
+  />
+  <textarea
+    #field
+    [value]="value()"
+    (input)="onInput(field.value)"
+    (select)="readSelection()"
+    (keyup)="readSelection()"
+    (pointerup)="readSelection()"
+    (blur)="onBlur()"
+    [rows]="minRows()"
+    [placeholder]="placeholder()"
+    [attr.maxlength]="maxLength() ?? null"
+    [class]="
+      boxClass +
+      ' ' +
+      textClass() +
+      ' relative block w-full resize-none overflow-hidden bg-transparent outline-none selection:bg-signal/30 placeholder:text-muted/40'
+    "
+  ></textarea>
+</div>
+
+<app-mark-actions
+  [marks]="marks()"
+  [allowCloze]="allowCloze()"
+  [hasSelection]="pendingSelection() !== null"
+  [markedKind]="markedMark()?.kind ?? null"
+  (add)="addMark($event)"
+  (remove)="removeMark()"
+/>

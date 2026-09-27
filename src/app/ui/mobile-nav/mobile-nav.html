@@ -1,0 +1,40 @@
+<button
+  type="button"
+  (click)="openMenu()"
+  aria-label="Abrir menu"
+  aria-haspopup="dialog"
+  class="-mr-2 shrink-0 p-2 text-muted transition hover:text-signal md:hidden"
+>
+  <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+    <path d="M3 5h14M3 10h14M3 15h14" />
+  </svg>
+</button>
+
+<dialog
+  #dialog
+  class="m-0 ml-auto h-dvh max-h-dvh w-72 max-w-[80%] border-l border-line bg-surface p-0 text-text backdrop:bg-ink/60"
+  (cancel)="closeMenu()"
+>
+  <div class="flex h-full flex-col overflow-y-auto px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[calc(1.5rem+env(safe-area-inset-top))]">
+    <div class="flex items-baseline justify-between">
+      <p class="font-mono text-label uppercase tracking-wider text-muted">Menu</p>
+      <button type="button" (click)="closeMenu()" aria-label="Fechar menu" class="-mr-2 p-2 font-mono text-label text-muted hover:text-signal">
+        fechar
+      </button>
+    </div>
+
+    <nav class="mt-4 flex flex-col">
+      @for (item of items; track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="text-signal font-medium"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMenu()"
+          class="rounded-xl px-2 py-3 text-left text-meta text-text transition hover:bg-line/40"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+  </div>
+</dialog>

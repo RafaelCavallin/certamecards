@@ -1,0 +1,8 @@
+<div
+  aria-hidden="true"
+  [class]="'pointer-events-none absolute inset-0 text-transparent ' + textClass()"
+>
+  @for (segment of segments(); track segment.start) {
+    <span [class]="segmentClass(segment)">{{ segment.text }}</span>
+  }
+</div>

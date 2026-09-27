@@ -1,0 +1,30 @@
+@if (revealed()) {
+  <div class="grid grid-cols-2 gap-3">
+    <button
+      type="button"
+      (click)="again.emit()"
+      [disabled]="answering()"
+      [attr.aria-busy]="answering()"
+      class="rounded-2xl border border-miss/40 bg-miss/10 py-4 text-body font-medium text-miss transition hover:bg-miss/20 disabled:opacity-60"
+    >
+      Errei
+    </button>
+    <button
+      type="button"
+      (click)="good.emit()"
+      [disabled]="answering()"
+      [attr.aria-busy]="answering()"
+      class="rounded-2xl border border-hit/40 bg-hit/10 py-4 text-body font-medium text-hit transition hover:bg-hit/20 disabled:opacity-60"
+    >
+      Acertei
+    </button>
+  </div>
+} @else {
+  <button
+    type="button"
+    (click)="reveal.emit()"
+    class="w-full rounded-2xl bg-surface py-4 text-body font-medium transition hover:bg-line"
+  >
+    Mostrar resposta
+  </button>
+}

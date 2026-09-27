@@ -1,0 +1,58 @@
+<div class="mx-auto flex min-h-[70vh] max-w-2xl flex-col justify-center px-5 py-10">
+  @if (view(); as v) {
+    @if (v.kind === 'loading') {
+      <div aria-hidden="true">
+        <p class="skeleton h-4 w-16"></p>
+        <p class="skeleton mt-5 h-16 w-24"></p>
+        <p class="skeleton mt-3 h-6 w-40"></p>
+        <p class="skeleton mt-10 h-14 w-36 rounded-full"></p>
+      </div>
+    } @else if (v.kind === 'onboarding') {
+      <h1 class="font-display text-front-long sm:text-front">
+        Comece criando um cartão que você quer nunca mais esquecer.
+      </h1>
+      <p class="mt-4 max-w-md text-body text-muted">
+        Cada cartão vira uma repetição espaçada. Você revisa quando estiver prestes a esquecer.
+      </p>
+      <button
+        type="button"
+        (click)="goAddCard()"
+        class="mt-10 self-start rounded-full bg-signal px-7 py-3.5 text-meta font-medium text-on-signal transition hover:brightness-110"
+      >
+        Criar primeiro cartão
+      </button>
+    } @else {
+      <p class="font-mono text-label uppercase tracking-[0.25em] text-signal">Hoje</p>
+      <p class="mt-5 font-display text-front-long tabular-nums sm:text-front">
+        {{ v.queueSize ?? 0 }}
+      </p>
+      <p class="mt-3 text-body text-muted">
+        {{ v.queueSize === 1 ? 'cartão para revisar' : 'cartões para revisar'
+        }}{{ v.queueSize ? ' · cerca de ' + v.minutes + ' min' : '' }}
+      </p>
+      <button
+        type="button"
+        (click)="goStudy()"
+        [disabled]="!v.queueSize"
+        [attr.aria-busy]="v.queueSize === null"
+        class="mt-10 self-start rounded-full bg-signal px-8 py-4 text-meta font-medium text-on-signal transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-surface disabled:text-muted"
+      >
+        {{ studyLabel() }}
+      </button>
+
+      @if (hasHistory()) {
+        <button
+          type="button"
+          (click)="goProgress()"
+          aria-label="Ver progresso"
+          class="mt-14 rounded-xl border border-transparent p-2 text-left transition hover:border-line"
+        >
+          <app-heatmap [counts]="byDay()" />
+          <span class="mt-2 block font-mono text-label uppercase tracking-wider text-muted"
+            >Ver progresso →</span
+          >
+        </button>
+      }
+    }
+  }
+</div>

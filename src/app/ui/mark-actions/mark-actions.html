@@ -1,0 +1,35 @@
+@if (markedKind(); as kind) {
+  <div class="mt-2 min-h-8">
+    <button
+      type="button"
+      [class]="pillClass"
+      (mousedown)="keepSelection($event)"
+      (click)="remove.emit()"
+    >
+      {{ kind === 'cloze' ? 'Mostrar de novo' : 'Tirar destaque' }}
+    </button>
+  </div>
+} @else if (hasSelection()) {
+  <div class="mt-2 flex min-h-8 flex-wrap gap-3">
+    @if (allowCloze()) {
+      <button
+        type="button"
+        [class]="pillClass"
+        (mousedown)="keepSelection($event)"
+        (click)="add.emit('cloze')"
+      >
+        Ocultar seleção
+      </button>
+    }
+    <button
+      type="button"
+      [class]="pillClass"
+      (mousedown)="keepSelection($event)"
+      (click)="add.emit('emphasis')"
+    >
+      Destacar seleção
+    </button>
+  </div>
+} @else {
+  <p class="mt-2 flex min-h-8 items-center text-label text-muted">{{ hintLabel() }}</p>
+}

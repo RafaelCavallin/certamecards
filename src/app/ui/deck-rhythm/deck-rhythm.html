@@ -1,0 +1,39 @@
+<h2 class="font-mono text-label uppercase tracking-[0.2em] text-signal">Ritmo</h2>
+
+<div class="mt-7">
+  <div class="flex items-baseline justify-between">
+    <label for="new-per-day" class="text-body text-text/90">Máximo de cartões novos por dia</label>
+    <span class="font-mono text-body tabular-nums text-signal">{{ newCardsPerDay() }}</span>
+  </div>
+  <input
+    #newPerDayInput
+    id="new-per-day"
+    type="range"
+    [min]="newPerDayMin"
+    [max]="newPerDayMax"
+    [step]="newPerDayStep"
+    [value]="newCardsPerDay()"
+    (input)="setNewCardsPerDay(newPerDayInput.valueAsNumber)"
+    class="mt-3 w-full accent-signal"
+  />
+</div>
+
+<div class="mt-7">
+  <div class="flex items-baseline justify-between">
+    <label for="young-limit" class="text-body text-text/90"
+      >Teto de cartões ainda não firmados</label
+    >
+    <span class="font-mono text-body tabular-nums text-signal">{{ youngLimit() }}</span>
+  </div>
+  <input
+    #youngLimitInput
+    id="young-limit"
+    type="range"
+    [min]="youngLimitMin"
+    [max]="youngLimitMax"
+    [step]="youngLimitStep"
+    [value]="youngLimit()"
+    (input)="setYoungLimit(youngLimitInput.valueAsNumber)"
+    class="mt-3 w-full accent-signal"
+  />
+</div>

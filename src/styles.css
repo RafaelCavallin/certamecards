@@ -1,0 +1,120 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
+:root {
+  --ink: #14142b;
+  --surface: #1f1f3d;
+  --line: #32325c;
+  --text: #edebff;
+  --muted: #9c9bc4;
+  --signal: #f4b740;
+  --on-signal: #14142b;
+  --hit: #7ce2c0;
+  --miss: #f2789b;
+
+  --size-label: 14px;
+  --size-meta: 16px;
+  --size-body: 18px;
+  --size-back: 22px;
+  --size-front: 24px;
+  --size-front-long: 20px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --size-back: 24px;
+    --size-front: 30px;
+    --size-front-long: 24px;
+  }
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-signal: var(--signal);
+  --color-on-signal: var(--on-signal);
+  --color-hit: var(--hit);
+  --color-miss: var(--miss);
+
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, sans-serif;
+  --font-body: 'Inter Variable', ui-sans-serif, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  --text-label: var(--size-label);
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.04em;
+  --text-meta: var(--size-meta);
+  --text-meta--line-height: 1.5;
+  --text-body: var(--size-body);
+  --text-body--line-height: 1.7;
+  --text-back: var(--size-back);
+  --text-back--line-height: 1.5;
+  --text-front: var(--size-front);
+  --text-front--line-height: 1.35;
+  --text-front-long: var(--size-front-long);
+  --text-front-long--line-height: 1.35;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-ink);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+.skeleton {
+  background-color: var(--color-line);
+  border-radius: 0.5rem;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/*
+ * O wrapper absolutamente posicionado do CDK vem só com min-width: 100% — sem
+ * um width explícito, ele encolhe para caber no conteúdo (shrink-to-fit) e
+ * ignora o flex-shrink das linhas, empurrando os botões para fora da viewport
+ * em telas estreitas. width: 100% resolve contra o viewport, que tem tamanho
+ * definido, e restaura o encolhimento normal do flex.
+ */
+.cdk-virtual-scroll-content-wrapper {
+  width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
