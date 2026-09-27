@@ -11,7 +11,7 @@
 - [x] 7.0 Cadastro de cartões
 - [x] 8.0 Revisão e Home
 - [x] 9.0 Lista, Progresso e Ajustes
-- [ ] 10.0 Offline, PWA e preview
+- [x] 10.0 Offline, PWA e preview
 
 ## Dependências
 

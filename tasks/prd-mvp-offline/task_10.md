@@ -38,9 +38,9 @@ Lidos o `AGENTS.md` e todas as rules em `.agents/rules/`.
 - [x] 10.2 Aviso “Nova versão — recarregar” por `SwUpdate.versionUpdates`
 - [x] 10.3 `storage.persist()` no boot
 - [x] 10.4 Roteiros E2E-07 e E2E-10 contra o build de produção servido localmente
-- [ ] 10.5 Deploy de preview na `des` e repetição rápida de E2E-07 no preview (bloqueado — ver observação abaixo)
+- [x] 10.5 Deploy de preview na `des` e repetição rápida de E2E-07 no preview
 
-> **Observação (10.5 bloqueada):** o diretório do projeto ainda não é um repositório git (`git status` acusa "not a git repository"). Deploy de preview exige a branch `des` e um projeto Vercel conectado — nenhum dos dois existe ainda. `git init`, primeiro commit, branch `des` e a conexão com a Vercel são decisões do Rafael; nenhum agente as toma sozinho sem pedido explícito. Os itens 10.1–10.4 foram implementados e validados localmente (build de produção servido em `http-server`, service worker ativo, offline completo, `storage.persist()`, tipografia a 360 px, ausência de áudio). Falta apenas publicar o preview quando o repositório estiver pronto.
+> **Nota sobre 10.5:** repositório criado pelo Rafael (`git@github.com:RafaelCavallin/certamecards.git`, branches `main`/`des`/`prod`), deploy de preview publicado pela Vercel a partir da `des`. A preview tinha Deployment Protection (SSO) ativa; o Rafael habilitou "Protection Bypass for Automation" nas configurações do projeto para permitir a validação, sem desativar a proteção. Roteiro E2E-07 repetido com sucesso contra a URL de preview (criar cartão, revisar por teclado, offline completo — evidência em `evidences/task-10/e2e-07-preview-offline-done.png`); primeira carga medida em ~495 ms (sem throttling de rede — o `agent-browser` desta sessão não expõe emulação de 4G), bem dentro do teto de 3 s.
 
 ## Detalhes de implementação
 
@@ -57,7 +57,7 @@ Ver `techspec.md` → “Pontos de integração” e “Sequenciamento — etapa
 
 ### Testes E2E
 
-- [x] E2E-07 — Offline sem conta (DevTools offline) — rodado localmente contra o build de produção; repetição no preview pendente (ver observação em 10.5)
+- [x] E2E-07 — Offline sem conta (DevTools offline) — rodado localmente contra o build de produção e repetido no deploy de preview da `des`
 - [x] E2E-10 — Inspeção de tipografia a 360 px e ausência de áudio
 
 ## Arquivos relevantes
