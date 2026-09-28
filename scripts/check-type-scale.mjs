@@ -3,11 +3,13 @@ import { join, extname } from 'node:path';
 
 const TARGET_EXTENSIONS = ['.html', '.ts'];
 const SCAN_ROOT = 'src/app';
+const MIN_LABEL_PX = 13;
 const FORBIDDEN_PATTERNS = [
   { name: 'text-xs', regex: /\btext-xs\b/ },
   { name: 'text-[Npx]/text-[Nrem]', regex: /\btext-\[[^\]]+\]/ },
   { name: 'cor em hex', regex: /#[0-9a-fA-F]{3}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{8}\b/ },
 ];
+const FONT_SIZE_PX_REGEX = /font-size:\s*(\d+(?:\.\d+)?)px/g;
 
 export function findViolations(content) {
   const lines = content.split('\n');
@@ -15,10 +17,17 @@ export function findViolations(content) {
 }
 
 function violationsInLine(line, lineNumber) {
-  return FORBIDDEN_PATTERNS.filter((pattern) => pattern.regex.test(line)).map((pattern) => ({
+  const classViolations = FORBIDDEN_PATTERNS.filter((pattern) => pattern.regex.test(line)).map((pattern) => ({
     pattern: pattern.name,
     line: lineNumber,
   }));
+  return [...classViolations, ...fontSizeViolationsInLine(line, lineNumber)];
+}
+
+function fontSizeViolationsInLine(line, lineNumber) {
+  return [...line.matchAll(FONT_SIZE_PX_REGEX)]
+    .filter((match) => Number(match[1]) < MIN_LABEL_PX)
+    .map(() => ({ pattern: 'font-size inline abaixo de 13px', line: lineNumber }));
 }
 
 export function listSourceFiles(dir) {

@@ -7,8 +7,10 @@ const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', '
 const INTENSITY_LOW = 0.34;
 const INTENSITY_MID = 0.67;
 const INTENSITY_FLOOR = 4;
+const TOP_MARGIN = 20;
 
-export const HEATMAP_HEIGHT = 7 * (CELL + GAP) + 16;
+export const HEATMAP_HEIGHT = 7 * (CELL + GAP) + TOP_MARGIN;
+export const HEATMAP_MONTH_LABEL_Y = 14;
 
 export type HeatmapIntensity = 'empty' | 'low' | 'mid' | 'high';
 
@@ -51,11 +53,13 @@ function cellLabel(date: Date): string {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }
 
-/** Grade de 40 semanas de constância, sem lib de gráfico — SVG à mão custa menos que a dependência. */
-export function buildHeatmapGrid(counts: Map<string, number>, now: Date = new Date()): HeatmapGrid {
-  const today = new Date(now);
-  today.setHours(0, 0, 0, 0);
-  const start = startOfGrid(today);
+interface RawGrid {
+  cells: HeatmapCell[];
+  monthMarks: HeatmapMonthMark[];
+  max: number;
+}
+
+function buildCellsAndMarks(start: Date, today: Date, counts: Map<string, number>): RawGrid {
   const cells: HeatmapCell[] = [];
   const monthMarks: HeatmapMonthMark[] = [];
   let lastMonth = -1;
@@ -74,16 +78,22 @@ export function buildHeatmapGrid(counts: Map<string, number>, now: Date = new Da
       cells.push({
         key: iso(date),
         x: week * (CELL + GAP),
-        y: day * (CELL + GAP),
+        y: day * (CELL + GAP) + TOP_MARGIN,
         count,
         intensity: 'empty',
         label: cellLabel(date),
       });
     }
   }
-  const withIntensity = cells.map((cell) => ({
-    ...cell,
-    intensity: heatmapIntensity(cell.count, max),
-  }));
+  return { cells, monthMarks, max };
+}
+
+/** Grade de 40 semanas de constância, sem lib de gráfico — SVG à mão custa menos que a dependência. */
+export function buildHeatmapGrid(counts: Map<string, number>, now: Date = new Date()): HeatmapGrid {
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  const start = startOfGrid(today);
+  const { cells, monthMarks, max } = buildCellsAndMarks(start, today, counts);
+  const withIntensity = cells.map((cell) => ({ ...cell, intensity: heatmapIntensity(cell.count, max) }));
   return { cells: withIntensity, monthMarks, max, width: WEEKS * (CELL + GAP) };
 }

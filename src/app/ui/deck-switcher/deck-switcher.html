@@ -11,8 +11,9 @@
         <li class="flex items-center gap-2 rounded-xl px-2 py-2 hover:bg-line/40">
           @if (editingId() === deck.id) {
             <input
+              #editNameInput
               [value]="editName()"
-              (input)="editName.set($any($event.target).value)"
+              (input)="editName.set(editNameInput.value)"
               (keydown.enter)="confirmRename(deck.id)"
               (blur)="confirmRename(deck.id)"
               class="min-w-0 flex-1 rounded-lg border border-signal bg-transparent px-2 py-1 text-meta outline-none"
@@ -54,8 +55,9 @@
     @if (creating()) {
       <div class="mt-3 flex gap-2">
         <input
+          #newNameInput
           [value]="newName()"
-          (input)="newName.set($any($event.target).value)"
+          (input)="newName.set(newNameInput.value)"
           (keydown.enter)="confirmCreate()"
           placeholder="Nome do baralho"
           class="min-w-0 flex-1 rounded-lg border border-line bg-transparent px-3 py-2 text-meta outline-none focus:border-signal"

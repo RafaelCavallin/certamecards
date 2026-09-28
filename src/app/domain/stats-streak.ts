@@ -47,12 +47,10 @@ export function currentStreak(byDay: Map<string, number>, cards: Card[], logs: R
   const logsByCard = groupLogsByCard(logs);
   const earliest = earliestDayStart(cards, logs);
   if (earliest === null) return 0;
-
   let streak = 0;
   const cursor = new Date();
   cursor.setHours(0, 0, 0, 0);
   if (!byDay.get(iso(cursor))) cursor.setDate(cursor.getDate() - 1);
-
   while (cursor.getTime() >= earliest) {
     if (byDay.get(iso(cursor))) {
       streak++;

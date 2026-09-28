@@ -47,22 +47,18 @@ export function interleave(due: Card[], fresh: Card[]): Card[] {
 export async function buildQueue(deck: Deck): Promise<Card[]> {
   const all = await liveCards(deck.id).toArray();
   const now = Date.now();
-
   const due = all
     .filter((card) => card.state !== State.New && card.due <= now)
     .sort((a, b) => a.due - b.due);
-
   const youngCount = all.filter(isYoung).length;
   const introducedToday = await countIntroducedToday(deck.id);
   const roomByYoung = Math.max(0, deck.youngLimit - youngCount);
   const roomByDaily = Math.max(0, deck.newCardsPerDay - introducedToday);
   const room = Math.min(roomByYoung, roomByDaily);
-
   const fresh = all
     .filter((card) => card.state === State.New)
     .sort((a, b) => a.createdAt - b.createdAt)
     .slice(0, room);
-
   return interleave(due, fresh);
 }
 

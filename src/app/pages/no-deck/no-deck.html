@@ -4,8 +4,9 @@
 
   <div class="mt-6 flex w-full gap-2">
     <input
+      #nameInput
       [value]="name()"
-      (input)="name.set($any($event.target).value)"
+      (input)="name.set(nameInput.value)"
       (keydown.enter)="create()"
       [disabled]="busy()"
       placeholder="Nome do baralho"

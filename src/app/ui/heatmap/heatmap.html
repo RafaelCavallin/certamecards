@@ -10,14 +10,14 @@
     class="min-w-full"
   >
     @for (mark of grid().monthMarks; track mark.label + mark.x) {
-      <text [attr.x]="mark.x" y="10" class="fill-muted font-mono" style="font-size: 9px">
+      <text [attr.x]="mark.x" [attr.y]="monthLabelY" class="fill-muted font-mono text-label">
         {{ mark.label }}
       </text>
     }
     @for (cell of grid().cells; track cell.key) {
       <rect
         [attr.x]="cell.x"
-        [attr.y]="cell.y + 16"
+        [attr.y]="cell.y"
         width="11"
         height="11"
         rx="2.5"

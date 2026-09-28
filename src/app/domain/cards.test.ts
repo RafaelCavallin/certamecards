@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { resetDb } from '../../test/db-helpers';
-import { createCard, deleteCards, liveCards, updateCardContent } from './cards';
+import { createCard, deleteCards, getCard, liveCards, updateCardContent } from './cards';
 import { db } from './db';
 import { EMPTY_CARD_MARKS, type CardMarks } from './text-marks';
 
@@ -71,6 +71,22 @@ describe('deleteCards', () => {
 
     expect((await db.cards.get(a.id))!.deletedAt).toBeGreaterThan(0);
     expect((await db.cards.get(b.id))!.deletedAt).toBeGreaterThan(0);
+  });
+});
+
+describe('getCard', () => {
+  it('devolve o cartão pelo id', async () => {
+    const created = await createCard({ deckId: 'd1', front: 'A', back: 'A', notes: '', marks: EMPTY_CARD_MARKS });
+
+    const found = await getCard(created.id);
+
+    expect(found?.id).toBe(created.id);
+  });
+
+  it('devolve undefined para id inexistente', async () => {
+    const found = await getCard('id-inexistente');
+
+    expect(found).toBeUndefined();
   });
 });
 

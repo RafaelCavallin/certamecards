@@ -9,7 +9,7 @@
   @for (bar of bars(); track bar.day) {
     <rect
       [attr.x]="bar.x"
-      [attr.y]="height - 18 - bar.height"
+      [attr.y]="bar.y"
       [attr.width]="bar.width"
       [attr.height]="bar.height"
       rx="3"
@@ -20,10 +20,9 @@
     @if (bar.showLabel) {
       <text
         [attr.x]="bar.x + bar.width / 2"
-        [attr.y]="height - 4"
+        [attr.y]="bar.labelY"
         text-anchor="middle"
-        class="fill-muted font-mono"
-        style="font-size: 9px"
+        class="fill-muted font-mono text-label"
       >
         {{ bar.day }}
       </text>

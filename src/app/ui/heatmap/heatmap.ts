@@ -7,7 +7,12 @@ import {
   input,
   viewChild,
 } from '@angular/core';
-import { HEATMAP_HEIGHT, buildHeatmapGrid, type HeatmapIntensity } from '../../domain/heatmap-grid';
+import {
+  HEATMAP_HEIGHT,
+  HEATMAP_MONTH_LABEL_Y,
+  buildHeatmapGrid,
+  type HeatmapIntensity,
+} from '../../domain/heatmap-grid';
 
 const INTENSITY_CLASS: Record<HeatmapIntensity, string> = {
   empty: 'fill-line',
@@ -26,6 +31,7 @@ export class Heatmap {
   readonly counts = input.required<Map<string, number>>();
 
   readonly height = HEATMAP_HEIGHT;
+  readonly monthLabelY = HEATMAP_MONTH_LABEL_Y;
   readonly grid = computed(() => buildHeatmapGrid(this.counts()));
 
   private readonly scrollHost = viewChild.required<ElementRef<HTMLElement>>('scrollHost');

@@ -2,8 +2,8 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CardForm } from '../../ui/card-form/card-form';
-import { db, type Card } from '../../domain/db';
-import { updateCardContent, type CardContent } from '../../domain/cards';
+import type { Card } from '../../domain/db';
+import { getCard, updateCardContent, type CardContent } from '../../domain/cards';
 
 @Component({
   selector: 'app-card-edit',
@@ -25,7 +25,7 @@ export class CardEdit {
   });
 
   constructor() {
-    void db.cards.get(this.cardId).then((card) => this.card.set(card ?? null));
+    void getCard(this.cardId).then((card) => this.card.set(card ?? null));
   }
 
   back(): void {

@@ -36,10 +36,10 @@ tasks/prd-<slug>/      Uma pasta por entrega: prd.md, techspec.md, tasks.md, tas
 ### Regras de dependência (quebrar = recusar a mudança)
 
 - `domain/` **nunca** importa `@angular/*`, `rxjs`, nem nada de `state/`, `pages/`, `ui/`.
-- `pages/` e `ui/` acessam dados só por `state/`. Nada de abrir o Dexie ou chamar o Supabase num componente.
+- `pages/` e `ui/` **nunca** abrem o Dexie (`db`) nem chamam o Supabase diretamente — sempre por uma função de `domain/`. Dentro dessa regra, dois padrões convivem: leitura reativa usa `state/live-query.ts#liveQuerySignal` (direto do componente ou por trás de um serviço de `state/`); escrita pontual (criar, editar, excluir) chama a função de `domain/` direto do componente, sem precisar de um serviço de `state/` no meio. `state/` existe para estado **compartilhado entre páginas** (baralho ativo, contagem de pendentes no cabeçalho) — não é um intermediário obrigatório para toda leitura ou escrita.
 - `ui/` não importa `pages/`. Precisa de algo da página? Recebe por `input()`.
 - `src/test/` só é importado por arquivos `*.test.ts`.
-- Dexie vira signal em um único lugar: `state/live-query.ts`.
+- Dexie vira signal em um único lugar: a função `liveQuerySignal` de `state/live-query.ts` — nenhum outro arquivo chama `liveQuery()` do Dexie diretamente.
 
 ### Regras de domínio que não se negociam
 

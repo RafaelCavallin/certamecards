@@ -35,4 +35,16 @@ describe('findViolations', () => {
 
     expect(violations).toEqual([{ pattern: 'text-xs', line: 2 }]);
   });
+
+  it('aponta font-size inline abaixo de 13px', () => {
+    const violations = findViolations('<text style="font-size: 9px">rótulo</text>');
+
+    expect(violations).toEqual([{ pattern: 'font-size inline abaixo de 13px', line: 1 }]);
+  });
+
+  it('aceita font-size inline a partir de 13px', () => {
+    const violations = findViolations('<text style="font-size: 14px">rótulo</text>');
+
+    expect(violations).toEqual([]);
+  });
 });

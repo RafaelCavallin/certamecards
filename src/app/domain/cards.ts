@@ -19,6 +19,10 @@ export function liveCards(deckId: string) {
   return db.cards.where('[deckId+deletedAt]').equals([deckId, 0]);
 }
 
+export async function getCard(cardId: string): Promise<Card | undefined> {
+  return db.cards.get(cardId);
+}
+
 export async function createCard(input: NewCardInput): Promise<Card> {
   const empty = createEmptyCard(new Date());
   const now = Date.now();
