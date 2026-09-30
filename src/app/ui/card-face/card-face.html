@@ -1,21 +1,23 @@
-<p [class]="frontClass()">
-  <app-marked-text
-    [text]="card().front"
-    [cloze]="card().marks.front.cloze"
-    [emphasis]="card().marks.front.emphasis"
-    [hideCloze]="!revealed()"
-  />
-</p>
+<div class="min-w-0 [overflow-wrap:anywhere]">
+  <p [class]="frontClass()">
+    <app-marked-text
+      [text]="card().front"
+      [cloze]="card().marks.front.cloze"
+      [emphasis]="card().marks.front.emphasis"
+      [hideCloze]="!revealed()"
+    />
+  </p>
 
-@if (revealed()) {
-  <div class="mt-8 border-t border-line pt-6">
-    <p class="text-back">
-      <app-marked-text [text]="card().back" [emphasis]="card().marks.back.emphasis" />
-    </p>
-    @if (card().notes) {
-      <p class="mt-4 text-body text-muted">
-        <app-marked-text [text]="card().notes" [emphasis]="card().marks.notes.emphasis" />
+  @if (revealed()) {
+    <div class="mt-8 border-t border-line pt-6">
+      <p class="text-back">
+        <app-marked-text [text]="card().back" [emphasis]="card().marks.back.emphasis" />
       </p>
-    }
-  </div>
-}
+      @if (card().notes) {
+        <p class="mt-4 text-body text-muted">
+          <app-marked-text [text]="card().notes" [emphasis]="card().marks.notes.emphasis" />
+        </p>
+      }
+    </div>
+  }
+</div>

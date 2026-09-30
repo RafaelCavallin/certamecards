@@ -5,37 +5,54 @@
   Pular para o conteúdo
 </a>
 
-<div class="mx-auto flex min-h-dvh max-w-[42rem] flex-col">
-  <header class="flex items-center justify-between gap-4 border-b border-line px-5 py-4">
-    <a routerLink="/" class="font-display text-meta text-text">CertameCards</a>
+<div class="min-h-dvh lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]">
+  <aside class="sticky top-0 hidden h-dvh flex-col border-r border-line px-4 py-6 lg:flex">
+    <a routerLink="/" class="px-3 font-display text-body text-text">CertameCards</a>
 
-    <nav class="hidden items-center gap-4 font-mono text-label text-muted md:flex">
+    @if (deck(); as activeDeck) {
+      <button
+        type="button"
+        (click)="openSwitcher()"
+        class="mt-8 flex w-full items-center justify-between gap-2 rounded-xl border border-line bg-surface px-3 py-3 text-left transition hover:border-signal"
+      >
+        <span class="min-w-0 truncate text-meta text-text">{{ activeDeck.name }}</span>
+        <app-due-badge [count]="totalDue()" label="para revisar em todos os baralhos" />
+      </button>
+    }
+
+    <nav aria-label="Navegação principal" class="mt-8 flex flex-col gap-1 font-mono text-label text-muted">
       @for (item of navItems; track item.path) {
         <a
           [routerLink]="item.path"
-          routerLinkActive="text-signal"
+          routerLinkActive="bg-surface text-signal"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="uppercase tracking-wider transition hover:text-text"
+          ariaCurrentWhenActive="page"
+          class="whitespace-nowrap rounded-xl px-3 py-3 uppercase tracking-wider transition hover:bg-surface hover:text-text"
         >
           {{ item.label }}
         </a>
       }
     </nav>
+  </aside>
 
-    <div class="flex items-center gap-3">
-      @if (deck(); as activeDeck) {
-        <button type="button" (click)="openSwitcher()" class="flex items-center gap-2">
-          <span class="max-w-[8rem] truncate text-meta text-text">{{ activeDeck.name }}</span>
-          <app-due-badge [count]="totalDue()" label="para revisar em todos os baralhos" />
-        </button>
-      }
-      <app-mobile-nav />
-    </div>
-  </header>
+  <div class="min-w-0">
+    <header class="flex h-16 items-center justify-between gap-3 border-b border-line px-5 lg:hidden">
+      <a routerLink="/" class="shrink-0 font-display text-label text-text sm:text-meta">CertameCards</a>
+      <div class="flex min-w-0 items-center gap-2">
+        @if (deck(); as activeDeck) {
+          <button type="button" (click)="openSwitcher()" class="flex min-w-0 items-center gap-2">
+            <span class="max-w-20 truncate text-meta text-text sm:max-w-32">{{ activeDeck.name }}</span>
+            <app-due-badge [count]="totalDue()" label="para revisar em todos os baralhos" />
+          </button>
+        }
+        <app-mobile-nav />
+      </div>
+    </header>
 
-  <main id="main" class="flex-1">
-    <router-outlet />
-  </main>
+    <main id="main" class="min-w-0 lg:mx-auto lg:max-w-[80rem]">
+      <router-outlet />
+    </main>
+  </div>
 </div>
 
 <app-deck-switcher />

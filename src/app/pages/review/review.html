@@ -4,7 +4,7 @@
   </div>
 } @else if (session.current(); as card) {
   <div
-    class="mx-auto flex min-h-dvh max-w-2xl flex-col px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-6"
+    class="mx-auto flex h-[calc(100dvh-4rem)] max-w-3xl flex-col px-5 pt-4 lg:h-dvh"
   >
     <header class="flex items-center justify-between font-mono text-label text-muted">
       <button type="button" (click)="goHome()" class="hover:text-text">← Sair</button>
@@ -15,18 +15,20 @@
       <div class="h-full bg-signal transition-all duration-300" [style.width.%]="progress()"></div>
     </div>
 
-    <main class="flex flex-1 flex-col justify-center py-10">
-      <app-card-face [card]="card" [revealed]="session.revealed()" />
-      <button
-        type="button"
-        (click)="openEdit()"
-        class="mt-6 self-start font-mono text-label text-muted hover:text-signal"
-      >
-        Editar cartão
-      </button>
+    <main class="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-6">
+      <div class="my-auto min-w-0">
+        <app-card-face [card]="card" [revealed]="session.revealed()" />
+        <button
+          type="button"
+          (click)="openEdit()"
+          class="mt-6 self-start font-mono text-label text-muted hover:text-signal"
+        >
+          Editar cartão
+        </button>
+      </div>
     </main>
 
-    <footer>
+    <footer class="shrink-0 border-t border-line pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4">
       <app-answer-bar
         [revealed]="session.revealed()"
         [answering]="session.answering()"
@@ -39,9 +41,10 @@
 
   <dialog
     #editDialog
-    class="w-full max-w-2xl rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-ink/60"
+    aria-label="Editar cartão"
+    class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-ink/60"
   >
-    <div class="max-h-[85vh] overflow-y-auto p-5">
+    <div class="p-5">
       <app-card-form
         title="Editar cartão"
         submitLabel="Salvar alterações"

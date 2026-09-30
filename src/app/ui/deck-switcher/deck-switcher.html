@@ -1,6 +1,7 @@
 <dialog
   #dialog
-  class="w-full max-w-sm rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-ink/60"
+  aria-label="Baralhos"
+  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-ink/60"
   (cancel)="close()"
 >
   <div class="p-4">
@@ -8,7 +9,7 @@
 
     <ul class="mt-3 space-y-1">
       @for (deck of decks(); track deck.id) {
-        <li class="flex items-center gap-2 rounded-xl px-2 py-2 hover:bg-line/40">
+        <li class="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl px-2 py-2 hover:bg-line/40">
           @if (editingId() === deck.id) {
             <input
               #editNameInput
@@ -16,14 +17,14 @@
               (input)="editName.set(editNameInput.value)"
               (keydown.enter)="confirmRename(deck.id)"
               (blur)="confirmRename(deck.id)"
-              class="min-w-0 flex-1 rounded-lg border border-signal bg-transparent px-2 py-1 text-meta outline-none"
+              class="min-w-0 flex-1 basis-full rounded-lg border border-signal bg-transparent px-2 py-1 text-meta outline-none"
             />
           } @else {
-            <div class="flex min-w-0 flex-1 items-center gap-2">
+            <div class="flex min-w-0 flex-1 basis-full items-center gap-2 sm:basis-auto">
               <button
                 type="button"
                 (click)="select(deck.id)"
-                class="min-w-0 truncate text-left text-meta"
+                class="min-h-11 min-w-0 truncate text-left text-meta"
                 [class.text-signal]="deck.id === activeDeck()?.id"
                 [class.font-medium]="deck.id === activeDeck()?.id"
               >
@@ -36,7 +37,7 @@
             type="button"
             (click)="startRename(deck.id, deck.name)"
             aria-label="Renomear baralho"
-            class="shrink-0 font-mono text-label uppercase text-muted hover:text-text"
+            class="ml-auto min-h-11 shrink-0 px-1 font-mono text-label uppercase text-muted hover:text-text"
           >
             editar
           </button>
@@ -44,7 +45,7 @@
             type="button"
             (click)="askRemove(deck.id)"
             aria-label="Excluir baralho"
-            class="shrink-0 font-mono text-label uppercase text-muted hover:text-miss"
+            class="min-h-11 shrink-0 px-1 font-mono text-label uppercase text-muted hover:text-miss"
           >
             excluir
           </button>
@@ -74,7 +75,7 @@
       <button
         type="button"
         (click)="startCreate()"
-        class="mt-3 w-full rounded-xl border border-dashed border-line py-2 text-meta text-muted transition hover:border-signal hover:text-signal"
+        class="mt-3 min-h-11 w-full rounded-xl border border-dashed border-line py-2 text-meta text-muted transition hover:border-signal hover:text-signal"
       >
         + Novo baralho
       </button>
@@ -84,7 +85,7 @@
       <p class="mt-3 text-meta text-miss">{{ message }}</p>
     }
 
-    <button type="button" (click)="close()" class="mt-4 w-full text-center font-mono text-label text-muted">
+    <button type="button" (click)="close()" class="mt-4 min-h-11 w-full text-center font-mono text-label text-muted">
       fechar
     </button>
   </div>
