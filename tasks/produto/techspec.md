@@ -631,9 +631,9 @@ Edge Function (Deno) chamada a cada 15 min pelo `pg_cron`. Autentica o chamador 
 
 ## Pontos de integração
 
-- **Supabase Auth** — email e senha, confirmação por email ligada em preview/produção (Inbucket em `localhost:55324` no local). O SDK é carregado por `import()` dinâmico: quem não usa conta não baixa o bundle.
+- **Supabase Auth** — email e senha, confirmação por email nos ambientes com Supabase; preview sem conta (Inbucket em `localhost:55324` no local). O SDK é carregado por `import()` dinâmico: quem não usa conta não baixa o bundle.
 - **Supabase PostgREST/RPC** — ver endpoints. Erros de rede viram `offline` silencioso; erros de servidor aparecem como texto curto na tela de Conta/Ajustes, nunca bloqueiam o estudo.
-- **Vercel** — hospedagem estática do `dist/certamecards/browser`; `vercel.json` com rewrite SPA para `index.html` e `Cache-Control: no-cache` para `ngsw.json`/`ngsw-worker.js`. Variáveis `NG_APP_SUPABASE_URL` e `NG_APP_SUPABASE_PUBLISHABLE_KEY` por escopo (Development/Preview → projeto dev; Production → projeto prod). `scripts/write-env.mjs` roda no `prebuild`/`prestart` e grava `src/environments/env.ts`; sem as variáveis, grava `null` e o app segue sem conta (RF41).
+- **Vercel** — hospedagem estática do `dist/certamecards/browser`; `vercel.json` com rewrite SPA para `index.html` e `Cache-Control: no-cache` para `ngsw.json`/`ngsw-worker.js`. Variáveis `NG_APP_SUPABASE_URL` e `NG_APP_SUPABASE_PUBLISHABLE_KEY` só no escopo Production, apontando para o banco remoto `certamecards`; Development/Preview ficam sem elas. `scripts/write-env.mjs` roda no `prebuild`/`prestart` e grava `src/environments/env.ts`; sem as variáveis, grava `null` e o app segue sem conta (RF41).
 - **Service worker** — `@angular/service-worker` (`ng add @angular/pwa`): `ngsw-config.json` com o app shell e fontes em `prefetch`; sem `dataGroups` para o Supabase (nunca cachear API). Na Fase 2, `SwPush.requestSubscription` com a chave VAPID pública (`NG_APP_VAPID_PUBLIC_KEY`).
 - **Web Push (Fase 2)** — chaves VAPID geradas uma vez por ambiente; a privada só nos segredos da Edge Function. No iPhone, só funciona com o app instalado na tela de início (iOS 16.4+); a tela de lembrete explica isso e oferece o `.ics`.
 - **Anki (Fase 2)** — `.apkg` lido no navegador com JSZip + sql.js (wasm fora do precache, baixado só por quem importa), como no Lingo.
@@ -734,7 +734,7 @@ Roteiros executados à mão com a skill `agent-browser` contra `ng serve` (e Sup
 5. **Revisão e Home (dias 8–9)** — `marked-text` (3 modos), `review-session`, `review` (com diálogo de edição), `home`, `heatmap`, `due-badge`.
 6. **Lista e Progresso (dia 10)** — `cards` (busca + virtualização + lote), `progress` (`bar-chart`), `settings`. **Fim do MVP offline** → deploy de preview.
 7. **Conta e sync (dias 11–14)** — migration no Supabase local, `supabase`, `sync-rows`, `sync*`, `auth` + testes; `auth-store`, `sync-store`, `account`, seção de conta em Ajustes.
-8. **QA e produção** — roteiro E2E completo no preview, migration manual em produção, promoção para `prod`.
+8. **QA e produção** — E2E de conta/sync no Supabase local e roteiros offline no preview, migration manual em produção, promoção para `prod`.
 
 **Fase 2** — cada fatia vai sozinha para produção, nesta ordem:
 

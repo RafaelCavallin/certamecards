@@ -125,19 +125,19 @@ Desenvolvimento **nunca** fala com o banco de produção.
 | Ambiente | Banco | Quem usa |
 | --- | --- | --- |
 | Local | Supabase em Docker (`127.0.0.1:55321`) | `npm start` via `.env.local` |
-| Preview | projeto hospedado `certamecards-dev` | deploys da branch `des` (escopos Preview/Development da Vercel) |
-| Produção | projeto hospedado `certamecards-prod` | só a branch **`prod`** (escopo Production) |
+| Preview | nenhum banco; sincronização indisponível | deploys da branch `des` (escopo Preview da Vercel) |
+| Produção | projeto hospedado `certamecards` | só a branch **`prod`** (escopo Production) |
 
-- `prod` é produção, `des` é desenvolvimento; `main` não dispara deploy de produção. Só se promove para `prod` o que foi validado 100% no preview da `des`.
-- Os dois projetos Supabase são criados **fora** da integração Vercel Marketplace (ela injeta a mesma credencial nos três escopos).
+- `prod` é produção, `des` é desenvolvimento; `main` não dispara deploy de produção. Os fluxos offline são validados no preview da `des`; conta e sincronização são validadas contra o Supabase local antes da promoção.
+- O banco remoto `certamecards` é exclusivo da produção. Não configure `NG_APP_SUPABASE_URL` nem `NG_APP_SUPABASE_PUBLISHABLE_KEY` nos escopos Preview/Development da Vercel. Evite integração Marketplace que injete credenciais em todos os escopos.
 - Nunca `npx vercel env pull` sem argumento (sobrescreve `.env.local`). Use `npx vercel env pull .env.vercel-prod.bak`.
-- Só `NG_APP_SUPABASE_URL`, `NG_APP_SUPABASE_PUBLISHABLE_KEY` e (Fase 2) `NG_APP_VAPID_PUBLIC_KEY` vão para o bundle. **Nunca** `SUPABASE_SECRET_KEY`/`SERVICE_ROLE_KEY` com prefixo `NG_APP_`.
+- No escopo Production, só `NG_APP_SUPABASE_URL`, `NG_APP_SUPABASE_PUBLISHABLE_KEY` e (Fase 2) `NG_APP_VAPID_PUBLIC_KEY` vão para o bundle. **Nunca** `SUPABASE_SECRET_KEY`/`SERVICE_ROLE_KEY` com prefixo `NG_APP_`.
 
 ### Fluxo de uma migration nova
 
-1. Local: `npx supabase db reset`.
-2. Dev: `npx supabase db push --db-url "postgresql://postgres:<senha>@db.<ref-dev>.supabase.co:5432/postgres"`.
-3. Produção: só à mão, depois de validar no preview, e antes do deploy que depende dela.
+1. Local: `npx supabase db reset` e validação do banco e dos fluxos de conta/sync.
+2. Preview: validar os fluxos offline sem variáveis do Supabase.
+3. Produção: só com pedido explícito do Rafael, aplicar por `npx supabase db push --db-url "postgresql://postgres:<senha>@db.<ref-prod>.supabase.co:5432/postgres"`, antes do deploy que depende dela. Nunca usar `--linked`.
 
 Toda coluna nova em `cards`/`decks`/`user_settings` exige **reemitir `sync_push` inteira** na mesma migration (lista do insert, select e `on conflict`) e atualizar `domain/sync-rows.ts` — sem isso o campo é descartado em silêncio a cada push. Novas marcas de texto **não** precisam disso: moram no `marks jsonb`. `cards.tags` e `user_settings` (Fase 2) já estão na migration inicial; imagens e push têm migration e RPC próprias.
 
@@ -145,10 +145,10 @@ Toda coluna nova em `cards`/`decks`/`user_settings` exige **reemitir `sync_push`
 
 ```bash
 npx supabase functions serve send-reminders            # local
-npx supabase functions deploy send-reminders --project-ref <ref-dev>
+npx supabase functions deploy send-reminders --project-ref <ref-prod>  # só com pedido explícito do Rafael
 ```
 
-Segredos da função (`VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `REMINDERS_TOKEN`) vão com `npx supabase secrets set` no projeto certo — nunca no repositório. O `cron.schedule` do lembrete é aplicado à mão em cada ambiente (usa segredos do Vault); o SQL está na techspec.
+Segredos da função (`VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `REMINDERS_TOKEN`) vão com `npx supabase secrets set` no projeto certo — nunca no repositório. O `cron.schedule` do lembrete é aplicado à mão em cada ambiente (usa segredos do Vault); o SQL está na techspec. Não há deploy hospedado de desenvolvimento.
 
 ## Comandos de validação
 

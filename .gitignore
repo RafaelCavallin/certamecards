@@ -53,3 +53,4 @@ tasks/*/evidences/
 # System files
 .DS_Store
 Thumbs.db
+/.vercel/

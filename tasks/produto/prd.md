@@ -295,7 +295,7 @@ Esquemas, tabelas fotografadas e mapas mentais anexados ao cartão.
 - **Estilos**: os mesmos tokens de cor, fontes e padrões visuais do Lingo (Tailwind), com a escala tipográfica aumentada descrita acima.
 - **Algoritmo**: FSRS com retenção alvo de 0,90 e avaliação binária.
 - **Segurança e privacidade**: dados pessoais de estudo; isolamento por usuário garantido no banco (RLS, chave composta `user_id + id`); nenhuma chave secreta no bundle; só email e nome são coletados.
-- **Ambientes isolados**: desenvolvimento nunca aponta para o banco de produção (mesmo modelo local / preview / produção do Lingo).
+- **Ambientes isolados**: desenvolvimento usa Supabase local, preview não configura sincronização e só produção aponta para o banco remoto.
 - **Desempenho**: primeira carga ≤ 3 s em 4G no celular; resposta a um cartão ≤ 150 ms; lista fluida com 5.000 cartões; sincronização paginada (500 linhas por página).
 
 ## Fora do escopo
