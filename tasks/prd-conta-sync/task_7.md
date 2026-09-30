@@ -25,10 +25,10 @@ Lido o `AGENTS.md` e as rules em `.agents/rules/`. `pages/` nunca abre o Dexie n
 
 ## Subtarefas
 
-- [ ] 7.1 Criar a rota `conta` (`loadComponent` ou direta, conforme padrão das demais rotas) com formulário de entrar/cadastrar (email + senha), usando `auth-store.signIn`/`signUp`.
-- [ ] 7.2 Exibir aviso de confirmação por email após cadastro (Inbucket no local).
-- [ ] 7.3 Exibir a tela de decisão quando `auth-store.pendingDecision` estiver presente, com as três opções e chamando `resolveDecision(plan)`.
-- [ ] 7.4 Tratar erro de rede/servidor como texto curto na tela, nunca bloqueando a navegação.
+- [x] 7.1 Criar a rota `conta` (`loadComponent` ou direta, conforme padrão das demais rotas) com formulário de entrar/cadastrar (email + senha), usando `auth-store.signIn`/`signUp`.
+- [x] 7.2 Exibir aviso de confirmação por email após cadastro (Inbucket no local).
+- [x] 7.3 Exibir a tela de decisão quando `auth-store.pendingDecision` estiver presente, com as três opções e chamando `resolveDecision(plan)`.
+- [x] 7.4 Tratar erro de rede/servidor como texto curto na tela, nunca bloqueando a navegação.
 
 ## Detalhes de implementação
 
@@ -45,7 +45,7 @@ Ver TechSpec-base, "Camada `pages/`" (rota `conta` → `Account.tsx`) e "Pontos 
 
 ### Testes E2E (validados na Tarefa 9.0)
 
-- [ ] E2E-09 — Login com dados dos dois lados
+- [x] E2E-09 — Login com dados dos dois lados
 
 ## Arquivos relevantes
 

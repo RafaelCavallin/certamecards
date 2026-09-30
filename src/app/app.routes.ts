@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { requireDeck, requireNoDeck } from './state/guards';
-import { ReviewSession } from './state/review-session';
 
 export const routes: Routes = [
   {
@@ -11,7 +10,6 @@ export const routes: Routes = [
   {
     path: 'revisar',
     canActivate: [requireDeck],
-    providers: [ReviewSession],
     loadComponent: () => import('./pages/review/review').then((m) => m.Review),
   },
   {
@@ -38,6 +36,10 @@ export const routes: Routes = [
     path: 'ajustes',
     canActivate: [requireDeck],
     loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
+  },
+  {
+    path: 'conta',
+    loadComponent: () => import('./pages/account/account').then((m) => m.Account),
   },
   {
     path: 'sem-baralho',

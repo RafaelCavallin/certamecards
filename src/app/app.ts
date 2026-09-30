@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AppUpdate } from './state/app-update';
 import { DeckStore } from './state/deck-store';
+import { SyncStore } from './state/sync-store';
 import { DeckSwitcher } from './ui/deck-switcher/deck-switcher';
 import { DueBadge } from './ui/due-badge/due-badge';
 import { MobileNav } from './ui/mobile-nav/mobile-nav';
@@ -41,6 +42,7 @@ export class App {
   private readonly deckSwitcher = viewChild.required(DeckSwitcher);
 
   constructor() {
+    inject(SyncStore);
     persistStorage();
   }
 

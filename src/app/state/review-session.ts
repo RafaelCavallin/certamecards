@@ -4,10 +4,6 @@ import { buildQueue } from '../domain/queue';
 import { answer as answerCard, type BinaryRating } from '../domain/scheduler';
 import type { Card } from '../domain/db';
 
-/**
- * Estado da sessão de revisão. Provida na rota `revisar` (não é root): a fila e o índice
- * não podem sobreviver a uma navegação para fora da revisão.
- */
 @Injectable()
 export class ReviewSession {
   private readonly deckStore = inject(DeckStore);

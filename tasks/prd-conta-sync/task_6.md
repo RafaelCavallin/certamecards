@@ -23,9 +23,9 @@ Lido o `AGENTS.md` e as rules em `.agents/rules/`. `state/` existe para estado c
 
 ## Subtarefas
 
-- [ ] 6.1 Criar `src/app/state/auth-store.ts`: `session` e `phase` a partir da sessão do Supabase (restaurada no boot), `signIn`/`signUp`/`signOut` delegando para `domain/auth.ts` e `domain/supabase.ts`, `pendingDecision`/`resolveDecision` ligados a `decideOnSignIn`/`completeSignIn`.
-- [ ] 6.2 Criar `src/app/state/sync-store.ts`: `status` (`disabled`/`offline`/`syncing`/`synced`/`error`), `lastSyncAt` (persistido em `localStorage.certamecards.lastSync`), `syncNow(reason)` delegando para `domain/sync.ts`.
-- [ ] 6.3 Registrar os gatilhos de sync no próprio `sync-store` (boot, `window:online`, `Router.events` filtrando `NavigationEnd` para `/`, término de `signIn`/`resolveDecision`), com `DestroyRef` para cancelar assinaturas.
+- [x] 6.1 Criar `src/app/state/auth-store.ts`: `session` e `phase` a partir da sessão do Supabase (restaurada no boot), `signIn`/`signUp`/`signOut` delegando para `domain/auth.ts` e `domain/supabase.ts`, `pendingDecision`/`resolveDecision` ligados a `decideOnSignIn`/`completeSignIn`.
+- [x] 6.2 Criar `src/app/state/sync-store.ts`: `status` (`disabled`/`offline`/`syncing`/`synced`/`error`), `lastSyncAt` (persistido em `localStorage.certamecards.lastSync`), `syncNow(reason)` delegando para `domain/sync.ts`.
+- [x] 6.3 Registrar os gatilhos de sync no próprio `sync-store` (boot, `window:online`, `Router.events` filtrando `NavigationEnd` para `/`, término de `signIn`/`resolveDecision`), com `DestroyRef` para cancelar assinaturas.
 
 ## Detalhes de implementação
 

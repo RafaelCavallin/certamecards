@@ -23,9 +23,9 @@ Lido o `AGENTS.md` e as rules em `.agents/rules/`. `domain/` nunca importa `@ang
 
 ## Subtarefas
 
-- [ ] 2.1 Criar `src/app/domain/supabase.ts` com uma função que retorna o cliente memorizado (singleton), criado só na primeira chamada, via `import('@supabase/supabase-js')`.
-- [ ] 2.2 Tratar a ausência de `env.supabaseUrl`/`env.supabasePublishableKey`: a função retorna algo que sinalize "indisponível" (ex.: `null`) sem lançar exceção e sem importar o SDK.
-- [ ] 2.3 Escrever os testes unitários cobrindo os dois ramos (configurado / não configurado).
+- [x] 2.1 Criar `src/app/domain/supabase.ts` com uma função que retorna o cliente memorizado (singleton), criado só na primeira chamada, via `import('@supabase/supabase-js')`.
+- [x] 2.2 Tratar a ausência de `env.supabaseUrl`/`env.supabasePublishableKey`: a função retorna algo que sinalize "indisponível" (ex.: `null`) sem lançar exceção e sem importar o SDK.
+- [x] 2.3 Escrever os testes unitários cobrindo os dois ramos (configurado / não configurado).
 
 ## Detalhes de implementação
 
@@ -39,8 +39,8 @@ Ver TechSpec-base, "Camada `domain/`" (linha `supabase.ts`) e "Pontos de integra
 
 ### Testes de unidade
 
-- [ ] Cliente não é criado (e SDK não é importado) quando `env.supabaseUrl`/`env.supabasePublishableKey` estão ausentes.
-- [ ] Cliente é criado uma única vez e reaproveitado em chamadas subsequentes quando as variáveis estão presentes.
+- [x] Cliente não é criado (e SDK não é importado) quando `env.supabaseUrl`/`env.supabasePublishableKey` estão ausentes.
+- [x] Cliente é criado uma única vez e reaproveitado em chamadas subsequentes quando as variáveis estão presentes.
 
 ## Arquivos relevantes
 

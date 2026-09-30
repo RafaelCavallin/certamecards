@@ -1,36 +1,32 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
-import { DeckStore } from '../../state/deck-store';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { AuthStore } from '../../state/auth-store';
+import { SyncStore } from '../../state/sync-store';
+import { formatRelativeSync } from '../../domain/format-relative-time';
 
 const APP_VERSION = '0.1.0';
 
 @Component({
   selector: 'app-settings',
+  imports: [RouterLink],
   templateUrl: './settings.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Settings {
-  private readonly deckStore = inject(DeckStore);
+  readonly auth = inject(AuthStore);
+  readonly sync = inject(SyncStore);
 
   readonly version = APP_VERSION;
-  readonly name = signal('');
-  readonly saved = signal(false);
-
-  constructor() {
-    effect(() => {
-      const deck = this.deckStore.deck();
-      if (deck) this.name.set(deck.name);
-    });
+  async syncNow(): Promise<void> {
+    await this.sync.syncNow('manual');
   }
 
-  onNameInput(value: string): void {
-    this.name.set(value);
-    this.saved.set(false);
-  }
-
-  async save(): Promise<void> {
-    const deck = this.deckStore.deck();
-    if (!deck) return;
-    await this.deckStore.renameDeck(deck.id, this.name());
-    this.saved.set(true);
+  syncStatusText(): string {
+    const status = this.sync.status();
+    if (status === 'offline') return 'Offline — seus dados estão no aparelho.';
+    if (status === 'synced') return formatRelativeSync(this.sync.lastSyncAt(), Date.now());
+    if (status === 'error') return 'A sincronização falhou.';
+    if (status === 'syncing') return 'Sincronizando…';
+    return 'Ainda não sincronizado.';
   }
 }

@@ -24,10 +24,10 @@ Lido o `AGENTS.md` e as rules em `.agents/rules/`. `domain/` é TS puro. Nunca a
 
 ## Subtarefas
 
-- [ ] 5.1 Criar `src/app/domain/auth.ts` com `decideOnSignIn(local, remote)`: guardas para os quatro casos (sem dado nenhum → resume; só remoto → auto-adopt/pull; só local → auto-adopt/push; os dois → prompt).
-- [ ] 5.2 Implementar `completeSignIn(plan)`: `discard` (descarta local, baixa remoto), `merge` (mantém os dois, LWW resolve conflitos por id), `cancel` (não toca no Dexie).
-- [ ] 5.3 Implementar a troca de conta: ao detectar `user_id` remoto diferente do último vinculado (`syncState.boundUserId`), fazer wipe total do Dexie local antes de aplicar o pull e zerar todos os cursores.
-- [ ] 5.4 Escrever TU-16 e TI-08.
+- [x] 5.1 Criar `src/app/domain/auth.ts` com `decideOnSignIn(local, remote)`: guardas para os quatro casos (sem dado nenhum → resume; só remoto → auto-adopt/pull; só local → auto-adopt/push; os dois → prompt).
+- [x] 5.2 Implementar `completeSignIn(plan)`: `discard` (descarta local, baixa remoto), `merge` (mantém os dois, LWW resolve conflitos por id), `cancel` (não toca no Dexie).
+- [x] 5.3 Implementar a troca de conta: ao detectar `user_id` remoto diferente do último vinculado (`syncState.boundUserId`), fazer wipe total do Dexie local antes de aplicar o pull e zerar todos os cursores.
+- [x] 5.4 Escrever TU-16 e TI-08.
 
 ## Detalhes de implementação
 
@@ -42,11 +42,11 @@ Ver TechSpec-base, "Camada `domain/`" (`auth.ts`: "adoção, troca de conta, `de
 
 ### Testes de unidade
 
-- [ ] TU-16 — `decideOnSignIn` — matriz resume/auto-adopt/prompt/switch
+- [x] TU-16 — `decideOnSignIn` — matriz resume/auto-adopt/prompt/switch
 
 ### Testes de integração
 
-- [ ] TI-08 — `completeSignIn` discard/merge/cancel e troca de conta
+- [x] TI-08 — `completeSignIn` discard/merge/cancel e troca de conta
 
 ## Arquivos relevantes
 

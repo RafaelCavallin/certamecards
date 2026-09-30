@@ -18,6 +18,7 @@ import { updateCardContent, type CardContent } from '../../domain/cards';
   selector: 'app-review',
   imports: [AnswerBar, CardFace, CardForm],
   templateUrl: './review.html',
+  providers: [ReviewSession],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Review {

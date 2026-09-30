@@ -24,9 +24,9 @@ Lido o `AGENTS.md` e as rules em `.agents/rules/`. `pages/` só acessa `auth-sto
 
 ## Subtarefas
 
-- [ ] 8.1 Adicionar a seção de conta em `settings.html`/`settings.ts`: estado logado (email, "Sair") vs. deslogado (link para `conta`).
-- [ ] 8.2 Exibir `sync-store.status` e `lastSyncAt` formatado ("Sincronizado há 2 min" / "Offline…" / erro curto) e o botão "Sincronizar agora" chamando `syncNow('manual')`.
-- [ ] 8.3 Tratar o caso sem config (`env.supabaseUrl` nulo): seção mostra "sincronização não disponível", sem renderizar controles que dependam de sessão.
+- [x] 8.1 Adicionar a seção de conta em `settings.html`/`settings.ts`: estado logado (email, "Sair") vs. deslogado (link para `conta`).
+- [x] 8.2 Exibir `sync-store.status` e `lastSyncAt` formatado ("Sincronizado há 2 min" / "Offline…" / erro curto) e o botão "Sincronizar agora" chamando `syncNow('manual')`.
+- [x] 8.3 Tratar o caso sem config (`env.supabaseUrl` nulo): seção mostra "sincronização não disponível", sem renderizar controles que dependam de sessão.
 
 ## Detalhes de implementação
 
@@ -43,10 +43,11 @@ Ver TechSpec da entrega, "Visão dos componentes" (linha `pages/`: "seção de c
 
 ### Testes E2E (validados na Tarefa 9.0)
 
-- [ ] E2E-07 — Regressão: offline com Supabase configurado e sem conta
-- [ ] E2E-S1 — Build sem variáveis: abrir Conta e Ajustes
+- [x] E2E-07 — Regressão: offline com Supabase configurado e sem conta
+- [x] E2E-S1 — Build sem variáveis: abrir Conta e Ajustes
 
 ## Arquivos relevantes
 
 - `src/app/pages/settings/settings.ts` (alterado)
 - `src/app/pages/settings/settings.html` (alterado)
+- `src/app/domain/format-relative-time.ts`, `format-relative-time.test.ts` (novo — formata "Sincronizado há N min/h/d" a partir de `lastSyncAt`)

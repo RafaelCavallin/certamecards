@@ -41,8 +41,8 @@ Da tabela “Visão geral” da base, só: `GET /rest/v1/{decks|cards|review_log
 ## Pontos de integração
 
 - **Supabase Auth** e **PostgREST/RPC** — como na base (confirmação por email; Inbucket em `localhost:55324` no local; erro de rede → `offline` silencioso).
-- **Vercel** — `NG_APP_SUPABASE_URL` e `NG_APP_SUPABASE_PUBLISHABLE_KEY` por escopo: Development/Preview → `certamecards-dev`; Production → `certamecards-prod`. O agente prepara o comando do escopo Production e entrega ao Rafael.
-- **Projetos Supabase** — criados fora da integração Vercel Marketplace.
+- **Vercel** — Development/Preview sem `NG_APP_SUPABASE_URL` e `NG_APP_SUPABASE_PUBLISHABLE_KEY`; Production aponta para o banco remoto `certamecards`. O agente prepara o comando do escopo Production e entrega ao Rafael.
+- **Supabase** — desenvolvimento usa somente a instância local; preview não oferece conta nem sincronização.
 
 ## Abordagem de testes
 
@@ -84,7 +84,7 @@ Roteiros com `agent-browser` contra `ng serve` e Supabase local.
 | E2E-07 | Regressão: offline com Supabase configurado e sem conta | CA-17 |
 | E2E-S1 | Build sem variáveis: abrir Conta e Ajustes | CA-S1 |
 
-Antes da promoção, repetir no preview da `des` (projeto `certamecards-dev`) o roteiro E2E completo das duas entregas da Fase 1.
+Antes da promoção, validar E2E-08/E2E-09/E2E-07 com Supabase local e repetir no preview da `des` os roteiros offline E2E-01 a E2E-07, E2E-10 e E2E-S1.
 
 ## Sequenciamento do desenvolvimento
 
@@ -95,12 +95,12 @@ Etapas 7 e 8 da base:
 1. **Migration** no Supabase local e verificações do banco.
 2. **Domínio** — `supabase`, `lww`, `sync-rows`, `sync-pull`, `sync-push`, `sync`, `auth`, com TU e TI desta entrega.
 3. **Estado e UI** — `auth-store`, `sync-store`, `account`, seção de conta em Ajustes, status de sincronização.
-4. **Dev hospedado** — migration no `certamecards-dev` por `--db-url`, variáveis de Preview/Development na Vercel, roteiro E2E completo no preview.
-5. **Produção** — somente com pedido explícito do Rafael: migration manual no `certamecards-prod`, variáveis do escopo Production, merge da `des` na `prod`.
+4. **Preview sem backend** — manter Preview/Development sem variáveis Supabase, publicar a `des` e repetir os roteiros offline e E2E-S1. Os fluxos de conta/sync são validados localmente.
+5. **Produção** — somente com pedido explícito do Rafael: migration manual no banco remoto `certamecards` por `--db-url`, variáveis do escopo Production, merge da `des` na `prod`.
 
 ### Dependências técnicas
 
-Docker para o Supabase local; projetos `certamecards-dev` e `certamecards-prod` criados; Supabase CLI.
+Docker para o Supabase local; projeto remoto `certamecards` reservado à produção; Supabase CLI.
 
 ## Monitoramento e observabilidade
 

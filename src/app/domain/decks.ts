@@ -33,11 +33,12 @@ function newDeck(name: string): Deck {
  * válida do usuário; `null` significa "sem baralho agora", não erro.
  */
 export async function ensureDefaultDeck(): Promise<Deck | null> {
-  return db.transaction('rw', db.decks, async () => {
+  return db.transaction('rw', db.decks, db.syncState, async () => {
     const everHadAnyDeck = (await db.decks.count()) > 0;
     if (everHadAnyDeck) {
       return (await db.decks.filter((deck) => deck.deletedAt === 0).first()) ?? null;
     }
+    if (await db.syncState.get('boundUserId')) return null;
     const deck = newDeck(DEFAULT_DECK_NAME);
     await db.decks.add(deck);
     return deck;

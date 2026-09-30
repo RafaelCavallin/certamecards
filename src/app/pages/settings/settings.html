@@ -2,27 +2,18 @@
   <h1 class="font-display text-front">Ajustes</h1>
 
   <section class="mt-8">
-    <label for="deck-name" class="block font-mono text-label uppercase tracking-wider text-muted">
-      Nome do baralho
-    </label>
-    <div class="mt-2 flex gap-3">
-      <input
-        #nameInput
-        id="deck-name"
-        [value]="name()"
-        (input)="onNameInput(nameInput.value)"
-        class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-body outline-none placeholder:text-muted/40 focus:border-signal"
-      />
-      <button
-        type="button"
-        (click)="save()"
-        class="shrink-0 rounded-xl bg-signal px-5 py-3 text-meta font-medium text-on-signal transition hover:brightness-110"
-      >
-        Salvar
-      </button>
-    </div>
-    @if (saved()) {
-      <p class="mt-2 text-label text-hit">Salvo.</p>
+    <p class="font-mono text-label uppercase tracking-wider text-muted">Conta e sincronização</p>
+    @if (auth.phase() === 'disabled') {
+      <p class="mt-2 text-meta text-muted">Sincronização não disponível neste servidor.</p>
+    } @else if (auth.session(); as session) {
+      <p class="mt-2 text-meta text-muted">Conectado como {{ session.user.email }}.</p>
+      <p class="mt-2 text-meta text-muted">{{ syncStatusText() }}</p>
+      <div class="mt-4 flex gap-3">
+        <button type="button" (click)="syncNow()" class="rounded-xl bg-signal px-5 py-3 text-body text-on-signal">Sincronizar agora</button>
+        <button type="button" (click)="auth.signOut()" class="rounded-xl border border-line px-5 py-3 text-body">Sair</button>
+      </div>
+    } @else {
+      <a routerLink="/conta" class="mt-4 inline-block rounded-xl border border-line px-5 py-3 text-body">Entrar ou criar conta</a>
     }
   </section>
 
