@@ -665,7 +665,7 @@ Runner: **Vitest** (o padrão do Angular desde a v21). A camada `domain/` roda n
 | TU-17 | `homeView` / `studyButtonLabel` | CA-11 | Estados loading/onboarding/today. |
 | TU-18 | `tagKey` / `addTag` com caixa e acento diferentes (Fase 2) | CA-24 | “pegadinha” não duplica “Pegadinha”. |
 | TU-19 | Filtro de etiquetas com E lógico + busca | CA-25 | Só cartões com todas as etiquetas. |
-| TU-20 | `buildQueue` com filtro de etiquetas | CA-26 | Fila com 12 de 40; limites de novos aplicados depois do filtro. |
+| TU-20 | `buildQueue` com filtro de etiquetas (OU entre as escolhidas) | CA-26 | Fila com 12 de 40; limites de novos aplicados depois do filtro. |
 | TU-21 | `difficultyScore` e corte em 3 | CA-28 | Pontuação 5 entra; 2 fica de fora. |
 | TU-22 | `goalProgress` e `goalStreak` | CA-30 | “28 / 40”; dia marcado ao chegar em 40. |
 | TU-23 | `buildDailyIcs` | CA-32 | `DTSTART` com `TZID`, `RRULE:FREQ=DAILY`, linhas ≤ 75 octetos, CRLF. |

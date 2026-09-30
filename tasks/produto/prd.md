@@ -33,8 +33,8 @@ Este documento é a referência de produto; não é executado diretamente. Cada 
 | --- | --- | --- | --- |
 | Fase 1 — MVP offline | [prd-mvp-offline](../prd-mvp-offline/prd.md) | F1–F7, F9 sem conta, F10, RF36 | PRD e TechSpec prontos |
 | Fase 1 — Conta e sincronização | [prd-conta-sync](../prd-conta-sync/prd.md) | F8 (RF37–RF41), conta em F9 | PRD e TechSpec prontos |
-| Fase 2 — Tema claro | `prd-tema-claro` | F16 | a criar ao iniciar |
-| Fase 2 — Etiquetas | `prd-etiquetas` | F11 | a criar ao iniciar |
+| Fase 2 — Tema claro | [prd-tema-claro](../prd-tema-claro/prd.md) | F16 | PRD pronto |
+| Fase 2 — Etiquetas | [prd-etiquetas](../prd-etiquetas/prd.md) | F11 | PRD e TechSpec prontos |
 | Fase 2 — Difíceis e reforço | `prd-dificeis-reforco` | F12 | a criar ao iniciar |
 | Fase 2 — Importação do Anki | `prd-importacao-anki` | F14 | a criar ao iniciar |
 | Fase 2 — Meta e lembrete | `prd-meta-lembrete` | F13 | a criar ao iniciar |
