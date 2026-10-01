@@ -35,7 +35,7 @@ Li o `AGENTS.md` e as rules em `.agents/rules/`. Pontos relevantes:
 - [x] 7.2 E2E-A5 com o Supabase local (dois perfis do navegador na mesma conta).
 - [x] 7.3 E2E-A6 contra o build de produção servido localmente (perfil novo, offline antes de abrir `/importar`, religar a rede, rede lenta cortada no meio).
 - [x] 7.4 E2E-A7: 10.000 notas no desktop e 5.000 com o celular emulado (CPU 4× lenta), medidas no painel Performance; 360 px em todos os passos.
-- [ ] 7.5 Conferir no preview da `des` que `/sqljs/sql-wasm-browser.wasm` responde com `Content-Type: application/wasm`, e não com o `index.html` do `rewrites`.
+- [x] 7.5 Conferir no preview da `des` que `/sqljs/sql-wasm-browser.wasm` responde com `Content-Type: application/wasm`, e não com o `index.html` do `rewrites`.
 - [x] 7.6 Registrar as evidências e encerrar os processos iniciados.
 
 ## Detalhes de implementação
