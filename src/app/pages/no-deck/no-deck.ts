@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DeckStore } from '../../state/deck-store';
 
 @Component({
   selector: 'app-no-deck',
+  imports: [RouterLink],
   templateUrl: './no-deck.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

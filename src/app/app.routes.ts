@@ -55,6 +55,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/tags/tags').then((m) => m.Tags),
   },
   {
+    path: 'importar',
+    title: 'Importar do Anki',
+    loadComponent: () => import('./pages/import/import').then((m) => m.Import),
+  },
+  {
     path: 'conta',
     loadComponent: () => import('./pages/account/account').then((m) => m.Account),
   },

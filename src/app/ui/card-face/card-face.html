@@ -1,5 +1,5 @@
 <div class="min-w-0 [overflow-wrap:anywhere]">
-  <p [class]="frontClass()">
+  <p class="whitespace-pre-wrap" [class]="frontClass()">
     <app-marked-text
       [text]="card().front"
       [cloze]="card().marks.front.cloze"
@@ -10,11 +10,11 @@
 
   @if (revealed()) {
     <div class="mt-8 border-t border-line pt-6">
-      <p class="text-back">
+      <p class="whitespace-pre-wrap text-back">
         <app-marked-text [text]="card().back" [emphasis]="card().marks.back.emphasis" />
       </p>
       @if (card().notes) {
-        <p class="mt-4 text-body text-muted">
+        <p class="mt-4 whitespace-pre-wrap text-body text-muted">
           <app-marked-text [text]="card().notes" [emphasis]="card().marks.notes.emphasis" />
         </p>
       }

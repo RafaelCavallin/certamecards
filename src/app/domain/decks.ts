@@ -12,7 +12,11 @@ function clampDeckName(name: string): string {
   return name.trim().slice(0, DECK_NAME_MAX);
 }
 
-function newDeck(name: string): Deck {
+export function deckNameOrFallback(name: string): string {
+  return clampDeckName(name) || FALLBACK_DECK_NAME;
+}
+
+export function newDeckRecord(name: string): Deck {
   const now = Date.now();
   return {
     id: uid(),
@@ -39,14 +43,14 @@ export async function ensureDefaultDeck(): Promise<Deck | null> {
       return (await db.decks.filter((deck) => deck.deletedAt === 0).first()) ?? null;
     }
     if (await db.syncState.get('boundUserId')) return null;
-    const deck = newDeck(DEFAULT_DECK_NAME);
+    const deck = newDeckRecord(DEFAULT_DECK_NAME);
     await db.decks.add(deck);
     return deck;
   });
 }
 
 export async function createDeck(name: string): Promise<Deck> {
-  const deck = newDeck(clampDeckName(name) || FALLBACK_DECK_NAME);
+  const deck = newDeckRecord(deckNameOrFallback(name));
   await db.decks.add(deck);
   return deck;
 }

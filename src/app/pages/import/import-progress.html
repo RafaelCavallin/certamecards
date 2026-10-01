@@ -1,0 +1,16 @@
+<p class="text-body" id="import-progress-label">{{ label() }}</p>
+<div
+  class="mt-4 h-2 overflow-hidden rounded-full bg-line"
+  role="progressbar"
+  aria-labelledby="import-progress-label"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  [attr.aria-valuenow]="percent()"
+>
+  <div class="h-full rounded-full bg-signal transition-[width] motion-reduce:transition-none" [style.width.%]="percent()"></div>
+</div>
+<p class="sr-only" aria-live="polite">{{ milestone() }}</p>
+
+<button type="button" (click)="run.cancel()" class="mt-6 min-h-11 rounded-full border border-line px-6 py-2 text-meta hover:border-signal">
+  Cancelar
+</button>

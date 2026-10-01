@@ -26,9 +26,15 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "sql-wasm-browser.wasm",
+                "input": "node_modules/sql.js/dist",
+                "output": "sqljs"
               }
             ],
-            "styles": ["src/styles.css"]
+            "styles": ["src/styles.css"],
+            "allowedCommonJsDependencies": ["sql.js"]
           },
           "configurations": {
             "production": {

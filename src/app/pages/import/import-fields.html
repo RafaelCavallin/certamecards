@@ -1,0 +1,21 @@
+<p class="font-mono text-label uppercase tracking-wider text-signal" aria-live="polite">{{ summary() }}</p>
+<h2 class="mt-4 font-display text-body font-semibold">Que campo vai para cada parte do cartão?</h2>
+<p class="mt-1 text-meta text-muted">Um mapeamento por tipo de nota do Anki. A sugestão vem dos nomes dos campos.</p>
+
+@for (notetype of session.notetypes(); track notetype.id) {
+  <app-import-notetype class="mt-6 block" [notetype]="notetype" />
+}
+
+@if (preparing()) {
+  <p class="mt-6 text-meta text-muted" role="status" aria-live="polite">Preparando os cartões…</p>
+}
+
+<button
+  type="button"
+  (click)="continue()"
+  [disabled]="!canContinue()"
+  [attr.aria-busy]="preparing()"
+  class="mt-6 min-h-11 w-full rounded-full bg-signal px-8 py-3 text-body font-medium text-on-signal transition hover:brightness-110 disabled:opacity-60"
+>
+  Continuar
+</button>

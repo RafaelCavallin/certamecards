@@ -26,9 +26,14 @@ export async function getCard(cardId: string): Promise<Card | undefined> {
 }
 
 export async function createCard(input: NewCardInput): Promise<Card> {
-  const empty = createEmptyCard(new Date());
-  const now = Date.now();
-  const card: Card = {
+  const card = newCardRecord(input, Date.now());
+  await db.cards.add(card);
+  return card;
+}
+
+export function newCardRecord(input: NewCardInput, now: number): Card {
+  const empty = createEmptyCard(new Date(now));
+  return {
     id: uid(),
     deckId: input.deckId,
     front: input.front.trim(),
@@ -50,8 +55,6 @@ export async function createCard(input: NewCardInput): Promise<Card> {
     deletedAt: 0,
     dirty: 1,
   };
-  await db.cards.add(card);
-  return card;
 }
 
 /**

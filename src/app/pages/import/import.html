@@ -1,0 +1,37 @@
+<div class="mx-auto max-w-2xl px-5 py-8">
+  <a [routerLink]="exitLink()" class="inline-flex min-h-11 items-center font-mono text-label uppercase text-muted hover:text-text">
+    {{ exitLabel() }}
+  </a>
+  <h1 class="mt-2 font-display text-front">Importar do Anki</h1>
+  <p class="mt-2 text-meta text-muted">
+    Traz os cartões de um arquivo .apkg ou .colpkg, com lacunas, destaques e etiquetas. Tudo acontece neste aparelho.
+  </p>
+
+  @if (stepLabel(); as label) {
+    <div class="mt-6 flex items-center justify-between gap-4">
+      <p class="font-mono text-label uppercase tracking-wider text-muted">{{ label }}</p>
+      @if (canGoBack()) {
+        <button type="button" (click)="session.back()" class="min-h-11 rounded-full border border-line px-5 py-2 text-meta hover:border-signal">
+          Voltar
+        </button>
+      }
+    </div>
+  }
+
+  @if (error(); as message) {
+    <p class="mt-6 text-meta text-miss" role="alert">{{ message }}</p>
+  }
+
+  <div class="mt-6">
+    @switch (session.step()) {
+      @case ('file') { <app-import-file /> }
+      @case ('reading') { <app-import-file /> }
+      @case ('decks') { <app-import-decks /> }
+      @case ('fields') { <app-import-fields /> }
+      @case ('preparing') { <app-import-fields /> }
+      @case ('target') { <app-import-target [hasDecks]="hasDecks()" /> }
+      @case ('importing') { <app-import-progress /> }
+      @case ('done') { <app-import-summary /> }
+    }
+  </div>
+</div>

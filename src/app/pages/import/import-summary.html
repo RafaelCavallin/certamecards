@@ -1,0 +1,27 @@
+<div role="status" aria-live="polite">
+  <p class="font-display text-front-long text-hit">{{ headline() }}</p>
+  <p class="mt-2 text-meta text-muted">
+    O baralho já está ativo. São cartões novos: entram aos poucos, no ritmo de “novos por dia”.
+  </p>
+
+  <div class="mt-4 space-y-1 text-meta text-muted">
+    @if (duplicates() > 0) {
+      <p>{{ duplicatesLine() }}</p>
+    }
+    @for (entry of skipped(); track entry.reason) {
+      <p>{{ skippedLine(entry.count, entry.label) }}</p>
+    }
+    @if (droppedTags() > 0) {
+      <p>{{ count(droppedTags()) }} {{ droppedTags() === 1 ? 'etiqueta descartada' : 'etiquetas descartadas' }}.</p>
+    }
+  </div>
+</div>
+
+<div class="mt-8 flex flex-wrap gap-3">
+  <a routerLink="/" class="inline-flex min-h-11 items-center rounded-full bg-signal px-8 py-3 text-body font-medium text-on-signal transition hover:brightness-110">
+    Ir para o início
+  </a>
+  <a routerLink="/cartoes" class="inline-flex min-h-11 items-center rounded-full border border-line px-6 py-3 text-meta hover:border-signal">
+    Ver cartões
+  </a>
+</div>

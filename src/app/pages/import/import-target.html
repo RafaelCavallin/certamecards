@@ -1,0 +1,53 @@
+<h2 class="font-display text-body font-semibold">Para qual baralho?</h2>
+
+<fieldset class="mt-4 space-y-3">
+  <legend class="sr-only">Baralho de destino</legend>
+  @if (hasDecks()) {
+    <div class="rounded-2xl border border-line p-4">
+      <label class="flex min-h-11 cursor-pointer items-center gap-3 text-meta">
+        <input type="radio" name="target" class="size-5 accent-signal" [checked]="!isNew()" (change)="chooseExisting(existingId())" />
+        Baralho existente
+      </label>
+      @if (!isNew()) {
+        <label class="sr-only" for="target-deck">Baralho existente</label>
+        <select #deckSelect id="target-deck" (change)="chooseExisting(deckSelect.value)"
+          class="mt-2 min-h-11 w-full rounded-xl border border-line bg-ink px-4 py-3 text-meta outline-none focus:border-signal">
+          @for (deck of decks(); track deck.id) { <option [value]="deck.id" [selected]="deck.id === existingId()">{{ deck.name }}</option> }
+        </select>
+      }
+    </div>
+  }
+  <div class="rounded-2xl border border-line p-4">
+    <label class="flex min-h-11 cursor-pointer items-center gap-3 text-meta">
+      <input type="radio" name="target" class="size-5 accent-signal" [checked]="isNew()" (change)="chooseNew(newName())" />
+      Novo baralho
+    </label>
+    @if (isNew()) {
+      <label class="sr-only" for="target-name">Nome do novo baralho</label>
+      <input #nameInput id="target-name" [value]="newName()" (input)="chooseNew(nameInput.value)" maxlength="80"
+        class="mt-2 min-h-11 w-full rounded-xl border border-line bg-ink px-4 py-3 text-meta outline-none focus:border-signal" />
+    }
+  </div>
+</fieldset>
+
+<div class="mt-6 space-y-2 text-meta text-muted" aria-live="polite">
+  <p>O agendamento recomeça do zero e imagens e áudios ficam de fora.</p>
+  @if (duplicates() > 0) {
+    <p>{{ duplicatesLine() }}</p>
+  }
+  @for (entry of skipped(); track entry.reason) {
+    <p>{{ skippedLine(entry.count, entry.label) }}</p>
+  }
+  @if (droppedTags() > 0) {
+    <p>{{ count(droppedTags()) }} {{ droppedTags() === 1 ? 'etiqueta será descartada' : 'etiquetas serão descartadas' }} (internas do Anki, longas ou além de 20).</p>
+  }
+</div>
+
+<button
+  type="button"
+  (click)="start()"
+  [disabled]="run.toCreate() === 0"
+  class="mt-6 min-h-11 w-full rounded-full bg-signal px-8 py-3 text-body font-medium text-on-signal transition hover:brightness-110 disabled:opacity-60 [overflow-wrap:anywhere]"
+>
+  {{ buttonLabel() }}
+</button>

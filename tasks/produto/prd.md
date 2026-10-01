@@ -36,7 +36,7 @@ Este documento é a referência de produto; não é executado diretamente. Cada 
 | Fase 2 — Tema claro | [prd-tema-claro](../prd-tema-claro/prd.md) | F16 | PRD pronto |
 | Fase 2 — Etiquetas | [prd-etiquetas](../prd-etiquetas/prd.md) | F11 | PRD e TechSpec prontos |
 | Fase 2 — Difíceis e reforço | [prd-dificeis-reforco](../prd-dificeis-reforco/prd.md) | F12 | PRD e TechSpec prontos |
-| Fase 2 — Importação do Anki | `prd-importacao-anki` | F14 | a criar ao iniciar |
+| Fase 2 — Importação do Anki | [prd-importacao-anki](../prd-importacao-anki/prd.md) | F14 | PRD e TechSpec prontos |
 | Fase 2 — Meta e lembrete | `prd-meta-lembrete` | F13 | a criar ao iniciar |
 | Fase 2 — Imagens nas Notas | `prd-imagens-notas` | F17 | a criar ao iniciar |
 | Fase 2 — Backup e restauração | `prd-backup` | F15 | a criar ao iniciar |
