@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, afterRenderEffect, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ImportDecks } from './import-decks';
 import { ImportFields } from './import-fields';
@@ -10,7 +10,7 @@ import { AnkiImportRun } from '../../state/anki-import-run';
 import { AnkiImportSession } from '../../state/anki-import-session';
 import { AnkiReaderStatus } from '../../state/anki-reader-status';
 import { DeckStore } from '../../state/deck-store';
-import { TOTAL_VISIBLE_STEPS, canGoBack, stageOf, visibleStepNumber } from '../../domain/anki-steps';
+import { TOTAL_VISIBLE_STEPS, canGoBack, movesFocus, stageOf, visibleStepNumber, type ImportStage } from '../../domain/anki-steps';
 
 @Component({
   selector: 'app-import',
@@ -22,6 +22,8 @@ import { TOTAL_VISIBLE_STEPS, canGoBack, stageOf, visibleStepNumber } from '../.
 export class Import {
   readonly session = inject(AnkiImportSession);
   private readonly deckStore = inject(DeckStore);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private shownStage: ImportStage | null = null;
 
   readonly hasDecks = computed(() => (this.deckStore.decks()?.length ?? 0) > 0);
   readonly exitLink = computed(() => (this.hasDecks() ? '/ajustes' : '/sem-baralho'));
@@ -33,4 +35,14 @@ export class Import {
   readonly stage = computed(() => stageOf(this.session.step()));
   readonly canGoBack = computed(() => canGoBack(this.session.step()));
   readonly error = computed(() => this.session.error() ?? this.session.run.error());
+
+  constructor() {
+    afterRenderEffect(() => {
+      const stage = this.stage();
+      if (movesFocus(this.shownStage, stage)) {
+        this.host.nativeElement.querySelector<HTMLElement>('[data-step-focus]')?.focus();
+      }
+      this.shownStage = stage;
+    });
+  }
 }

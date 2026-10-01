@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canGoBack, previousStep, stageOf, stepAfterReading, visibleStepNumber } from './anki-steps';
+import { canGoBack, movesFocus, previousStep, stageOf, stepAfterReading, visibleStepNumber } from './anki-steps';
 
 describe('passos da importação', () => {
   it('pula o passo de origem quando há um só baralho', () => {
@@ -34,5 +34,12 @@ describe('passos da importação', () => {
       'fields',
       'target',
     ]);
+  });
+
+  it('move o foco só quando a tela muda, nunca na primeira exibição', () => {
+    expect(movesFocus(null, 'file')).toBe(false);
+    expect(movesFocus('file', 'file')).toBe(false);
+    expect(movesFocus('file', 'fields')).toBe(true);
+    expect(movesFocus('target', 'importing')).toBe(true);
   });
 });

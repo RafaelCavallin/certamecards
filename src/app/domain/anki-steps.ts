@@ -35,3 +35,7 @@ export function stageOf(step: ImportStep): ImportStage {
   if (step === 'reading') return 'file';
   return step === 'preparing' ? 'fields' : step;
 }
+
+export function movesFocus(previous: ImportStage | null, current: ImportStage): boolean {
+  return previous !== null && previous !== current;
+}
