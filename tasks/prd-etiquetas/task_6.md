@@ -38,11 +38,11 @@ Li o `AGENTS.md` e as rules em `.agents/rules/`. Pontos relevantes:
 
 ## Subtarefas
 
-- [ ] 6.1 Criar `ui/tag-filter/tag-filter.{ts,html}`: `options` (`key`, `name`, `count`), `selected = model<string[]>()`, `label`; chips alternáveis com `aria-pressed` ou checkbox, área de toque ≥ 44 px.
-- [ ] 6.2 Criar `ui/tag-chips/tag-chips.{ts,html}`: exibição com `visibleTagChips` e “+N” (texto completo acessível).
-- [ ] 6.3 Extrair a linha da lista para `pages/cards/card-row.{ts,html}` com os chips. Ajustar `ROW_SIZE` para a nova altura fixa.
-- [ ] 6.4 Em `cards.ts`: `selectedTags` limpo quando o baralho muda; `filtered = searchCards(filterCardsByTags(...))`; opções vindas de `summarizeTags(cards)`; chips escolhidos + “Limpar”; mensagem de vazio que considera o filtro.
-- [ ] 6.5 Rodar `npm run lint`, `npm run check:type-scale` e `npm run build`. Executar o E2E-E2 (semeando 5.000 cartões pelo `eval`) e salvar as capturas em `evidences/`.
+- [x] 6.1 Criar `ui/tag-filter/tag-filter.{ts,html}`: `options` (`key`, `name`, `count`), `selected = model<string[]>()`, `label`; chips alternáveis com `aria-pressed` ou checkbox, área de toque ≥ 44 px.
+- [x] 6.2 Criar `ui/tag-chips/tag-chips.{ts,html}`: exibição com `visibleTagChips` e “+N” (texto completo acessível).
+- [x] 6.3 Extrair a linha da lista para `pages/cards/card-row.{ts,html}` com os chips. Ajustar `ROW_SIZE` para a nova altura fixa.
+- [x] 6.4 Em `cards.ts`: `selectedTags` limpo quando o baralho muda; `filtered = searchCards(filterCardsByTags(...))`; opções vindas de `summarizeTags(cards)`; chips escolhidos + “Limpar”; mensagem de vazio que considera o filtro.
+- [x] 6.5 Rodar `npm run lint`, `npm run check:type-scale` e `npm run build`. Executar o E2E-E2 (semeando 5.000 cartões pelo `eval`) e salvar as capturas em `evidences/`.
 
 ## Detalhes de implementação
 
@@ -58,7 +58,7 @@ Ver [techspec.md](techspec.md): a tabela “Visão dos componentes” (linhas `t
 
 ### Testes E2E
 
-- [ ] E2E-E2 — lista com 5.000 cartões: filtro + busca
+- [x] E2E-E2 — lista com 5.000 cartões: filtro + busca
 
 A lógica já está coberta pelos TU-19, TU-E4 e TU-E9 (tarefa 3.0).
 

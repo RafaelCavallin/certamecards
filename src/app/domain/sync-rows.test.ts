@@ -29,6 +29,15 @@ describe('parseCardRow', () => {
     expect(result?.row.tags).toEqual([]);
   });
 
+  it('normaliza tags duplicadas, vazias e longas vindas do remoto', () => {
+    const row = { ...toCardRow(makeCard()), tags: ['Cespe', 'CESPE', ' ', 'x'.repeat(41)], synced_at: '2026-01-01T00:00:00Z' };
+
+    const result = parseCardRow(row);
+
+    expect(result?.row.tags).toEqual(['Cespe']);
+    expect(result?.row.dirty).toBe(0);
+  });
+
   it('descarta lacuna de Verso e Notas vindas do remoto', () => {
     const card = makeCard();
     const row = toCardRow(card) as Record<string, unknown>;

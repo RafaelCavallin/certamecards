@@ -36,11 +36,11 @@ Li o `AGENTS.md` e as rules em `.agents/rules/`. Pontos relevantes:
 
 ## Subtarefas
 
-- [ ] 9.1 Rodar `npm run lint`, `npm run check:type-scale`, `npm run test:coverage` e `npm run build`, e corrigir o que falhar (com teste, se for bug).
-- [ ] 9.2 Executar o E2E-11 (jornada completa sem conta) e salvar as capturas.
-- [ ] 9.3 Subir o Supabase local e executar o E2E-E5 com dois perfis de navegador na mesma conta.
-- [ ] 9.4 Executar o E2E-E6 com o DevTools offline e a viewport de 360 px.
-- [ ] 9.5 Registrar os resultados e as evidências. Marcar as tarefas em `tasks.md` e encerrar os processos iniciados.
+- [x] 9.1 Rodar `npm run lint`, `npm run check:type-scale`, `npm run test:coverage` e `npm run build`, e corrigir o que falhar (com teste, se for bug).
+- [x] 9.2 Executar o E2E-11 (jornada completa sem conta) e salvar as capturas.
+- [x] 9.3 Subir o Supabase local e executar o E2E-E5 com dois perfis de navegador na mesma conta.
+- [x] 9.4 Executar o E2E-E6 com o DevTools offline e a viewport de 360 px.
+- [x] 9.5 Registrar os resultados e as evidências. Marcar as tarefas em `tasks.md` e encerrar os processos iniciados.
 
 ## Detalhes de implementação
 
@@ -60,9 +60,9 @@ Ver [techspec.md](techspec.md): “Testes E2E” (roteiros e forma de semear o I
 
 ### Testes E2E
 
-- [ ] E2E-11 — Jornada completa: criar com etiquetas, autocompletar, filtrar a lista, “Estudar só…”, renomear em Ajustes
-- [ ] E2E-E5 — dois perfis na mesma conta (Supabase local)
-- [ ] E2E-E6 — offline sem conta e a 360 px
+- [x] E2E-11 — Jornada completa: criar com etiquetas, autocompletar, filtrar a lista, “Estudar só…”, renomear em Ajustes
+- [x] E2E-E5 — dois perfis na mesma conta (Supabase local)
+- [x] E2E-E6 — offline sem conta e a 360 px
 
 ## Arquivos relevantes
 

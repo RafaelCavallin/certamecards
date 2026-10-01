@@ -36,11 +36,11 @@ Li o `AGENTS.md` e as rules em `.agents/rules/`. Pontos relevantes:
 
 ## Subtarefas
 
-- [ ] 5.1 Criar `ui/tag-input/tag-input.{ts,html}`: `tags = model<string[]>()`, texto em digitação, sugestões (`suggestTags`), adicionar por `addTagInput` com a mensagem do primeiro `rejected`, teclado (Enter, vírgula, Backspace, setas, Escape) e ARIA (`role="combobox"`, `aria-expanded`, `aria-controls`, `aria-activedescendant`, `role="listbox"`/`option`).
-- [ ] 5.2 Extrair o estado de `card-form.ts` para `card-form-fields.ts` (sinais dos campos, `loadInitial`, `buildContent`, `resetFields`) e acrescentar `tags`. `resetFields` não limpa `tags`.
-- [ ] 5.3 Adicionar o campo Etiquetas ao `card-form.html`, depois das Notas, com rótulo no padrão dos outros campos.
-- [ ] 5.4 Conferir que `card-edit` e o diálogo de edição da revisão mostram as etiquetas do cartão e que salvar atualiza o cartão atual (chamadores ajustados na tarefa 2.0).
-- [ ] 5.5 Rodar `npm run lint`, `npm run check:type-scale` e `npm run build`. Executar o E2E-E1 com `agent-browser` e salvar as capturas em `evidences/`.
+- [x] 5.1 Criar `ui/tag-input/tag-input.{ts,html}`: `tags = model<string[]>()`, texto em digitação, sugestões (`suggestTags`), adicionar por `addTagInput` com a mensagem do primeiro `rejected`, teclado (Enter, vírgula, Backspace, setas, Escape) e ARIA (`role="combobox"`, `aria-expanded`, `aria-controls`, `aria-activedescendant`, `role="listbox"`/`option`).
+- [x] 5.2 Extrair o estado de `card-form.ts` para `card-form-fields.ts` (sinais dos campos, `loadInitial`, `buildContent`, `resetFields`) e acrescentar `tags`. `resetFields` não limpa `tags`.
+- [x] 5.3 Adicionar o campo Etiquetas ao `card-form.html`, depois das Notas, com rótulo no padrão dos outros campos.
+- [x] 5.4 Conferir que `card-edit` e o diálogo de edição da revisão mostram as etiquetas do cartão e que salvar atualiza o cartão atual (chamadores ajustados na tarefa 2.0).
+- [x] 5.5 Rodar `npm run lint`, `npm run check:type-scale` e `npm run build`. Executar o E2E-E1 com `agent-browser` e salvar as capturas em `evidences/`.
 
 ## Detalhes de implementação
 
@@ -59,7 +59,7 @@ Ver [techspec.md](techspec.md): a tabela “Visão dos componentes” (linhas `t
 
 ### Testes E2E
 
-- [ ] E2E-E1 — campo de etiquetas no formulário
+- [x] E2E-E1 — campo de etiquetas no formulário
 
 A lógica do campo já está coberta pelos TU-18, TU-E1, TU-E2 e TU-E3 (tarefas 1.0 e 3.0).
 

@@ -1,0 +1,48 @@
+<div class="mx-auto max-w-2xl px-5 py-8">
+  <h1 class="font-display text-front-long">Difíceis</h1>
+  <p class="mt-2 text-meta text-muted">
+    Cartões com lapsos ou erros recentes. Lapso vale 2, erro nos últimos 30 dias vale 1; entram a
+    partir de 3.
+  </p>
+
+  @if (list() === undefined) {
+    <p class="mt-8 text-meta text-muted" aria-live="polite">Carregando…</p>
+  } @else if (list()?.length === 0) {
+    <p class="mt-8 text-body text-muted">
+      Nenhum cartão difícil por enquanto. A lista se forma conforme você revisa e erra os mesmos
+      cartões.
+    </p>
+  } @else {
+    <p class="mt-8 font-mono text-label uppercase tracking-wider text-signal" role="status" aria-live="polite">
+      {{ countLabel() }}
+    </p>
+
+    @if (options().length > 0) {
+      <div class="mt-4">
+        <app-tag-filter label="Etiquetas" [options]="options()" [selected]="activeKeys()" (selectedChange)="setKeys($event)" />
+      </div>
+    }
+
+    @if (filtered().length === 0) {
+      <p class="mt-6 text-body text-muted">Nenhum cartão difícil com essas etiquetas.</p>
+      <button type="button" (click)="setKeys([])" class="mt-4 min-h-11 rounded-full border border-line px-5 py-2 text-meta hover:border-signal">
+        Limpar filtro
+      </button>
+    } @else {
+      <a
+        routerLink="/reforco"
+        [queryParams]="reinforceParams()"
+        class="mt-6 inline-flex min-h-11 items-center rounded-full bg-signal px-8 py-3 text-meta font-medium text-on-signal transition hover:brightness-110"
+      >
+        Reforçar {{ reinforceCount() }}
+      </a>
+      <ul class="mt-6">
+        @for (item of filtered(); track item.card.id) {
+          <li><app-difficult-row [item]="item" [now]="now()" (edit)="edit($event)" /></li>
+        }
+      </ul>
+    }
+  }
+</div>
+
+<app-card-edit-dialog />

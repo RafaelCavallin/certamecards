@@ -1,0 +1,56 @@
+<div class="mx-auto max-w-2xl px-5 py-10" role="status" aria-live="polite">
+  <p class="font-mono text-label uppercase tracking-wider text-signal">Reforço concluído</p>
+  <h1 class="mt-4 font-display text-front">
+    Acertou de primeira: {{ summary().firstTry }} de {{ summary().total }}
+  </h1>
+
+  @if (missed().length === 0) {
+    <p class="mt-4 text-body text-muted">Você acertou todos de primeira.</p>
+  } @else {
+    <h2 class="mt-8 font-mono text-label uppercase tracking-wider text-muted">Cartões que você errou</h2>
+    <ul class="mt-2">
+      @for (item of missed(); track item.card.id) {
+        <li class="flex items-start gap-3 border-b border-line py-4">
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-body">
+              <app-marked-text
+                [text]="item.card.front"
+                [cloze]="item.card.marks.front.cloze"
+                [emphasis]="item.card.marks.front.emphasis"
+                [hideCloze]="true"
+              />
+            </p>
+            <p class="mt-1 text-meta text-muted">
+              errou {{ item.misses }} {{ item.misses === 1 ? 'vez' : 'vezes' }} no reforço
+            </p>
+          </div>
+          <button
+            type="button"
+            (click)="edit.emit(item.card)"
+            [attr.aria-label]="'Editar cartão: ' + item.card.front"
+            class="min-h-11 shrink-0 rounded-full border border-line px-4 py-2 font-mono text-label uppercase tracking-wider text-muted transition hover:border-signal hover:text-signal"
+          >
+            Editar
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <div class="mt-8 flex flex-wrap gap-3">
+    <a
+      routerLink="/dificeis"
+      [queryParams]="backParams()"
+      class="inline-flex min-h-11 items-center rounded-full bg-signal px-6 py-3 text-meta font-medium text-on-signal transition hover:brightness-110"
+    >
+      Voltar para Difíceis
+    </a>
+    <button
+      type="button"
+      (click)="home.emit()"
+      class="min-h-11 rounded-full border border-line px-6 py-3 text-meta transition hover:border-signal"
+    >
+      Voltar ao início
+    </button>
+  </div>
+</div>

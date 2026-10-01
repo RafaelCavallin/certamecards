@@ -63,8 +63,8 @@ describe('deleteDeck', () => {
   it('tombstona o baralho e os cartões vivos dele, preservando os de outro baralho', async () => {
     const deck = await createDeck('Para excluir');
     const other = await createDeck('Outro');
-    const card = await createCard({ deckId: deck.id, front: 'A', back: 'A', notes: '', marks: EMPTY_CARD_MARKS });
-    const otherCard = await createCard({ deckId: other.id, front: 'B', back: 'B', notes: '', marks: EMPTY_CARD_MARKS });
+    const card = await createCard({ deckId: deck.id, front: 'A', back: 'A', notes: '', marks: EMPTY_CARD_MARKS, tags: [] });
+    const otherCard = await createCard({ deckId: other.id, front: 'B', back: 'B', notes: '', marks: EMPTY_CARD_MARKS, tags: [] });
 
     await deleteDeck(deck.id);
 

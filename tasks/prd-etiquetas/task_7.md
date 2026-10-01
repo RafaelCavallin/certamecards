@@ -39,12 +39,12 @@ Li o `AGENTS.md` e as rules em `.agents/rules/`. Pontos relevantes:
 
 ## Subtarefas
 
-- [ ] 7.1 Criar `domain/study-tags.ts`: `parseStudyTags`, `reconcileStudyTags`, `renameStudyTag` e `removeStudyTag`, com teste (TU-E7).
-- [ ] 7.2 Criar `state/tag-filter-store.ts` (`@Service`): `keysFor`, `set`, `clear`, `reconcile`, `applyRename` e `applyDelete`, gravando só as chaves de baralhos vivos.
-- [ ] 7.3 `review-session.ts`: `buildQueue(deck, { tagKeys: store.keysFor(deck.id) })`.
-- [ ] 7.4 Criar `pages/home/study-filter.{ts,html}` (`<dialog>` com `tag-filter`, opções de `listDeckTags` + `tagQueueCounts`) e a faixa “Só: …” + “Limpar”.
-- [ ] 7.5 `home.ts`/`home.html`: fila filtrada e fila sem filtro para `unfilteredSize`; `reconcile` com as etiquetas do baralho; os estados `today.filter` e `filtered-empty` de `homeView`; contagem anunciada por `aria-live`.
-- [ ] 7.6 Rodar `npm run lint`, `npm run check:type-scale`, `npm run test:coverage` e `npm run build`. Executar o E2E-E3 e salvar as capturas em `evidences/`.
+- [x] 7.1 Criar `domain/study-tags.ts`: `parseStudyTags`, `reconcileStudyTags`, `renameStudyTag` e `removeStudyTag`, com teste (TU-E7).
+- [x] 7.2 Criar `state/tag-filter-store.ts` (`@Service`): `keysFor`, `set`, `clear`, `reconcile`, `applyRename` e `applyDelete`, gravando só as chaves de baralhos vivos.
+- [x] 7.3 `review-session.ts`: `buildQueue(deck, { tagKeys: store.keysFor(deck.id) })`.
+- [x] 7.4 Criar `pages/home/study-filter.{ts,html}` (`<dialog>` com `tag-filter`, opções de `listDeckTags` + `tagQueueCounts`) e a faixa “Só: …” + “Limpar”.
+- [x] 7.5 `home.ts`/`home.html`: fila filtrada e fila sem filtro para `unfilteredSize`; `reconcile` com as etiquetas do baralho; os estados `today.filter` e `filtered-empty` de `homeView`; contagem anunciada por `aria-live`.
+- [x] 7.6 Rodar `npm run lint`, `npm run check:type-scale`, `npm run test:coverage` e `npm run build`. Executar o E2E-E3 e salvar as capturas em `evidences/`.
 
 ## Detalhes de implementação
 
@@ -67,11 +67,11 @@ Ver [techspec.md](techspec.md):
 
 ### Testes de unidade
 
-- [ ] TU-E7 — `parseStudyTags`, `reconcileStudyTags`, `renameStudyTag`, `removeStudyTag`
+- [x] TU-E7 — `parseStudyTags`, `reconcileStudyTags`, `renameStudyTag`, `removeStudyTag`
 
 ### Testes E2E
 
-- [ ] E2E-E3 — “Estudar só…” na Home
+- [x] E2E-E3 — “Estudar só…” na Home
 
 ## Arquivos relevantes
 

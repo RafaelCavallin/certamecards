@@ -1,5 +1,6 @@
 import { createEmptyCard } from 'ts-fsrs';
 import { db, uid, type Card } from './db';
+import { normalizeTags } from './tags';
 import { normalizeCardMarks } from './text-marks-normalize';
 import type { CardMarks } from './text-marks';
 
@@ -8,6 +9,7 @@ export interface CardContent {
   back: string;
   notes: string;
   marks: CardMarks;
+  tags: string[];
 }
 
 export interface NewCardInput extends CardContent {
@@ -33,7 +35,7 @@ export async function createCard(input: NewCardInput): Promise<Card> {
     back: input.back.trim(),
     notes: input.notes.trim(),
     marks: normalizeCardMarks(input.marks),
-    tags: [],
+    tags: normalizeTags(input.tags),
     due: empty.due.getTime(),
     stability: empty.stability,
     difficulty: empty.difficulty,
@@ -57,14 +59,16 @@ export async function createCard(input: NewCardInput): Promise<Card> {
  * scheduler: editar o texto não é uma resposta e não pode reagendar nem
  * gerar log de revisão.
  */
-export async function updateCardContent(cardId: string, content: CardContent): Promise<void> {
-  await db.cards.update(cardId, {
+export async function updateCardContent(cardId: string, content: CardContent): Promise<CardContent> {
+  const saved: CardContent = {
     front: content.front.trim(),
     back: content.back.trim(),
     notes: content.notes.trim(),
     marks: normalizeCardMarks(content.marks),
-    updatedAt: Date.now(),
-  });
+    tags: normalizeTags(content.tags),
+  };
+  await db.cards.update(cardId, { ...saved, updatedAt: Date.now() });
+  return saved;
 }
 
 export async function deleteCards(cardIds: string[]): Promise<void> {

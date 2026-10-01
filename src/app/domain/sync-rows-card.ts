@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { Card } from './db';
 import { cardMarksSchema } from './sync-rows-marks';
 import type { Parsed } from './sync-rows-types';
+import { normalizeTags } from './tags';
 import { normalizeCardMarks } from './text-marks-normalize';
 
 const fsrsStateSchema = z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]);
@@ -41,7 +42,7 @@ export function parseCardRow(raw: unknown): Parsed<Card> | null {
     back: data.back,
     notes: data.notes,
     marks: normalizeCardMarks(data.marks),
-    tags: data.tags ?? [],
+    tags: normalizeTags(data.tags ?? []),
     due: data.due,
     stability: data.stability,
     difficulty: data.difficulty,

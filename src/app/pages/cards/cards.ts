@@ -8,19 +8,21 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { ConfirmDialog } from '../../ui/confirm-dialog/confirm-dialog';
-import { MarkedText } from '../../ui/marked-text/marked-text';
+import { TagFilter } from '../../ui/tag-filter/tag-filter';
+import { CardRow } from './card-row';
 import { DeckStore } from '../../state/deck-store';
 import { deleteCards, liveCards } from '../../domain/cards';
 import { searchCards } from '../../domain/card-search';
+import { summarizeTags } from '../../domain/tag-catalog';
+import { filterCardsByTags } from '../../domain/tag-filter';
 import type { Card } from '../../domain/db';
 
-const ROW_SIZE = 88;
+const ROW_SIZE = 124;
 
 @Component({
   selector: 'app-cards',
-  imports: [ScrollingModule, RouterLink, ConfirmDialog, MarkedText],
+  imports: [ScrollingModule, ConfirmDialog, TagFilter, CardRow],
   templateUrl: './cards.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -28,14 +30,21 @@ export class Cards {
   private readonly deckStore = inject(DeckStore);
   private readonly pendingDelete = signal<string[]>([]);
   private readonly confirmDialog = viewChild.required(ConfirmDialog);
-
   readonly rowSize = ROW_SIZE;
   readonly deckName = computed(() => this.deckStore.deck()?.name ?? '');
   readonly cards = signal<Card[] | undefined>(undefined);
   readonly query = signal('');
   readonly selected = signal<Set<string>>(new Set());
 
-  readonly filtered = computed(() => searchCards(this.cards() ?? [], this.query()));
+  readonly selectedTags = signal<string[]>([]);
+  readonly tagOptions = computed(() => summarizeTags(this.cards() ?? []));
+  readonly activeTags = computed(() => {
+    const known = new Set(this.tagOptions().map((option) => option.key));
+    return this.selectedTags().filter((key) => known.has(key));
+  });
+  readonly filtered = computed(() =>
+    searchCards(filterCardsByTags(this.cards() ?? [], this.activeTags()), this.query()),
+  );
   readonly selectedCount = computed(() => this.selected().size);
 
   readonly confirmMessage = computed(() => {
@@ -48,6 +57,7 @@ export class Cards {
     effect(() => {
       const deck = this.deckStore.deck();
       if (!deck) return;
+      this.selectedTags.set([]);
       void this.refresh(deck.id);
     });
   }

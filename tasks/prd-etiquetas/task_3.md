@@ -40,12 +40,12 @@ Li o `AGENTS.md` e as rules em `.agents/rules/`. Pontos relevantes:
 
 ## Subtarefas
 
-- [ ] 3.1 `tag-catalog.ts`: `summarizeTags` (grafia majoritária, contagem somada), `compareTagNames`, `listTagCatalog` (cartões vivos de baralhos vivos), `listDeckTags(deckId)` e `suggestTags(SuggestInput)`.
-- [ ] 3.2 `card-search.ts` passa a importar o padrão de diacríticos de `tags.ts` (sem mudar o comportamento; TU-10 continua verde).
-- [ ] 3.3 `tag-filter.ts`: `hasAllTags`, `hasAnyTag`, `filterCardsByTags` (E).
-- [ ] 3.4 `tag-chips.ts`: `visibleTagChips(tags, budget)` → `{ shown, hiddenCount }` e a constante `TAG_ROW_BUDGET`.
-- [ ] 3.5 `tag-bulk.ts`: `planTagRename` (puro: `rename`/`merge`/`invalid`), `renameTag` e `deleteTag` com `Collection.modify` numa transação. Nome inválido lança `Error` em PT-BR antes de abrir a transação.
-- [ ] 3.6 Escrever TU-19, TU-E3, TU-E4, TU-E6, TU-E9, TI-10, TI-E2, TI-E3, TI-E6 e a parte de push do TI-E5.
+- [x] 3.1 `tag-catalog.ts`: `summarizeTags` (grafia majoritária, contagem somada), `compareTagNames`, `listTagCatalog` (cartões vivos de baralhos vivos), `listDeckTags(deckId)` e `suggestTags(SuggestInput)`.
+- [x] 3.2 `card-search.ts` passa a importar o padrão de diacríticos de `tags.ts` (sem mudar o comportamento; TU-10 continua verde).
+- [x] 3.3 `tag-filter.ts`: `hasAllTags`, `hasAnyTag`, `filterCardsByTags` (E).
+- [x] 3.4 `tag-chips.ts`: `visibleTagChips(tags, budget)` → `{ shown, hiddenCount }` e a constante `TAG_ROW_BUDGET`.
+- [x] 3.5 `tag-bulk.ts`: `planTagRename` (puro: `rename`/`merge`/`invalid`), `renameTag` e `deleteTag` com `Collection.modify` numa transação. Nome inválido lança `Error` em PT-BR antes de abrir a transação.
+- [x] 3.6 Escrever TU-19, TU-E3, TU-E4, TU-E6, TU-E9, TI-10, TI-E2, TI-E3, TI-E6 e a parte de push do TI-E5.
 
 ## Detalhes de implementação
 
@@ -71,19 +71,19 @@ Ver [techspec.md](techspec.md):
 
 ### Testes de unidade
 
-- [ ] TU-19 — `filterCardsByTags` (E) combinado com `searchCards`
-- [ ] TU-E3 — `suggestTags`: começo de palavra, ordem por contagem, exclusão dos chips
-- [ ] TU-E4 — `summarizeTags`: contagem, grafia majoritária, ordem alfabética sem acento
-- [ ] TU-E6 — `planTagRename`: `rename`, só caixa, `merge` e `invalid`
-- [ ] TU-E9 — `visibleTagChips` com orçamento
+- [x] TU-19 — `filterCardsByTags` (E) combinado com `searchCards`
+- [x] TU-E3 — `suggestTags`: começo de palavra, ordem por contagem, exclusão dos chips
+- [x] TU-E4 — `summarizeTags`: contagem, grafia majoritária, ordem alfabética sem acento
+- [x] TU-E6 — `planTagRename`: `rename`, só caixa, `merge` e `invalid`
+- [x] TU-E9 — `visibleTagChips` com orçamento
 
 ### Testes de integração
 
-- [ ] TI-10 — `renameTag` juntando duas etiquetas
-- [ ] TI-E2 — `deleteTag` em dois baralhos
-- [ ] TI-E3 — `renameTag` com falha no meio
-- [ ] TI-E5 (parte do push) — os cartões renomeados vão no push com as `tags` novas
-- [ ] TI-E6 — `listTagCatalog` ignora cartões excluídos e baralhos excluídos
+- [x] TI-10 — `renameTag` juntando duas etiquetas
+- [x] TI-E2 — `deleteTag` em dois baralhos
+- [x] TI-E3 — `renameTag` com falha no meio
+- [x] TI-E5 (parte do push) — os cartões renomeados vão no push com as `tags` novas
+- [x] TI-E6 — `listTagCatalog` ignora cartões excluídos e baralhos excluídos
 
 ## Arquivos relevantes
 

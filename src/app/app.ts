@@ -6,23 +6,11 @@ import { SyncStore } from './state/sync-store';
 import { DeckSwitcher } from './ui/deck-switcher/deck-switcher';
 import { DueBadge } from './ui/due-badge/due-badge';
 import { MobileNav } from './ui/mobile-nav/mobile-nav';
+import { NAV_ITEMS } from './ui/mobile-nav/nav-items';
 
 function persistStorage(): void {
   void navigator.storage?.persist?.();
 }
-
-interface NavItem {
-  path: string;
-  label: string;
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { path: '/', label: 'Início' },
-  { path: '/cartoes/novo', label: '+ Cartão' },
-  { path: '/cartoes', label: 'Cartões' },
-  { path: '/progresso', label: 'Progresso' },
-  { path: '/ajustes', label: 'Ajustes' },
-];
 
 @Component({
   selector: 'app-root',

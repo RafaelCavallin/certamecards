@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   HostListener,
   computed,
   inject,
@@ -9,14 +8,16 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { AnswerBar } from '../../ui/answer-bar/answer-bar';
+import { CardEditDialog } from '../../ui/card-edit-dialog/card-edit-dialog';
 import { CardFace } from '../../ui/card-face/card-face';
-import { CardForm } from '../../ui/card-form/card-form';
+import { SessionShell } from '../../ui/session-shell/session-shell';
 import { ReviewSession } from '../../state/review-session';
-import { updateCardContent, type CardContent } from '../../domain/cards';
+import { reviewKeyAction } from '../../domain/review-keys';
+import type { Card } from '../../domain/db';
 
 @Component({
   selector: 'app-review',
-  imports: [AnswerBar, CardFace, CardForm],
+  imports: [AnswerBar, CardEditDialog, CardFace, SessionShell],
   templateUrl: './review.html',
   providers: [ReviewSession],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,12 +26,14 @@ export class Review {
   private readonly router = inject(Router);
   readonly session = inject(ReviewSession);
 
-  private readonly editDialog = viewChild<ElementRef<HTMLDialogElement>>('editDialog');
+  private readonly editDialog = viewChild.required(CardEditDialog);
 
   readonly progress = computed(() => {
     const total = this.session.queue()?.length ?? 0;
     return total ? (this.session.index() / total) * 100 : 0;
   });
+
+  readonly position = computed(() => `${this.session.index() + 1} / ${this.session.queue()?.length}`);
 
   readonly resultLabel = computed(() => {
     const done = this.session.done();
@@ -38,39 +41,24 @@ export class Review {
     return `${done} ${done === 1 ? 'cartão revisado' : 'cartões revisados'}`;
   });
 
-  readonly editInitial = computed<CardContent | null>(() => {
-    const card = this.session.current();
-    return card
-      ? { front: card.front, back: card.back, notes: card.notes, marks: card.marks }
-      : null;
-  });
-
   @HostListener('document:keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
-    if (this.editDialog()?.nativeElement.open) return;
-    if (event.code === 'Space') {
-      event.preventDefault();
-      if (this.session.revealed()) void this.session.answer('good');
-      else this.session.reveal();
-      return;
-    }
-    if (event.key === '1' && this.session.revealed()) void this.session.answer('again');
-    if (event.key === '2' && this.session.revealed()) void this.session.answer('good');
+    if (this.editDialog().isOpen()) return;
+    if (event.code === 'Space') event.preventDefault();
+    const action = reviewKeyAction(event, this.session.revealed());
+    if (action === 'reveal') this.session.reveal();
+    if (action === 'again' || action === 'good') void this.session.answer(action);
   }
 
   goHome(): void {
     void this.router.navigateByUrl('/');
   }
 
-  openEdit(): void {
-    this.editDialog()?.nativeElement.showModal();
+  openEdit(card: Card): void {
+    this.editDialog().open(card);
   }
 
-  readonly saveEdit = async (content: CardContent): Promise<void> => {
-    const card = this.session.current();
-    if (!card) return;
-    await updateCardContent(card.id, content);
-    this.session.replaceCurrent({ ...card, ...content });
-    this.editDialog()?.nativeElement.close();
-  };
+  replaceCurrent(card: Card): void {
+    this.session.replaceCurrent(card);
+  }
 }

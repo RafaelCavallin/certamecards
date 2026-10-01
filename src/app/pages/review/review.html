@@ -3,56 +3,24 @@
     <p class="text-meta text-muted">Montando a fila…</p>
   </div>
 } @else if (session.current(); as card) {
-  <div
-    class="mx-auto flex h-[calc(100dvh-4rem)] max-w-3xl flex-col px-5 pt-4 lg:h-dvh"
-  >
-    <header class="flex items-center justify-between font-mono text-label text-muted">
-      <button type="button" (click)="goHome()" class="hover:text-text">← Sair</button>
-      <span>{{ session.index() + 1 }} / {{ session.queue()?.length }}</span>
-    </header>
-
-    <div class="mt-2 h-[2px] w-full bg-line">
-      <div class="h-full bg-signal transition-all duration-300" [style.width.%]="progress()"></div>
-    </div>
-
-    <main class="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-6">
-      <div class="my-auto min-w-0">
-        <app-card-face [card]="card" [revealed]="session.revealed()" />
-        <button
-          type="button"
-          (click)="openEdit()"
-          class="mt-6 self-start font-mono text-label text-muted hover:text-signal"
-        >
-          Editar cartão
-        </button>
-      </div>
-    </main>
-
-    <footer class="shrink-0 border-t border-line pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4">
-      <app-answer-bar
-        [revealed]="session.revealed()"
-        [answering]="session.answering()"
-        (reveal)="session.reveal()"
-        (again)="session.answer('again')"
-        (good)="session.answer('good')"
-      />
-    </footer>
-  </div>
-
-  <dialog
-    #editDialog
-    aria-label="Editar cartão"
-    class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-ink/60"
-  >
-    <div class="p-5">
-      <app-card-form
-        title="Editar cartão"
-        submitLabel="Salvar alterações"
-        [initial]="editInitial()"
-        [onSubmit]="saveEdit"
-      />
-    </div>
-  </dialog>
+  <app-session-shell [position]="position()" [progress]="progress()" (exit)="goHome()">
+    <app-card-face [card]="card" [revealed]="session.revealed()" />
+    <button
+      type="button"
+      (click)="openEdit(card)"
+      class="mt-6 min-h-11 self-start font-mono text-label text-muted hover:text-signal"
+    >
+      Editar cartão
+    </button>
+    <app-answer-bar
+      footer
+      [revealed]="session.revealed()"
+      [answering]="session.answering()"
+      (reveal)="session.reveal()"
+      (again)="session.answer('again')"
+      (good)="session.answer('good')"
+    />
+  </app-session-shell>
 } @else {
   <div class="mx-auto flex min-h-[70vh] max-w-2xl flex-col items-start justify-center px-5">
     <p class="font-mono text-label uppercase tracking-wider text-signal">Sessão concluída</p>
@@ -66,3 +34,5 @@
     </button>
   </div>
 }
+
+<app-card-edit-dialog (saved)="replaceCurrent($event)" />

@@ -104,7 +104,7 @@ scripts/           write-env.mjs, check-type-scale.mjs
 | domain | `tags.ts` | novo | `normalizeTag` (apara, junta espaços), `tagKey` (minúsculas sem acento), `addTag` sem duplicar, `listTags` com contagem, `renameTag`/`deleteTag` em lote numa transação. |
 | domain | `queue.ts` | modificado | `buildQueue(deck, { tags })`: filtra antes de aplicar os limites de novos. |
 | domain | `difficulty.ts` | novo | `difficultyScore = 2 × lapses + erros em 30 dias`; `listDifficult(deckId)` com corte `DIFFICULT_THRESHOLD = 3`. |
-| domain | `reinforce.ts` | novo | `buildReinforceQueue({ deckId, tags, limit: 30 })`. Nenhuma escrita. |
+| domain | `reinforce.ts` | novo | `pickReinforceCards` (top 30 embaralhados) + máquina de estados da sessão (`startReinforce`, `answerReinforce`). Nenhuma escrita (lint + TI-11). Detalhe em [prd-dificeis-reforco](../prd-dificeis-reforco/techspec.md). |
 | domain | `settings.ts`, `goals.ts` | novo | Configurações `'me'` (LWW); `goalProgress(today, goal)`, `goalStreak(byDay, goal)`. |
 | domain | `reminder-ics.ts` | novo | `buildDailyIcs({ minute, timeZone })` — `RRULE:FREQ=DAILY`, `VALARM` no horário. |
 | domain | `anki-import.ts`, `anki-html.ts`, `anki-cloze.ts` | `services/ankiImport.ts` | Leitura do `.apkg` (idem Lingo) + `htmlToMarkedText` (quebras e negrito → destaque) + `expandCloze` (um cartão por cN) + etiquetas da nota. |

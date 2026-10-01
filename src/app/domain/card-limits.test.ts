@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateCardContent, FRONT_MAX, BACK_MAX, NOTES_MAX } from './card-limits';
+import { validateCardContent, FRONT_MAX, BACK_MAX, NOTES_MAX, TAGS_MAX } from './card-limits';
 
 function content(overrides: Partial<{ front: string; back: string; notes: string }> = {}) {
   return { front: 'Frente', back: 'Verso', notes: '', ...overrides };
@@ -52,5 +52,19 @@ describe('validateCardContent', () => {
     const result = validateCardContent({ front: '', back: '', notes: 'n'.repeat(NOTES_MAX + 1) });
 
     expect(result.errors).toHaveLength(3);
+  });
+
+  it('aceita exatamente 20 etiquetas', () => {
+    const tags = Array.from({ length: TAGS_MAX }, (_, index) => `t${index}`);
+
+    expect(validateCardContent({ ...content(), tags }).valid).toBe(true);
+  });
+
+  it('rejeita 21 etiquetas com a mensagem de limite', () => {
+    const tags = Array.from({ length: TAGS_MAX + 1 }, (_, index) => `t${index}`);
+
+    const result = validateCardContent({ ...content(), tags });
+
+    expect(result).toEqual({ valid: false, errors: ['Limite de 20 etiquetas'] });
   });
 });

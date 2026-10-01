@@ -21,12 +21,28 @@
       >
         Criar primeiro cartão
       </button>
-    } @else {
+    } @else if (v.kind === 'filtered-empty') {
+      <p class="font-mono text-label uppercase tracking-[0.25em] text-signal">Hoje</p>
+      <p class="mt-5 font-display text-front-long tabular-nums sm:text-front">0</p>
+      <p class="mt-3 break-words text-body text-muted" role="status" aria-live="polite">
+        Nenhum cartão de {{ v.filter.names.join(', ') }} para hoje. Sem o filtro, são
+        {{ v.filter.unfilteredSize }}.
+      </p>
+      <button
+        type="button"
+        (click)="clearFilter()"
+        class="mt-10 min-h-11 self-start rounded-full bg-signal px-8 py-4 text-meta font-medium text-on-signal transition hover:brightness-110"
+      >
+        Limpar filtro
+      </button>
+      <app-study-filter [options]="options()" [selected]="studyKeys()" (selectedChange)="setStudyKeys($event)" />
+      <app-difficult-shortcut />
+    } @else if (v.kind === 'today') {
       <p class="font-mono text-label uppercase tracking-[0.25em] text-signal">Hoje</p>
       <p class="mt-5 font-display text-front-long tabular-nums sm:text-front">
         {{ v.queueSize ?? 0 }}
       </p>
-      <p class="mt-3 text-body text-muted">
+      <p class="mt-3 text-body text-muted" aria-live="polite">
         {{ v.queueSize === 1 ? 'cartão para revisar' : 'cartões para revisar'
         }}{{ v.queueSize ? ' · cerca de ' + v.minutes + ' min' : '' }}
       </p>
@@ -39,6 +55,8 @@
       >
         {{ studyLabel() }}
       </button>
+      <app-study-filter [options]="options()" [selected]="studyKeys()" (selectedChange)="setStudyKeys($event)" />
+      <app-difficult-shortcut />
 
       @if (hasHistory()) {
         <button

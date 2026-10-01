@@ -36,10 +36,10 @@ tasks/prd-<slug>/      Uma pasta por entrega: prd.md, techspec.md, tasks.md, tas
 ### Regras de dependência (quebrar = recusar a mudança)
 
 - `domain/` **nunca** importa `@angular/*`, `rxjs`, nem nada de `state/`, `pages/`, `ui/`.
-- `pages/` e `ui/` **nunca** abrem o Dexie (`db`) nem chamam o Supabase diretamente — sempre por uma função de `domain/`. Dentro dessa regra, dois padrões convivem: leitura reativa usa `state/live-query.ts#liveQuerySignal` (direto do componente ou por trás de um serviço de `state/`); escrita pontual (criar, editar, excluir) chama a função de `domain/` direto do componente, sem precisar de um serviço de `state/` no meio. `state/` existe para estado **compartilhado entre páginas** (baralho ativo, contagem de pendentes no cabeçalho) — não é um intermediário obrigatório para toda leitura ou escrita.
+- `pages/` e `ui/` **nunca** abrem o Dexie (`db`) nem chamam o Supabase diretamente — sempre por uma função de `domain/`. Dentro dessa regra, dois padrões convivem: leitura reativa usa `state/live-query.ts#liveQuerySignal` (ou `liveQueryFor`, quando a consulta depende de um signal, como o baralho ativo) (direto do componente ou por trás de um serviço de `state/`); escrita pontual (criar, editar, excluir) chama a função de `domain/` direto do componente, sem precisar de um serviço de `state/` no meio. `state/` existe para estado **compartilhado entre páginas** (baralho ativo, contagem de pendentes no cabeçalho) — não é um intermediário obrigatório para toda leitura ou escrita.
 - `ui/` não importa `pages/`. Precisa de algo da página? Recebe por `input()`.
 - `src/test/` só é importado por arquivos `*.test.ts`.
-- Dexie vira signal em um único lugar: a função `liveQuerySignal` de `state/live-query.ts` — nenhum outro arquivo chama `liveQuery()` do Dexie diretamente.
+- Dexie vira signal em um único lugar: as funções `liveQuerySignal` e `liveQueryFor` de `state/live-query.ts` — nenhum outro arquivo chama `liveQuery()` do Dexie diretamente.
 
 ### Regras de domínio que não se negociam
 
@@ -68,6 +68,7 @@ Nomes de arquivo em kebab-case sem sufixo (`home.ts`, não `home.component.ts`),
 - `input()`, `output()`, `model()`, `signal`, `computed`; `inject()` em vez de construtor; `@Service` para serviços root.
 - Controle de fluxo `@if`/`@for`/`@switch` nos templates; nunca `*ngIf`/`*ngFor`.
 - Rotas com `loadComponent` para `progress`; guards funcionais `requireDeck`/`requireNoDeck`.
+- Parâmetros de query chegam à página por `input()` com o mesmo nome (`withComponentInputBinding()` ligado em `app.config.ts`); não crie `input()` homônimo de um parâmetro de rota sem querer lê-lo.
 - Sem NgRx. RxJS só nas bordas: `state/live-query.ts`, eventos do `Router` no `sync-store` e `SwUpdate`.
 
 ## Estilo visual

@@ -1,0 +1,45 @@
+<div class="flex items-center justify-between gap-3">
+  <span class="font-mono text-label uppercase tracking-wider text-muted">{{ label() }}</span>
+  @if (selected().length > 0) {
+    <button
+      type="button"
+      (click)="clear()"
+      class="min-h-11 px-2 text-meta text-muted hover:text-text"
+    >
+      Limpar
+    </button>
+  }
+</div>
+@if (chosen().length > 0) {
+  <div class="mb-2 flex flex-wrap gap-2">
+    @for (option of chosen(); track option.key) {
+      <button
+        type="button"
+        (click)="toggle(option.key)"
+        [attr.aria-label]="'Remover filtro ' + option.name"
+        class="min-h-11 max-w-full rounded-full border border-signal px-4 py-2 text-meta text-signal"
+      >
+        <span class="break-words">{{ option.name }}</span> ×
+      </button>
+    }
+  </div>
+}
+<div role="group" [attr.aria-label]="label()" class="flex max-h-36 flex-wrap gap-2 overflow-y-auto">
+  @for (option of options(); track option.key) {
+    <button
+      type="button"
+      (click)="toggle(option.key)"
+      [attr.aria-pressed]="isSelected(option.key)"
+      [class]="
+        'min-h-11 max-w-full rounded-full border px-4 py-2 text-meta transition ' +
+        (isSelected(option.key)
+          ? 'border-signal bg-signal text-on-signal'
+          : 'border-line text-text hover:border-signal')
+      "
+    >
+      <span class="break-words">{{ option.name }}</span>
+      <span class="sr-only">, </span>
+      <span class="ml-1 font-mono text-label opacity-70">{{ option.count }}</span>
+    </button>
+  }
+</div>

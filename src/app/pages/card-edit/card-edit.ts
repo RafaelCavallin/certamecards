@@ -20,7 +20,7 @@ export class CardEdit {
   readonly initial = computed<CardContent | null>(() => {
     const card = this.card();
     return card
-      ? { front: card.front, back: card.back, notes: card.notes, marks: card.marks }
+      ? { front: card.front, back: card.back, notes: card.notes, marks: card.marks, tags: card.tags }
       : null;
   });
 

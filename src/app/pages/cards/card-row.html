@@ -1,0 +1,33 @@
+<input
+  type="checkbox"
+  [checked]="checked()"
+  (change)="toggled.emit()"
+  aria-label="Selecionar cartão"
+  class="mt-1.5 h-4 w-4 shrink-0 accent-signal"
+/>
+<div class="min-w-0 flex-1">
+  <p class="truncate text-body">
+    <app-marked-text [text]="card().front" [emphasis]="card().marks.front.emphasis" />
+  </p>
+  <p class="mt-1 truncate text-meta text-muted">
+    <app-marked-text [text]="card().back" [emphasis]="card().marks.back.emphasis" />
+  </p>
+  @if (card().tags.length > 0) {
+    <app-tag-chips class="mt-1.5" [tags]="card().tags" />
+  }
+</div>
+<a
+  [routerLink]="['/cartoes', card().id]"
+  aria-label="Editar cartão"
+  class="shrink-0 rounded-full border border-line px-3 py-1.5 font-mono text-label uppercase tracking-wider text-muted transition hover:border-signal hover:text-signal"
+>
+  Editar
+</a>
+<button
+  type="button"
+  (click)="removed.emit()"
+  aria-label="Excluir cartão"
+  class="shrink-0 rounded-full border border-line px-3 py-1.5 font-mono text-label uppercase tracking-wider text-muted transition hover:border-miss hover:text-miss"
+>
+  Excluir
+</button>

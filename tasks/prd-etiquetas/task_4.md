@@ -30,11 +30,11 @@ Li o `AGENTS.md` e as rules em `.agents/rules/`. Pontos relevantes:
 
 ## Subtarefas
 
-- [ ] 4.1 Extrair `isYoung`, `interleave` e `countIntroducedToday` para `queue-mix.ts` (os testes existentes continuam passando; ajustar só os imports).
-- [ ] 4.2 Refatorar `buildQueue(deck, filter?: QueueFilter)` em `loadQueueContext(deck)` + `assembleQueue(ctx, predicate)`. Aplicar `hasAnyTag` em vencidos e novos antes do `slice(room)`.
-- [ ] 4.3 Criar `queue-tags.ts` com `tagQueueCounts(deck, keys)`, reusando o mesmo contexto (vencidos por etiqueta + `min(novos por etiqueta, room)`).
-- [ ] 4.4 Estender `home-summary.ts`: `today.filter` (`names`, `unfilteredSize`) e o estado `filtered-empty`. `studyButtonLabel` continua coerente.
-- [ ] 4.5 Escrever TU-20, TU-E11, TU-E8 e TI-E4. Rodar TU-06/TU-07 sem alteração.
+- [x] 4.1 Extrair `isYoung`, `interleave` e `countIntroducedToday` para `queue-mix.ts` (os testes existentes continuam passando; ajustar só os imports).
+- [x] 4.2 Refatorar `buildQueue(deck, filter?: QueueFilter)` em `loadQueueContext(deck)` + `assembleQueue(ctx, predicate)`. Aplicar `hasAnyTag` em vencidos e novos antes do `slice(room)`.
+- [x] 4.3 Criar `queue-tags.ts` com `tagQueueCounts(deck, keys)`, reusando o mesmo contexto (vencidos por etiqueta + `min(novos por etiqueta, room)`).
+- [x] 4.4 Estender `home-summary.ts`: `today.filter` (`names`, `unfilteredSize`) e o estado `filtered-empty`. `studyButtonLabel` continua coerente.
+- [x] 4.5 Escrever TU-20, TU-E11, TU-E8 e TI-E4. Rodar TU-06/TU-07 sem alteração.
 
 ## Detalhes de implementação
 
@@ -56,13 +56,13 @@ Ver [techspec.md](techspec.md):
 
 ### Testes de unidade
 
-- [ ] TU-20 — `buildQueue` com filtro de etiquetas (OU) e limites depois do filtro
-- [ ] TU-E8 — `homeView` com filtro: `today.filter` e `filtered-empty`
-- [ ] TU-E11 — `tagQueueCounts` igual a `buildQueue` com uma etiqueta
+- [x] TU-20 — `buildQueue` com filtro de etiquetas (OU) e limites depois do filtro
+- [x] TU-E8 — `homeView` com filtro: `today.filter` e `filtered-empty`
+- [x] TU-E11 — `tagQueueCounts` igual a `buildQueue` com uma etiqueta
 
 ### Testes de integração
 
-- [ ] TI-E4 — fila filtrada consome o limite de novos do dia
+- [x] TI-E4 — fila filtrada consome o limite de novos do dia
 
 ## Arquivos relevantes
 

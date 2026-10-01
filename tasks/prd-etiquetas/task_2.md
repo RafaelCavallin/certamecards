@@ -28,11 +28,11 @@ Li o `AGENTS.md` e as rules em `.agents/rules/`. Pontos relevantes:
 
 ## Subtarefas
 
-- [ ] 2.1 Adicionar `tags: string[]` a `CardContent`. `createCard` grava `normalizeTags(input.tags)` em vez de `[]`.
-- [ ] 2.2 `updateCardContent` grava `tags` normalizadas e devolve `Promise<CardContent>` com o conteúdo como ficou gravado.
-- [ ] 2.3 Ajustar os chamadores ao novo tipo: `initial`/`editInitial` em `card-edit.ts` e `review.ts` passam `tags: card.tags`. `review.saveEdit` usa o retorno de `updateCardContent` em `replaceCurrent`.
-- [ ] 2.4 `parseCardRow` em `sync-rows-card.ts` aplica `normalizeTags(data.tags ?? [])`.
-- [ ] 2.5 Escrever TI-E1 e TU-E10, e a parte de pull do TI-E5 (linha com `["Cespe","CESPE"]` gravada como `["Cespe"]`, `dirty: 0`).
+- [x] 2.1 Adicionar `tags: string[]` a `CardContent`. `createCard` grava `normalizeTags(input.tags)` em vez de `[]`.
+- [x] 2.2 `updateCardContent` grava `tags` normalizadas e devolve `Promise<CardContent>` com o conteúdo como ficou gravado.
+- [x] 2.3 Ajustar os chamadores ao novo tipo: `initial`/`editInitial` em `card-edit.ts` e `review.ts` passam `tags: card.tags`. `review.saveEdit` usa o retorno de `updateCardContent` em `replaceCurrent`.
+- [x] 2.4 `parseCardRow` em `sync-rows-card.ts` aplica `normalizeTags(data.tags ?? [])`.
+- [x] 2.5 Escrever TI-E1 e TU-E10, e a parte de pull do TI-E5 (linha com `["Cespe","CESPE"]` gravada como `["Cespe"]`, `dirty: 0`).
 
 ## Detalhes de implementação
 
@@ -48,12 +48,12 @@ Ver [techspec.md](techspec.md): “Modelos de dados” (`CardContent`, “Mapeam
 
 ### Testes de unidade
 
-- [ ] TU-E10 — `parseCardRow` normaliza `tags`
+- [x] TU-E10 — `parseCardRow` normaliza `tags`
 
 ### Testes de integração
 
-- [ ] TI-E1 — `createCard` + `updateCardContent` com etiquetas no Dexie real
-- [ ] TI-E5 (parte do pull) — etiquetas no pull com `fake-supabase`
+- [x] TI-E1 — `createCard` + `updateCardContent` com etiquetas no Dexie real
+- [x] TI-E5 (parte do pull) — etiquetas no pull com `fake-supabase`
 
 ## Arquivos relevantes
 

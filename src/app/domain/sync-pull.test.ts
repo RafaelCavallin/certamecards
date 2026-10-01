@@ -42,6 +42,17 @@ describe('pullAll', () => {
     expect(await db.cards.count()).toBe(1);
   });
 
+  it('grava no Dexie as etiquetas normalizadas sem reenviar', async () => {
+    const remoteCard = { ...toCardRow(makeCard({ tags: ['Cespe', 'CESPE'] })), synced_at: '2026-01-01T00:00:10Z' };
+    const { client } = createFakeSupabase({ tables: { cards: [remoteCard] } });
+
+    await pullAll(client);
+
+    const stored = await db.cards.get('card-1');
+    expect(stored?.tags).toEqual(['Cespe']);
+    expect(stored?.dirty).toBe(0);
+  });
+
   it('avisa no console e descarta uma linha remota inválida sem derrubar a página', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     const validCard = { ...toCardRow(makeCard()), synced_at: '2026-01-01T00:00:10Z' };

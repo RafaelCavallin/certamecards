@@ -1,0 +1,71 @@
+<div class="mt-6">
+  <label
+    [for]="instanceId"
+    class="block font-mono text-label uppercase tracking-wider text-muted"
+    >{{ label() }}</label
+  >
+  <div class="relative mt-2">
+    <div
+      class="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface p-2 focus-within:border-signal"
+    >
+      @for (tag of tags(); track tag) {
+        <span
+          class="inline-flex items-center gap-1 rounded-full border border-line bg-ink py-1 pl-3 pr-1 text-meta"
+        >
+          {{ tag }}
+          <button
+            type="button"
+            (click)="remove(tag)"
+            [attr.aria-label]="'Remover etiqueta ' + tag"
+            class="-my-2 flex h-11 w-11 items-center justify-center rounded-full text-muted hover:text-text"
+          >
+            ×
+          </button>
+        </span>
+      }
+      <input
+        #field
+        [id]="instanceId"
+        type="text"
+        role="combobox"
+        autocomplete="off"
+        aria-autocomplete="list"
+        [attr.aria-expanded]="expanded()"
+        [attr.aria-controls]="instanceId + '-list'"
+        [attr.aria-activedescendant]="activeId()"
+        [value]="text()"
+        [disabled]="atLimit()"
+        (input)="onInput(field)"
+        (keydown)="onKeydown($event)"
+        (blur)="commitPending()"
+        [placeholder]="atLimit() ? 'Limite de 20 etiquetas' : 'Digite e tecle Enter'"
+        class="min-w-32 flex-1 bg-transparent px-2 py-2 text-meta outline-none placeholder:text-muted/60"
+      />
+    </div>
+    @if (expanded()) {
+      <ul
+        role="listbox"
+        [id]="instanceId + '-list'"
+        [attr.aria-label]="'Sugestões de ' + label()"
+        class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-line bg-surface py-1 shadow-lg"
+      >
+        @for (item of suggestions(); track item.key; let i = $index) {
+          <li
+            role="option"
+            [id]="instanceId + '-opt-' + i"
+            [attr.aria-selected]="i === activeIndex()"
+            (mousedown)="$event.preventDefault(); add(item.name)"
+            class="flex cursor-pointer items-center justify-between px-4 py-3 text-meta hover:bg-ink"
+            [class.bg-ink]="i === activeIndex()"
+          >
+            <span>{{ item.name }}</span>
+            <span class="font-mono text-label text-muted">{{ item.count }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+  @if (message(); as warning) {
+    <p role="status" class="mt-1 text-label text-miss">{{ warning }}</p>
+  }
+</div>

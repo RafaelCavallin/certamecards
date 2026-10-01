@@ -1,0 +1,58 @@
+<div class="mx-auto max-w-2xl px-5 py-8">
+  <a routerLink="/ajustes" class="inline-flex min-h-11 items-center font-mono text-label uppercase text-muted hover:text-text">
+    ← Ajustes
+  </a>
+  <h1 class="mt-2 font-display text-front">Etiquetas</h1>
+  <p class="mt-1 text-meta text-muted">Valem para todos os baralhos. A contagem considera só cartões ativos.</p>
+
+  @if (catalog(); as tags) {
+    @if (tags.length === 0) {
+      <p class="mt-8 text-meta text-muted">
+        Você ainda não tem etiquetas. Crie no campo Etiquetas ao cadastrar ou editar um cartão.
+      </p>
+    } @else {
+      <div class="mt-6" role="list">
+        @for (tag of tags; track tag.key) {
+          <app-tag-row
+            role="listitem"
+            [tag]="tag"
+            [editing]="editingKey() === tag.key"
+            [error]="errorFor(tag.key)"
+            (editStarted)="startEdit(tag.key)"
+            (editCancelled)="cancelEdit()"
+            (renamed)="rename(tag.key, $event)"
+            (deleteAsked)="askDelete(tag)"
+          />
+        }
+      </div>
+    }
+  } @else {
+    <p class="mt-8 text-meta text-muted">Carregando…</p>
+  }
+</div>
+
+<app-confirm-dialog
+  #mergeDialog
+  title="Juntar etiquetas"
+  confirmLabel="Juntar"
+  [message]="
+    pendingMerge()
+      ? 'Juntar com “' + pendingMerge()!.targetName + '”? ' + pendingMerge()!.affected +
+        (pendingMerge()!.affected === 1 ? ' cartão passa' : ' cartões passam') +
+        ' a usar “' + pendingMerge()!.targetName + '”.'
+      : ''
+  "
+  (confirmed)="confirmMerge()"
+/>
+
+<app-confirm-dialog
+  #deleteDialog
+  title="Excluir etiqueta"
+  [message]="
+    pendingDelete()
+      ? 'Excluir “' + pendingDelete()!.name + '” de ' + pendingDelete()!.count +
+        (pendingDelete()!.count === 1 ? ' cartão' : ' cartões') + '? Os cartões continuam existindo.'
+      : ''
+  "
+  (confirmed)="confirmDelete()"
+/>

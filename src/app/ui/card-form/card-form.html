@@ -5,8 +5,8 @@
   <div class="mt-2 normal-case tracking-normal">
     <app-markable-field
       #frontField
-      [(value)]="front"
-      [(marks)]="frontMarks"
+      [(value)]="fields.front"
+      [(marks)]="fields.frontMarks"
       [maxLength]="frontMax"
       placeholder="Ex.: o mandato do prefeito é de quatro anos."
       textClass="text-front"
@@ -21,8 +21,8 @@
   Verso
   <div class="mt-2 normal-case tracking-normal">
     <app-markable-field
-      [(value)]="back"
-      [(marks)]="backMarks"
+      [(value)]="fields.back"
+      [(marks)]="fields.backMarks"
       [allowCloze]="false"
       [maxLength]="backMax"
       placeholder="Resposta"
@@ -38,8 +38,8 @@
   Notas
   <div class="mt-2 normal-case tracking-normal">
     <app-markable-field
-      [(value)]="notes"
-      [(marks)]="notesMarks"
+      [(value)]="fields.notes"
+      [(marks)]="fields.notesMarks"
       [allowCloze]="false"
       [minRows]="6"
       [maxLength]="notesMax"
@@ -51,6 +51,8 @@
 @if (notesCounter(); as counter) {
   <p class="mt-1 text-label text-muted">{{ counter }}</p>
 }
+
+<app-tag-input [(tags)]="fields.tags" />
 
 @if (error(); as message) {
   <p class="mt-4 text-meta text-miss">{{ message }}</p>

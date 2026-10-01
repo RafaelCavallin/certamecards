@@ -2,7 +2,8 @@ import { State } from 'ts-fsrs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetDb } from '../../test/db-helpers';
 import { deleteDeck } from './decks';
-import { buildQueue, estimateMinutes, interleave, queueCount, totalQueueCount } from './queue';
+import { buildQueue, estimateMinutes, queueCount, totalQueueCount } from './queue';
+import { interleave } from './queue-mix';
 import { db, type Card, type Deck } from './db';
 import { EMPTY_CARD_MARKS } from './text-marks';
 

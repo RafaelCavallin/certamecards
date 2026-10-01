@@ -1,0 +1,18 @@
+<button
+  type="button"
+  (click)="edit.emit(item().card)"
+  class="block min-h-11 w-full min-w-0 overflow-hidden border-b border-line py-4 text-left transition hover:bg-surface/60"
+>
+  <p class="truncate text-body">
+    <app-marked-text
+      [text]="item().card.front"
+      [cloze]="item().card.marks.front.cloze"
+      [emphasis]="item().card.marks.front.emphasis"
+      [hideCloze]="true"
+    />
+  </p>
+  <p class="mt-1 text-meta text-muted">{{ caption() }}</p>
+  @if (item().card.tags.length > 0) {
+    <app-tag-chips class="mt-1.5" [tags]="item().card.tags" />
+  }
+</button>

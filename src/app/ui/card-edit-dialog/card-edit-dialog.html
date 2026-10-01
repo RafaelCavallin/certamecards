@@ -1,0 +1,14 @@
+<dialog
+  #dialog
+  aria-label="Editar cartão"
+  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-ink/60"
+>
+  <div class="p-5">
+    <app-card-form
+      title="Editar cartão"
+      submitLabel="Salvar alterações"
+      [initial]="initial()"
+      [onSubmit]="save"
+    />
+  </div>
+</dialog>

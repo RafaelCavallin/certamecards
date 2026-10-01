@@ -18,6 +18,9 @@
           <app-marked-text [text]="card().notes" [emphasis]="card().marks.notes.emphasis" />
         </p>
       }
+      @if (card().tags.length > 0) {
+        <app-tag-chips class="mt-5" [tags]="card().tags" />
+      }
     </div>
   }
 </div>

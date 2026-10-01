@@ -33,11 +33,11 @@ Li o `AGENTS.md` e as rules em `.agents/rules/`. Pontos relevantes:
 
 ## Subtarefas
 
-- [ ] 1.1 Adicionar `TAGS_MAX = 20` e `TAG_MAX_LENGTH = 40` a `card-limits.ts`. Estender `validateCardContent` para rejeitar mais de 20 etiquetas, com a mensagem “Limite de 20 etiquetas” (o tipo de entrada ganha `tags`).
-- [ ] 1.2 Criar `tags.ts` com a constante de diacríticos (depois reusada por `card-search.ts` na tarefa 3.0), `normalizeTag`, `tagKey` e `splitTagInput`.
-- [ ] 1.3 Implementar `normalizeTags`: idempotente, deduplica pela chave (a primeira grafia vence), descarta vazias e com mais de 40 caracteres, corta em 20.
-- [ ] 1.4 Implementar `addTagInput(TagInputRequest) → TagInputResult`: grafia do catálogo (RF47a), `rejected` com `too-long`/`limit`, duplicadas e vazias em silêncio.
-- [ ] 1.5 Escrever os testes TU-18, TU-E1, TU-E2, TU-E5 e TU-E12.
+- [x] 1.1 Adicionar `TAGS_MAX = 20` e `TAG_MAX_LENGTH = 40` a `card-limits.ts`. Estender `validateCardContent` para rejeitar mais de 20 etiquetas, com a mensagem “Limite de 20 etiquetas” (o tipo de entrada ganha `tags`).
+- [x] 1.2 Criar `tags.ts` com a constante de diacríticos (depois reusada por `card-search.ts` na tarefa 3.0), `normalizeTag`, `tagKey` e `splitTagInput`.
+- [x] 1.3 Implementar `normalizeTags`: idempotente, deduplica pela chave (a primeira grafia vence), descarta vazias e com mais de 40 caracteres, corta em 20.
+- [x] 1.4 Implementar `addTagInput(TagInputRequest) → TagInputResult`: grafia do catálogo (RF47a), `rejected` com `too-long`/`limit`, duplicadas e vazias em silêncio.
+- [x] 1.5 Escrever os testes TU-18, TU-E1, TU-E2, TU-E5 e TU-E12.
 
 ## Detalhes de implementação
 
@@ -54,11 +54,11 @@ Ver [techspec.md](techspec.md): “Principais interfaces” (bloco `domain/tags.
 
 ### Testes de unidade
 
-- [ ] TU-18 — `tagKey` e `addTagInput` com caixa e acento diferentes
-- [ ] TU-E1 — `normalizeTag` e `splitTagInput` com espaços, vírgulas vazias e quebras de linha
-- [ ] TU-E2 — `addTagInput` nos limites 20 e 40
-- [ ] TU-E5 — `normalizeTags`: idempotência, primeira grafia vence, descarte e corte
-- [ ] TU-E12 — `validateCardContent` com 21 etiquetas
+- [x] TU-18 — `tagKey` e `addTagInput` com caixa e acento diferentes
+- [x] TU-E1 — `normalizeTag` e `splitTagInput` com espaços, vírgulas vazias e quebras de linha
+- [x] TU-E2 — `addTagInput` nos limites 20 e 40
+- [x] TU-E5 — `normalizeTags`: idempotência, primeira grafia vence, descarte e corte
+- [x] TU-E12 — `validateCardContent` com 21 etiquetas
 
 ## Arquivos relevantes
 

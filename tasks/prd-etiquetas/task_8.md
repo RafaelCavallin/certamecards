@@ -34,12 +34,12 @@ Li o `AGENTS.md` e as rules em `.agents/rules/`. Pontos relevantes:
 
 ## Subtarefas
 
-- [ ] 8.1 Adicionar a rota `ajustes/etiquetas` em `app.routes.ts` (`loadComponent`, `requireDeck`).
-- [ ] 8.2 Criar `pages/tags/tags.{ts,html}`: catálogo reativo, lista, estado vazio e `confirm-dialog` para excluir e juntar.
-- [ ] 8.3 Criar `pages/tags/tag-row.{ts,html}`: exibição, modo de edição (Enter salva, Escape cancela), mensagem de `invalid`, pedido de confirmação quando o plano é `merge`.
-- [ ] 8.4 Após o sucesso: `tagFilterStore.applyRename(fromKey, toKey)` ou `applyDelete(key)`. Em falha: “Não foi possível renomear a etiqueta.” / “Não foi possível excluir a etiqueta.”
-- [ ] 8.5 Adicionar o link “Etiquetas” em `settings.html`.
-- [ ] 8.6 Rodar `npm run lint`, `npm run check:type-scale` e `npm run build`. Executar o E2E-E4 (inclusive excluir em 1.000 cartões em < 2 s) e salvar as capturas em `evidences/`.
+- [x] 8.1 Adicionar a rota `ajustes/etiquetas` em `app.routes.ts` (`loadComponent`, `requireDeck`).
+- [x] 8.2 Criar `pages/tags/tags.{ts,html}`: catálogo reativo, lista, estado vazio e `confirm-dialog` para excluir e juntar.
+- [x] 8.3 Criar `pages/tags/tag-row.{ts,html}`: exibição, modo de edição (Enter salva, Escape cancela), mensagem de `invalid`, pedido de confirmação quando o plano é `merge`.
+- [x] 8.4 Após o sucesso: `tagFilterStore.applyRename(fromKey, toKey)` ou `applyDelete(key)`. Em falha: “Não foi possível renomear a etiqueta.” / “Não foi possível excluir a etiqueta.”
+- [x] 8.5 Adicionar o link “Etiquetas” em `settings.html`.
+- [x] 8.6 Rodar `npm run lint`, `npm run check:type-scale` e `npm run build`. Executar o E2E-E4 (inclusive excluir em 1.000 cartões em < 2 s) e salvar as capturas em `evidences/`.
 
 ## Detalhes de implementação
 
@@ -59,7 +59,7 @@ Ver [techspec.md](techspec.md):
 
 ### Testes E2E
 
-- [ ] E2E-E4 — Ajustes → Etiquetas: renomear, juntar, excluir
+- [x] E2E-E4 — Ajustes → Etiquetas: renomear, juntar, excluir
 
 A lógica já está coberta pelos TU-E6, TI-10, TI-E2 e TI-E3 (tarefa 3.0) e pelo TU-E7 (tarefa 7.0).
 

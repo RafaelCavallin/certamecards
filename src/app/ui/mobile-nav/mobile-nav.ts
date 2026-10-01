@@ -1,18 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, viewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-
-interface NavItem {
-  path: string;
-  label: string;
-}
-
-const ITEMS: NavItem[] = [
-  { path: '/', label: 'Início' },
-  { path: '/cartoes/novo', label: '+ Cartão' },
-  { path: '/cartoes', label: 'Cartões' },
-  { path: '/progresso', label: 'Progresso' },
-  { path: '/ajustes', label: 'Ajustes' },
-];
+import { NAV_ITEMS } from './nav-items';
 
 /** Gatilho ☰ e painel: cada tela ganha isso de graça pelo cabeçalho da casca. Some a partir de `md`. */
 @Component({
@@ -22,7 +10,7 @@ const ITEMS: NavItem[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MobileNav {
-  readonly items = ITEMS;
+  readonly items = NAV_ITEMS;
 
   private readonly dialogRef = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
 
