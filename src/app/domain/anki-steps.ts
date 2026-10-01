@@ -1,5 +1,7 @@
 export type ImportStep = 'file' | 'reading' | 'decks' | 'fields' | 'preparing' | 'target' | 'importing' | 'done';
 
+export type ImportStage = 'file' | 'decks' | 'fields' | 'target' | 'importing' | 'done';
+
 export const TOTAL_VISIBLE_STEPS = 4;
 
 const VISIBLE_STEP_NUMBER: Partial<Record<ImportStep, number>> = {
@@ -27,4 +29,9 @@ export function canGoBack(step: ImportStep): boolean {
 
 export function visibleStepNumber(step: ImportStep): number | null {
   return VISIBLE_STEP_NUMBER[step] ?? null;
+}
+
+export function stageOf(step: ImportStep): ImportStage {
+  if (step === 'reading') return 'file';
+  return step === 'preparing' ? 'fields' : step;
 }

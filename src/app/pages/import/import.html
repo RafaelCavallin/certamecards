@@ -23,12 +23,10 @@
   }
 
   <div class="mt-6">
-    @switch (session.step()) {
+    @switch (stage()) {
       @case ('file') { <app-import-file /> }
-      @case ('reading') { <app-import-file /> }
       @case ('decks') { <app-import-decks /> }
       @case ('fields') { <app-import-fields /> }
-      @case ('preparing') { <app-import-fields /> }
       @case ('target') { <app-import-target [hasDecks]="hasDecks()" /> }
       @case ('importing') { <app-import-progress /> }
       @case ('done') { <app-import-summary /> }

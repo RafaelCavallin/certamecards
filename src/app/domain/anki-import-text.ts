@@ -26,6 +26,20 @@ export function notesLabel(count: number): string {
   return countLabel(count, 'nota', 'notas');
 }
 
+export interface FileCounts {
+  notes: number;
+  decks: number;
+  notetypes: number;
+}
+
+export function fileSummary(counts: FileCounts): string {
+  return [
+    notesLabel(counts.notes),
+    countLabel(counts.decks, 'baralho', 'baralhos'),
+    countLabel(counts.notetypes, 'tipo de nota', 'tipos de nota'),
+  ].join(' · ');
+}
+
 export function duplicatesLine(count: number, newDeck: boolean): string {
   const one = count === 1;
   if (newDeck) return `${cardsLabel(count)} se ${one ? 'repete' : 'repetem'} no arquivo e ${one ? 'entra' : 'entram'} uma vez só.`;

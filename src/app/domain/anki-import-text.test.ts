@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cardsLabel, countLabel, duplicatesLine, duplicatesSummary, formatCount, notesLabel, progressMilestone, skippedEntries } from './anki-import-text';
+import { cardsLabel, countLabel, duplicatesLine, duplicatesSummary, fileSummary, formatCount, notesLabel, progressMilestone, skippedEntries } from './anki-import-text';
 
 describe('textos da importação', () => {
   it('formata números no padrão brasileiro', () => {
@@ -39,6 +39,10 @@ describe('textos da importação', () => {
   it('resume duplicatas no fim conforme o destino', () => {
     expect(duplicatesSummary(6, true)).toBe('6 cartões repetidos no arquivo entraram uma vez só.');
     expect(duplicatesSummary(1, false)).toBe('1 cartão pulado porque já existia no baralho.');
+  });
+
+  it('resume o arquivo com notas, baralhos e tipos de nota', () => {
+    expect(fileSummary({ notes: 1404, decks: 13, notetypes: 1 })).toBe('1.404 notas · 13 baralhos · 1 tipo de nota');
   });
 
   it('arredonda o progresso para marcos de 25%', () => {

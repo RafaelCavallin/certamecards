@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canGoBack, previousStep, stepAfterReading, visibleStepNumber } from './anki-steps';
+import { canGoBack, previousStep, stageOf, stepAfterReading, visibleStepNumber } from './anki-steps';
 
 describe('passos da importação', () => {
   it('pula o passo de origem quando há um só baralho', () => {
@@ -24,5 +24,15 @@ describe('passos da importação', () => {
     expect([visibleStepNumber('file'), visibleStepNumber('decks'), visibleStepNumber('fields'), visibleStepNumber('target')]).toEqual([1, 2, 3, 4]);
     expect(visibleStepNumber('importing')).toBeNull();
     expect(visibleStepNumber('done')).toBeNull();
+  });
+
+  it('agrupa o passo transitório com a tela que continua visível, para ela não ser recriada', () => {
+    expect([stageOf('reading'), stageOf('file'), stageOf('preparing'), stageOf('fields'), stageOf('target')]).toEqual([
+      'file',
+      'file',
+      'fields',
+      'fields',
+      'target',
+    ]);
   });
 });

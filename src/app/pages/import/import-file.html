@@ -13,7 +13,7 @@
   (dragover)="dragOver($event)"
   (dragleave)="dragging.set(false)"
   (drop)="drop($event)"
-  class="mt-6 flex min-h-44 flex-col items-center justify-center rounded-2xl border border-dashed px-5 py-10 text-center transition"
+  class="mt-6 flex min-h-44 flex-col items-center justify-center rounded-2xl border border-dashed px-5 py-10 text-center transition focus-within:border-signal focus-within:ring-2 focus-within:ring-signal"
   [class.border-signal]="dragging()"
   [class.border-line]="!dragging()"
   [class.cursor-pointer]="!disabled()"

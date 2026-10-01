@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { AnkiImportSession } from '../../state/anki-import-session';
-import { cardsLabel, countLabel, notesLabel } from '../../domain/anki-import-text';
+import { cardsLabel, countLabel, fileSummary, notesLabel } from '../../domain/anki-import-text';
 
 const NO_DECK_NAME = 'Sem baralho';
 
@@ -14,9 +14,11 @@ export class ImportDecks {
 
   readonly fileSummary = computed(() => {
     const collection = this.session.collection();
-    const notes = notesLabel(collection?.notes.length ?? 0);
-    const decks = countLabel(this.session.sourceDecks().length, 'baralho', 'baralhos');
-    return `${notes} · ${decks} · ${countLabel(collection?.notetypes.length ?? 0, 'tipo de nota', 'tipos de nota')}`;
+    return fileSummary({
+      notes: collection?.notes.length ?? 0,
+      decks: this.session.sourceDecks().length,
+      notetypes: collection?.notetypes.length ?? 0,
+    });
   });
   readonly selectionSummary = computed(
     () => `${countLabel(this.session.selected().length, 'nota selecionada', 'notas selecionadas')} · ${cardsLabel(this.session.plannedCards())}`,
