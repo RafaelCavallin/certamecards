@@ -12,7 +12,7 @@ import { CardEditDialog } from '../../ui/card-edit-dialog/card-edit-dialog';
 import { CardFace } from '../../ui/card-face/card-face';
 import { SessionShell } from '../../ui/session-shell/session-shell';
 import { ReviewSession } from '../../state/review-session';
-import { reviewKeyAction } from '../../domain/review-keys';
+import { modalIsOpen, reviewKeyAction } from '../../domain/review-keys';
 import type { Card } from '../../domain/db';
 
 @Component({
@@ -43,7 +43,7 @@ export class Review {
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
-    if (this.editDialog().isOpen()) return;
+    if (modalIsOpen()) return;
     if (event.code === 'Space') event.preventDefault();
     const action = reviewKeyAction(event, this.session.revealed());
     if (action === 'reveal') this.session.reveal();

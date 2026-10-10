@@ -73,9 +73,20 @@ Nomes de arquivo em kebab-case sem sufixo (`home.ts`, não `home.component.ts`),
 
 ## Estilo visual
 
-Os tokens são os do Lingo, declarados em `src/styles.css` como variáveis CSS mapeadas por `@theme inline` (o tema claro da Fase 2 só troca as variáveis em `[data-theme='light']`): cores `ink #14142B`, `surface #1F1F3D`, `line #32325C`, `text #EDEBFF`, `muted #9C9BC4`, `signal #F4B740`, `hit #7CE2C0`, `miss #F2789B`; fontes Bricolage Grotesque (`font-display`), Inter (`font-body`), JetBrains Mono (`font-mono`), auto-hospedadas via `@fontsource-variable`.
+Os tokens são os do Lingo, declarados em `src/styles/tokens.css` (importado por `src/styles.css`) como variáveis CSS mapeadas por `@theme inline` (o tema claro da Fase 2 só troca as variáveis em `[data-theme='light']`): cores `ink #14142B`, `surface #1F1F3D`, `line #32325C`, `text #EDEBFF`, `muted #9C9BC4`, `signal #F4B740`, `hit #7CE2C0`, `miss #F2789B`; fontes Bricolage Grotesque (`font-display`), Inter (`font-body`), JetBrains Mono (`font-mono`), auto-hospedadas via `@fontsource-variable`.
 
 Texto sobre `bg-signal` usa **`text-on-signal`**, nunca `text-ink` (no tema claro `ink` é o fundo claro). Cores sempre por token — nada de hex em template.
+
+O tema claro vive em `src/styles/theme-light.css` (`:root[data-theme='light']`, importado por `styles.css`); o escuro é o `:root`. O tema é um atributo `data-theme` no `<html>`, aplicado antes da primeira pintura pelo script inline do `index.html` e depois pelo `ThemeStore`. Além dos tokens acima, há tokens que existem para o contraste do tema claro — no escuro eles valem exatamente o que valiam as classes que substituíram:
+
+| Token | Use em | Nunca em |
+| --- | --- | --- |
+| `edge` (`border-edge`, `bg-edge`) | borda de campos, botões e links com cara de botão; barras comuns da previsão | divisórias, painéis e diálogos (esses ficam em `line`) |
+| `placeholder`, `placeholder-strong` (`placeholder:text-placeholder`) | texto de placeholder (antes `muted/40` e `muted/60`) | texto real |
+| `scrim` (`backdrop:bg-scrim`) | véu atrás de `<dialog>` e do menu ☰ (antes `bg-ink/60`) | `image-viewer`, que usa `viewer` |
+| `heat-0…3` (`fill-heat-N`) | níveis do heatmap, do vazio ao mais intenso | qualquer outro gráfico |
+
+Não declare `color-scheme` e não use `dark:` do Tailwind: o tema muda só pelas variáveis. Todo token novo precisa de valor nos dois temas e de teste de contraste em `src/app/domain/theme-palette.test.ts`.
 
 **Tipografia maior que no Lingo** — use sempre a escala semântica:
 

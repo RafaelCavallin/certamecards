@@ -1,4 +1,5 @@
 import { getBoundUserId } from './auth';
+import { pushImages } from './image-sync-push';
 import { getSupabase } from './supabase';
 import { pullAll } from './sync-pull';
 import { pushDirty } from './sync-push';
@@ -29,7 +30,8 @@ async function runSync(): Promise<SyncOutcome> {
     if (data.session.user.id !== boundUserId) return mismatchedAccountOutcome();
     const pulled = await pullAll(client);
     const pushed = await pushDirty(client);
-    return { status: 'ok', pulled, pushed, at: Date.now() };
+    const images = await pushImages(client, boundUserId);
+    return { status: 'ok', pulled, pushed: pushed + images.pushed, at: Date.now() };
   } catch (error: unknown) {
     return isOffline(error) ? { status: 'offline' } : { status: 'error', message: errorMessage(error) };
   }

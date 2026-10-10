@@ -13,7 +13,7 @@
     />
   </div>
 </label>
-@if (frontCounter(); as counter) {
+@if (fields.frontCounter(); as counter) {
   <p class="mt-1 text-label text-muted">{{ counter }}</p>
 }
 
@@ -30,7 +30,7 @@
     />
   </div>
 </label>
-@if (backCounter(); as counter) {
+@if (fields.backCounter(); as counter) {
   <p class="mt-1 text-label text-muted">{{ counter }}</p>
 }
 
@@ -48,9 +48,11 @@
     />
   </div>
 </label>
-@if (notesCounter(); as counter) {
+@if (fields.notesCounter(); as counter) {
   <p class="mt-1 text-label text-muted">{{ counter }}</p>
 }
+
+<app-image-gallery-editor [(items)]="fields.gallery" [(pending)]="fields.pending" />
 
 <app-tag-input [(tags)]="fields.tags" />
 
@@ -61,9 +63,17 @@
 <button
   type="button"
   (click)="submit()"
-  [disabled]="!ready() || saving()"
+  [disabled]="!fields.ready() || saving()"
   [attr.aria-busy]="saving()"
   class="mt-6 w-full rounded-2xl bg-signal py-4 text-body font-medium text-on-signal transition hover:brightness-110 disabled:bg-surface disabled:text-muted"
 >
-  {{ saving() ? 'Salvando…' : submitLabel() }}
+  {{ submitText() }}
 </button>
+
+<app-confirm-dialog
+  title="Descartar alterações?"
+  message="O que você mudou neste cartão ainda não foi salvo."
+  confirmLabel="Descartar"
+  cancelLabel="Continuar editando"
+  tone="neutral"
+/>

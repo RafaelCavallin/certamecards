@@ -4,7 +4,7 @@ import { ConfirmDialog } from '../../ui/confirm-dialog/confirm-dialog';
 import { TagFilterStore } from '../../state/tag-filter-store';
 import { liveQuerySignal } from '../../state/live-query';
 import { TAG_INVALID_MESSAGES, deleteTag, planTagRename, renameTag } from '../../domain/tag-bulk';
-import { listTagCatalog } from '../../domain/tag-catalog';
+import { countUntaggedCards, listTagCatalog } from '../../domain/tag-catalog';
 import { tagKey, type TagSummary } from '../../domain/tags';
 import { TagRow } from './tag-row';
 
@@ -31,6 +31,7 @@ export class Tags {
   private readonly mergeDialog = viewChild.required<ConfirmDialog>('mergeDialog');
   private readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
   readonly catalog = liveQuerySignal(listTagCatalog);
+  readonly untaggedCount = liveQuerySignal(countUntaggedCards);
   readonly editingKey = signal<string | null>(null);
   readonly rowError = signal<RowError | null>(null);
   readonly pendingMerge = signal<PendingMerge | null>(null);

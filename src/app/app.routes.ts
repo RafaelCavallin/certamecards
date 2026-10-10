@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { requireDeck, requireNoDeck } from './state/guards';
+import { confirmLeave, requireDeck, requireNoDeck } from './state/guards';
 
 export const routes: Routes = [
   {
@@ -20,11 +20,13 @@ export const routes: Routes = [
   {
     path: 'cartoes/novo',
     canActivate: [requireDeck],
+    canDeactivate: [confirmLeave],
     loadComponent: () => import('./pages/card-new/card-new').then((m) => m.CardNew),
   },
   {
     path: 'cartoes/:id',
     canActivate: [requireDeck],
+    canDeactivate: [confirmLeave],
     loadComponent: () => import('./pages/card-edit/card-edit').then((m) => m.CardEdit),
   },
   {
@@ -53,6 +55,12 @@ export const routes: Routes = [
     path: 'ajustes/etiquetas',
     canActivate: [requireDeck],
     loadComponent: () => import('./pages/tags/tags').then((m) => m.Tags),
+  },
+  {
+    path: 'ajustes/backup',
+    title: 'Backup',
+    canActivate: [requireDeck],
+    loadComponent: () => import('./pages/backup/backup').then((m) => m.Backup),
   },
   {
     path: 'importar',

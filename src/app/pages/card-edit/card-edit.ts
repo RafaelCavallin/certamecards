@@ -1,9 +1,10 @@
 import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CardForm } from '../../ui/card-form/card-form';
-import type { Card } from '../../domain/db';
-import { getCard, updateCardContent, type CardContent } from '../../domain/cards';
+import { ImagePrefetch } from '../../state/image-prefetch';
+import { loadCardDraft, type CardDraft } from '../../domain/card-draft';
+import { saveCardEdit } from '../../domain/card-save';
 
 @Component({
   selector: 'app-card-edit',
@@ -13,27 +14,33 @@ import { getCard, updateCardContent, type CardContent } from '../../domain/cards
 })
 export class CardEdit {
   private readonly location = inject(Location);
+  private readonly prefetch = inject(ImagePrefetch);
   private readonly cardId = inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '';
+  private readonly form = viewChild(CardForm);
+  private saved = false;
 
-  readonly card = signal<Card | null | undefined>(undefined);
-
-  readonly initial = computed<CardContent | null>(() => {
-    const card = this.card();
-    return card
-      ? { front: card.front, back: card.back, notes: card.notes, marks: card.marks, tags: card.tags }
-      : null;
-  });
+  readonly draft = signal<CardDraft | null | undefined>(undefined);
 
   constructor() {
-    void getCard(this.cardId).then((card) => this.card.set(card ?? null));
+    void this.load();
+  }
+
+  private async load(): Promise<void> {
+    await this.prefetch.request([this.cardId]);
+    this.draft.set(await loadCardDraft(this.cardId));
+  }
+
+  canLeave(): boolean | Promise<boolean> {
+    return this.saved || (this.form()?.confirmDiscard() ?? true);
   }
 
   back(): void {
     this.location.back();
   }
 
-  readonly save = async (content: CardContent): Promise<void> => {
-    await updateCardContent(this.cardId, content);
+  readonly save = async (draft: CardDraft): Promise<void> => {
+    await saveCardEdit({ cardId: this.cardId, draft });
+    this.saved = true;
     this.location.back();
   };
 }

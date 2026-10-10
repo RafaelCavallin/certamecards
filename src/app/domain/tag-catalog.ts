@@ -49,14 +49,21 @@ function toSummary(bucket: TagBucket): TagSummary {
   return { key: bucket.key, name, count: bucket.count };
 }
 
-export async function listTagCatalog(): Promise<TagSummary[]> {
+async function listLiveCards(): Promise<Card[]> {
   const liveDeckIds = new Set(await db.decks.where('deletedAt').equals(0).primaryKeys());
-  const cards = await db.cards
+  return db.cards
     .where('deletedAt')
     .equals(0)
     .filter((card) => liveDeckIds.has(card.deckId))
     .toArray();
-  return summarizeTags(cards);
+}
+
+export async function listTagCatalog(): Promise<TagSummary[]> {
+  return summarizeTags(await listLiveCards());
+}
+
+export async function countUntaggedCards(): Promise<number> {
+  return (await listLiveCards()).filter((card) => card.tags.length === 0).length;
 }
 
 export async function listDeckTags(deckId: string): Promise<TagSummary[]> {

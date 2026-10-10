@@ -6,7 +6,7 @@
   >
   <div class="relative mt-2">
     <div
-      class="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface p-2 focus-within:border-signal"
+      class="flex flex-wrap items-center gap-2 rounded-xl border border-edge bg-surface p-2 focus-within:border-signal"
     >
       @for (tag of tags(); track tag) {
         <span
@@ -39,7 +39,7 @@
         (keydown)="onKeydown($event)"
         (blur)="commitPending()"
         [placeholder]="atLimit() ? 'Limite de 20 etiquetas' : 'Digite e tecle Enter'"
-        class="min-w-32 flex-1 bg-transparent px-2 py-2 text-meta outline-none placeholder:text-muted/60"
+        class="min-w-32 flex-1 bg-transparent px-2 py-2 text-meta outline-none placeholder:text-placeholder-strong"
       />
     </div>
     @if (expanded()) {

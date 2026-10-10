@@ -13,8 +13,8 @@
       @if (decision.kind !== 'switch') {
         <button type="button" (click)="resolve('merge')" class="rounded-xl bg-signal px-5 py-3 text-body text-on-signal">Juntar dados</button>
       }
-      <button type="button" (click)="resolve('discard')" class="rounded-xl border border-line px-5 py-3 text-body">Usar dados da conta</button>
-      <button type="button" (click)="resolve('cancel')" class="rounded-xl border border-line px-5 py-3 text-body">Cancelar</button>
+      <button type="button" (click)="resolve('discard')" class="rounded-xl border border-edge px-5 py-3 text-body">Usar dados da conta</button>
+      <button type="button" (click)="resolve('cancel')" class="rounded-xl border border-edge px-5 py-3 text-body">Cancelar</button>
     </div>
   } @else if (confirmation()) {
     <h1 class="font-display text-front">Confirme seu email</h1>
@@ -22,15 +22,15 @@
   } @else if (auth.session(); as session) {
     <h1 class="font-display text-front">Conta</h1>
     <p class="mt-4 text-body text-muted">Conectado como {{ session.user.email }}.</p>
-    <button type="button" (click)="auth.signOut()" class="mt-6 rounded-xl border border-line px-5 py-3 text-body">Sair da conta</button>
+    <button type="button" (click)="auth.signOut()" class="mt-6 rounded-xl border border-edge px-5 py-3 text-body">Sair da conta</button>
   } @else {
     <h1 class="font-display text-front">{{ mode() === 'signin' ? 'Entrar' : 'Criar conta' }}</h1>
     <p class="mt-3 text-meta text-muted">A conta é opcional e permite sincronizar entre aparelhos.</p>
     <div class="mt-6 grid gap-3">
       <label class="sr-only" for="account-email">Email</label>
-      <input id="account-email" #emailInput type="email" autocomplete="email" placeholder="Email" (input)="updateEmail(emailInput.value)" class="rounded-xl border border-line bg-surface px-4 py-3 text-body" />
+      <input id="account-email" #emailInput type="email" autocomplete="email" placeholder="Email" (input)="updateEmail(emailInput.value)" class="rounded-xl border border-edge bg-surface px-4 py-3 text-body" />
       <label class="sr-only" for="account-password">Senha</label>
-      <input id="account-password" #passwordInput type="password" [attr.autocomplete]="mode() === 'signup' ? 'new-password' : 'current-password'" placeholder="Senha" (input)="updatePassword(passwordInput.value)" class="rounded-xl border border-line bg-surface px-4 py-3 text-body" />
+      <input id="account-password" #passwordInput type="password" [attr.autocomplete]="mode() === 'signup' ? 'new-password' : 'current-password'" placeholder="Senha" (input)="updatePassword(passwordInput.value)" class="rounded-xl border border-edge bg-surface px-4 py-3 text-body" />
     </div>
     @if (error()) { <p class="mt-3 text-meta text-miss">{{ error() }}</p> }
     <button type="button" (click)="submit()" [disabled]="!email() || password().length < 6" class="mt-5 w-full rounded-xl bg-signal px-5 py-3 text-body text-on-signal">{{ mode() === 'signin' ? 'Entrar' : 'Criar conta' }}</button>

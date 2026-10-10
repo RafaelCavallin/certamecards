@@ -1,4 +1,5 @@
 import { DECK_NAME_MAX } from './card-limits';
+import { tombstoneImagesOfCards } from './card-images';
 import { liveCards } from './cards';
 import { db, uid, type Deck } from './db';
 
@@ -78,9 +79,10 @@ export async function updateDeckRhythm(deckId: string, rhythm: DeckRhythm): Prom
  */
 export async function deleteDeck(deckId: string): Promise<void> {
   const now = Date.now();
-  await db.transaction('rw', db.decks, db.cards, async () => {
+  await db.transaction('rw', db.decks, db.cards, db.cardImages, db.imageBlobs, async () => {
     await db.decks.update(deckId, { deletedAt: now, updatedAt: now });
     const cardIds = await liveCards(deckId).primaryKeys();
     await db.cards.where('id').anyOf(cardIds).modify({ deletedAt: now, updatedAt: now });
+    await tombstoneImagesOfCards(cardIds, now);
   });
 }

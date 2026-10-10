@@ -1,7 +1,7 @@
 @if (reader.status() === 'needs-network') {
   <div class="rounded-2xl border border-line bg-surface p-5" role="status">
     <p class="text-body">Para importar pela primeira vez, conecte-se à internet. Depois disso, a importação funciona sem rede.</p>
-    <button type="button" (click)="reader.retry()" class="mt-4 min-h-11 rounded-full border border-line px-5 py-2 text-meta hover:border-signal">
+    <button type="button" (click)="reader.retry()" class="mt-4 min-h-11 rounded-full border border-edge px-5 py-2 text-meta hover:border-signal">
       Tentar de novo
     </button>
   </div>
@@ -15,7 +15,7 @@
   (drop)="drop($event)"
   class="mt-6 flex min-h-44 flex-col items-center justify-center rounded-2xl border border-dashed px-5 py-10 text-center transition focus-within:border-signal focus-within:ring-2 focus-within:ring-signal"
   [class.border-signal]="dragging()"
-  [class.border-line]="!dragging()"
+  [class.border-edge]="!dragging()"
   [class.cursor-pointer]="!disabled()"
   [class.opacity-60]="disabled()"
 >

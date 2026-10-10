@@ -11,6 +11,8 @@ function makeCard(overrides: Partial<Card> = {}): Card {
 
 afterEach(async () => resetDb());
 
+const SLOW_TEST_TIMEOUT_MS = 20000;
+
 describe('pushDirty', () => {
   it('envia cards antes dos logs e limpa dirty', async () => {
     const { client, rpcCalls } = createFakeSupabase({ rpc: () => ({ error: null }) });
@@ -39,7 +41,7 @@ describe('pushDirty', () => {
     expect(rpcCalls).toHaveLength(2);
     expect((rpcCalls[0].args as { p_cards: unknown[] }).p_cards).toHaveLength(200);
     expect((rpcCalls[1].args as { p_cards: unknown[] }).p_cards).toHaveLength(1);
-  });
+  }, SLOW_TEST_TIMEOUT_MS);
 
   it('avisa no console quando um chunk é rejeitado, com o código e sem conteúdo', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);

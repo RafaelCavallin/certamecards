@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AppUpdate } from './state/app-update';
 import { DeckStore } from './state/deck-store';
 import { SyncStore } from './state/sync-store';
+import { ThemeStore } from './state/theme-store';
 import { DeckSwitcher } from './ui/deck-switcher/deck-switcher';
 import { DueBadge } from './ui/due-badge/due-badge';
 import { MobileNav } from './ui/mobile-nav/mobile-nav';
@@ -31,6 +32,7 @@ export class App {
 
   constructor() {
     inject(SyncStore);
+    inject(ThemeStore);
     persistStorage();
   }
 

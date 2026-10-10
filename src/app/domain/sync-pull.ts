@@ -1,7 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { applyCards, applyDecks, applyLogs, applySettings } from './sync-pull-apply';
+import { applyCardImages } from './sync-pull-images';
 import { pullTable } from './sync-pull-page';
-import { parseCardRow, parseDeckRow, parseReviewLogRow, parseSettingsRow } from './sync-rows';
+import { parseCardImageRow, parseCardRow, parseDeckRow, parseReviewLogRow, parseSettingsRow } from './sync-rows';
 
 export async function pullAll(client: SupabaseClient): Promise<number> {
   const counts = await Promise.all([
@@ -10,5 +11,6 @@ export async function pullAll(client: SupabaseClient): Promise<number> {
     pullTable({ client, table: 'review_logs', parser: parseReviewLogRow, apply: applyLogs }),
     pullTable({ client, table: 'user_settings', parser: parseSettingsRow, apply: applySettings }),
   ]);
-  return counts.reduce((total, count) => total + count, 0);
+  const images = await pullTable({ client, table: 'card_images', parser: parseCardImageRow, apply: applyCardImages });
+  return counts.reduce((total, count) => total + count, images);
 }

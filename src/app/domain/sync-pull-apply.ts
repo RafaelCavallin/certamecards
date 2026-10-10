@@ -1,3 +1,4 @@
+import { tombstoneImagesOfCards } from './card-images';
 import { db, type Card, type Deck, type ReviewLog, type UserSettings } from './db';
 import { wins } from './lww';
 import type { Parsed } from './sync-rows-types';
@@ -7,30 +8,39 @@ export interface VersionedTable<T> {
   bulkPut(rows: T[]): Promise<unknown>;
 }
 
-async function applyVersioned<T extends { id: string; updatedAt: number }>(
-  items: Parsed<T>[],
-  table: VersionedTable<T>,
-  cursorKey: string,
-): Promise<number> {
-  return db.transaction('rw', db.decks, db.cards, db.settings, db.syncState, async () => {
+interface VersionedApply<T> {
+  items: Parsed<T>[];
+  table: VersionedTable<T>;
+  cursorKey: string;
+  afterWrite?: (winners: T[]) => Promise<void>;
+}
+
+async function applyVersioned<T extends { id: string; updatedAt: number }>(spec: VersionedApply<T>): Promise<number> {
+  const { items, table, cursorKey } = spec;
+  return db.transaction('rw', [db.decks, db.cards, db.settings, db.syncState, db.cardImages, db.imageBlobs], async () => {
     const local = await table.bulkGet(items.map((item) => item.row.id));
     const winners = items.filter((item, index) => wins(item.row, local[index]));
     if (winners.length) await table.bulkPut(winners.map((item) => item.row));
+    await spec.afterWrite?.(winners.map((item) => item.row));
     await db.syncState.put({ key: cursorKey, value: items[items.length - 1].syncedAt });
     return winners.length;
   });
 }
 
+async function tombstoneImagesOfDeletedCards(cards: Card[]): Promise<void> {
+  for (const card of cards.filter((row) => row.deletedAt > 0)) await tombstoneImagesOfCards([card.id], card.deletedAt);
+}
+
 export function applyDecks(items: Parsed<Deck>[], cursorKey: string): Promise<number> {
-  return applyVersioned(items, db.decks as unknown as VersionedTable<Deck>, cursorKey);
+  return applyVersioned({ items, table: db.decks as unknown as VersionedTable<Deck>, cursorKey });
 }
 
 export function applyCards(items: Parsed<Card>[], cursorKey: string): Promise<number> {
-  return applyVersioned(items, db.cards as unknown as VersionedTable<Card>, cursorKey);
+  return applyVersioned({ items, table: db.cards as unknown as VersionedTable<Card>, cursorKey, afterWrite: tombstoneImagesOfDeletedCards });
 }
 
 export function applySettings(items: Parsed<UserSettings>[], cursorKey: string): Promise<number> {
-  return applyVersioned(items, db.settings as unknown as VersionedTable<UserSettings>, cursorKey);
+  return applyVersioned({ items, table: db.settings as unknown as VersionedTable<UserSettings>, cursorKey });
 }
 
 export async function applyLogs(items: Parsed<ReviewLog>[], cursorKey: string): Promise<number> {

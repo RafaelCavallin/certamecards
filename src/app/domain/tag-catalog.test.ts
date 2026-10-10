@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { resetDb } from '../../test/db-helpers';
 import { makeDeck, makeTaggedCard } from '../../test/card-fixtures';
 import { db } from './db';
-import { listDeckTags, listTagCatalog, suggestTags, summarizeTags } from './tag-catalog';
+import { countUntaggedCards, listDeckTags, listTagCatalog, suggestTags, summarizeTags } from './tag-catalog';
 import type { TagSummary } from './tags';
 
 afterEach(resetDb);
@@ -82,5 +82,19 @@ describe('listTagCatalog', () => {
     ]);
 
     expect(await listDeckTags('deck-2')).toEqual([{ key: 'y', name: 'y', count: 1 }]);
+  });
+});
+
+describe('countUntaggedCards', () => {
+  it('conta só cartões ativos, de baralhos ativos, sem etiquetas', async () => {
+    await db.decks.bulkAdd([makeDeck('deck-1'), makeDeck('morto', 5)]);
+    await db.cards.bulkAdd([
+      makeTaggedCard('a', []),
+      makeTaggedCard('b', ['x']),
+      makeTaggedCard('c', [], { deletedAt: 9 }),
+      makeTaggedCard('d', [], { deckId: 'morto' }),
+    ]);
+
+    expect(await countUntaggedCards()).toBe(1);
   });
 });

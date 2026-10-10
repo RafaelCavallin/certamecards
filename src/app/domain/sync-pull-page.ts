@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { db } from './db';
 import type { Parsed } from './sync-rows-types';
 
-type Table = 'decks' | 'cards' | 'review_logs' | 'user_settings';
+type Table = 'decks' | 'cards' | 'review_logs' | 'user_settings' | 'card_images';
 
 export interface PullSpec<T> {
   client: SupabaseClient;

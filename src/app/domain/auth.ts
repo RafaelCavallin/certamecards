@@ -1,8 +1,8 @@
 import { db } from './db';
+import { clearCursors, markAllDirty, wipeLocalData } from './local-data';
 import { getSupabase } from './supabase';
 
 const BOUND_USER_KEY = 'boundUserId';
-const CURSOR_KEYS = ['cursor:decks', 'cursor:cards', 'cursor:review_logs', 'cursor:user_settings'];
 
 export interface DataSummary {
   decks: number;
@@ -44,7 +44,7 @@ async function cancelSignIn(): Promise<void> {
 
 async function mergeLocalData(): Promise<void> {
   await clearCursors();
-  await markDirty();
+  await markAllDirty();
 }
 
 async function localSummary(): Promise<DataSummary> {
@@ -69,27 +69,4 @@ async function remoteSummary(): Promise<DataSummary> {
 
 function isEmpty(summary: DataSummary): boolean {
   return summary.decks === 0 && summary.cards === 0 && summary.reviewLogs === 0;
-}
-
-async function markDirty(): Promise<void> {
-  await Promise.all([
-    db.decks.toCollection().modify({ dirty: 1 }),
-    db.cards.toCollection().modify({ dirty: 1 }),
-    db.reviewLogs.toCollection().modify({ dirty: 1 }),
-    db.settings.toCollection().modify({ dirty: 1 }),
-  ]);
-}
-
-async function clearCursors(): Promise<void> {
-  await db.syncState.bulkDelete(CURSOR_KEYS);
-}
-
-async function wipeLocalData(): Promise<void> {
-  await db.transaction('rw', db.decks, db.cards, db.reviewLogs, db.settings, db.syncState, async () => {
-    await db.decks.clear();
-    await db.cards.clear();
-    await db.reviewLogs.clear();
-    await db.settings.clear();
-    await db.syncState.clear();
-  });
 }

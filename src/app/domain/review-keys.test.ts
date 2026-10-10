@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { reviewKeyAction } from './review-keys';
+import { afterEach, describe, expect, it } from 'vitest';
+import { modalIsOpen, reviewKeyAction } from './review-keys';
 
 const SPACE = { code: 'Space', key: ' ' };
 
@@ -22,5 +22,25 @@ describe('reviewKeyAction', () => {
 
   it('outras teclas são ignoradas', () => {
     expect(reviewKeyAction({ code: 'KeyA', key: 'a' }, true)).toBeNull();
+  });
+});
+
+describe('modalIsOpen', () => {
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  it('detecta um diálogo aberto (visualizador, edição ou confirmação)', () => {
+    document.body.innerHTML = '<dialog open aria-label="Imagem"></dialog>';
+
+    expect(modalIsOpen()).toBe(true);
+  });
+
+  it('ignora diálogos fechados e a ausência de diálogos', () => {
+    document.body.innerHTML = '<dialog></dialog>';
+
+    expect(modalIsOpen()).toBe(false);
+    document.body.innerHTML = '';
+    expect(modalIsOpen()).toBe(false);
   });
 });

@@ -4,6 +4,12 @@ export const NOTES_MAX = 20000;
 export const DECK_NAME_MAX = 80;
 export const TAGS_MAX = 20;
 export const TAG_MAX_LENGTH = 40;
+export const IMAGES_PER_CARD_MAX = 6;
+export const IMAGE_SIDE_MAX = 2000;
+export const IMAGE_BYTES_MAX = 1_572_864;
+export const IMAGE_CAPTION_MAX = 200;
+export const IMAGE_INPUT_BYTES_MAX = 52_428_800;
+export const IMAGE_MIME_TYPES = ['image/webp', 'image/jpeg'] as const;
 
 export interface CardContentLimits {
   front: string;

@@ -1,5 +1,6 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { DeckStore } from './deck-store';
+import { ImagePrefetch } from './image-prefetch';
 import { liveQueryFor } from './live-query';
 import { filterDifficultByTags } from '../domain/difficulty';
 import { listDifficult, liveCardIds } from '../domain/difficulty-data';
@@ -15,6 +16,8 @@ import {
 import type { Card } from '../domain/db';
 import type { BinaryRating } from '../domain/scheduler';
 
+const PREFETCH_AHEAD = 3;
+
 export interface MissedItem {
   card: Card;
   misses: number;
@@ -23,6 +26,7 @@ export interface MissedItem {
 @Injectable()
 export class ReinforceSession {
   private readonly deckStore = inject(DeckStore);
+  private readonly prefetch = inject(ImagePrefetch);
   private readonly stateSignal = signal<ReinforceState | null>(null);
   private readonly cardsSignal = signal<ReadonlyMap<string, Card>>(new Map());
   private readonly deckId = computed(() => this.deckStore.deck()?.id);
@@ -55,6 +59,10 @@ export class ReinforceSession {
     effect(() => {
       const alive = this.alive();
       if (alive) this.stateSignal.update((state) => state && dropMissing(state, new Set(alive)));
+    });
+    effect(() => {
+      const pending = this.stateSignal()?.pending.slice(0, PREFETCH_AHEAD) ?? [];
+      void this.prefetch.request([...pending], 'queue');
     });
   }
 

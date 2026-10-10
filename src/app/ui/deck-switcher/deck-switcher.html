@@ -1,7 +1,7 @@
 <dialog
   #dialog
   aria-label="Baralhos"
-  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-ink/60"
+  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-scrim"
   (cancel)="close()"
 >
   <div class="p-4">
@@ -61,7 +61,7 @@
           (input)="newName.set(newNameInput.value)"
           (keydown.enter)="confirmCreate()"
           placeholder="Nome do baralho"
-          class="min-w-0 flex-1 rounded-lg border border-line bg-transparent px-3 py-2 text-meta outline-none focus:border-signal"
+          class="min-w-0 flex-1 rounded-lg border border-edge bg-transparent px-3 py-2 text-meta outline-none focus:border-signal"
         />
         <button
           type="button"
@@ -75,7 +75,7 @@
       <button
         type="button"
         (click)="startCreate()"
-        class="mt-3 min-h-11 w-full rounded-xl border border-dashed border-line py-2 text-meta text-muted transition hover:border-signal hover:text-signal"
+        class="mt-3 min-h-11 w-full rounded-xl border border-dashed border-edge py-2 text-meta text-muted transition hover:border-signal hover:text-signal"
       >
         + Novo baralho
       </button>

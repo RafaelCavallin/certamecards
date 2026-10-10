@@ -6,12 +6,18 @@
   <p class="mt-1 text-meta text-muted">Valem para todos os baralhos. A contagem considera só cartões ativos.</p>
 
   @if (catalog(); as tags) {
+    <div class="mt-6 flex items-center gap-2 border-b border-line py-3">
+      <span class="min-w-0 flex-1 break-words text-body">Sem etiqueta</span>
+      <span class="font-mono text-label text-muted">
+        {{ untaggedCount() ?? 0 }} {{ untaggedCount() === 1 ? 'cartão' : 'cartões' }}
+      </span>
+    </div>
     @if (tags.length === 0) {
       <p class="mt-8 text-meta text-muted">
         Você ainda não tem etiquetas. Crie no campo Etiquetas ao cadastrar ou editar um cartão.
       </p>
     } @else {
-      <div class="mt-6" role="list">
+      <div role="list">
         @for (tag of tags; track tag.key) {
           <app-tag-row
             role="listitem"

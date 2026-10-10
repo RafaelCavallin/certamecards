@@ -1,0 +1,20 @@
+<div
+  class="flex h-full w-full items-center justify-center overflow-hidden"
+  [class.rounded-xl]="framed()"
+  [class.border]="framed()"
+  [class.border-line]="framed()"
+  [class.bg-surface]="framed()"
+>
+  @if (url(); as src) {
+    <img
+      [src]="src"
+      [alt]="alt()"
+      decoding="async"
+      class="h-full w-full"
+      [class.object-cover]="fit() === 'cover'"
+      [class.object-contain]="fit() === 'contain'"
+    />
+  } @else {
+    <p class="p-3 text-center text-meta text-muted">Imagem disponível quando houver conexão</p>
+  }
+</div>

@@ -7,7 +7,7 @@ import { SessionShell } from '../../ui/session-shell/session-shell';
 import { ReinforceSummary } from './reinforce-summary';
 import { DeckStore } from '../../state/deck-store';
 import { ReinforceSession } from '../../state/reinforce-session';
-import { reviewKeyAction } from '../../domain/review-keys';
+import { modalIsOpen, reviewKeyAction } from '../../domain/review-keys';
 import { TAG_PARAM, parseTagParam, serializeTagParam } from '../../domain/tag-param';
 import type { Card } from '../../domain/db';
 
@@ -44,7 +44,7 @@ export class Reinforce {
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
-    if (this.editDialog().isOpen()) return;
+    if (modalIsOpen()) return;
     if (event.code === 'Space') event.preventDefault();
     const action = reviewKeyAction(event, this.session.revealed());
     if (action === 'reveal') this.session.reveal();

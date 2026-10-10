@@ -13,3 +13,9 @@ export function reviewKeyAction(
   if (event.key === AGAIN_KEY) return 'again';
   return event.key === GOOD_KEY ? 'good' : null;
 }
+
+const OPEN_DIALOG_SELECTOR = 'dialog[open]';
+
+export function modalIsOpen(root: Pick<Document, 'querySelector'> = document): boolean {
+  return root.querySelector(OPEN_DIALOG_SELECTOR) !== null;
+}

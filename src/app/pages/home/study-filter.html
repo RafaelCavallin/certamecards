@@ -3,7 +3,7 @@
     <button
       type="button"
       (click)="open()"
-      class="min-h-11 rounded-full border border-line px-5 py-2 text-meta transition hover:border-signal"
+      class="min-h-11 rounded-full border border-edge px-5 py-2 text-meta transition hover:border-signal"
     >
       Estudar só…
     </button>
@@ -19,7 +19,7 @@
 <dialog
   #dialog
   aria-label="Estudar só"
-  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-ink/60"
+  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-scrim"
 >
   <div class="p-4">
     <app-tag-filter

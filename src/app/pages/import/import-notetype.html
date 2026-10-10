@@ -24,18 +24,18 @@
       } @else {
         <label class="mt-4 block font-mono text-label uppercase tracking-wider text-muted" for="front-{{ notetype().id }}">Frente</label>
         <select #frontSelect id="front-{{ notetype().id }}" (change)="setField('front', frontSelect.value)"
-          class="mt-2 min-h-11 w-full rounded-xl border border-line bg-ink px-4 py-3 text-meta outline-none focus:border-signal">
+          class="mt-2 min-h-11 w-full rounded-xl border border-edge bg-ink px-4 py-3 text-meta outline-none focus:border-signal">
           @for (field of notetype().fields; track $index) { <option [value]="$index" [selected]="$index === mapping().front">{{ field }}</option> }
         </select>
         <label class="mt-4 block font-mono text-label uppercase tracking-wider text-muted" for="back-{{ notetype().id }}">Verso</label>
         <select #backSelect id="back-{{ notetype().id }}" (change)="setField('back', backSelect.value)"
-          class="mt-2 min-h-11 w-full rounded-xl border border-line bg-ink px-4 py-3 text-meta outline-none focus:border-signal">
+          class="mt-2 min-h-11 w-full rounded-xl border border-edge bg-ink px-4 py-3 text-meta outline-none focus:border-signal">
           @for (field of notetype().fields; track $index) { <option [value]="$index" [selected]="$index === mapping().back">{{ field }}</option> }
         </select>
       }
       <label class="mt-4 block font-mono text-label uppercase tracking-wider text-muted" for="notes-{{ notetype().id }}">Notas</label>
       <select #notesSelect id="notes-{{ notetype().id }}" (change)="setField('notes', notesSelect.value)"
-        class="mt-2 min-h-11 w-full rounded-xl border border-line bg-ink px-4 py-3 text-meta outline-none focus:border-signal">
+        class="mt-2 min-h-11 w-full rounded-xl border border-edge bg-ink px-4 py-3 text-meta outline-none focus:border-signal">
         <option [value]="noField" [selected]="mapping().notes === null">Nenhum</option>
         @for (field of notetype().fields; track $index) { <option [value]="$index" [selected]="$index === mapping().notes">{{ field }}</option> }
       </select>

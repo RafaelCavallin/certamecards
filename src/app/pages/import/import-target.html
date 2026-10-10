@@ -11,7 +11,7 @@
       @if (!isNew()) {
         <label class="sr-only" for="target-deck">Baralho existente</label>
         <select #deckSelect id="target-deck" (change)="chooseExisting(deckSelect.value)"
-          class="mt-2 min-h-11 w-full rounded-xl border border-line bg-ink px-4 py-3 text-meta outline-none focus:border-signal">
+          class="mt-2 min-h-11 w-full rounded-xl border border-edge bg-ink px-4 py-3 text-meta outline-none focus:border-signal">
           @for (deck of decks(); track deck.id) { <option [value]="deck.id" [selected]="deck.id === existingId()">{{ deck.name }}</option> }
         </select>
       }
@@ -25,7 +25,7 @@
     @if (isNew()) {
       <label class="sr-only" for="target-name">Nome do novo baralho</label>
       <input #nameInput id="target-name" [value]="newName()" (input)="chooseNew(nameInput.value)" maxlength="80"
-        class="mt-2 min-h-11 w-full rounded-xl border border-line bg-ink px-4 py-3 text-meta outline-none focus:border-signal" />
+        class="mt-2 min-h-11 w-full rounded-xl border border-edge bg-ink px-4 py-3 text-meta outline-none focus:border-signal" />
     }
   </div>
 </fieldset>

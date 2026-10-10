@@ -7,7 +7,7 @@
     [value]="query()"
     (input)="query.set(searchInput.value)"
     placeholder="Buscar por Frente, Verso ou Notas"
-    class="mt-6 w-full rounded-xl border border-line bg-surface px-4 py-3 text-body outline-none placeholder:text-muted/40 focus:border-signal"
+    class="mt-6 w-full rounded-xl border border-edge bg-surface px-4 py-3 text-body outline-none placeholder:text-placeholder focus:border-signal"
   />
 
   @if (tagOptions().length > 0) {
@@ -57,16 +57,18 @@
       }}
     </p>
   } @else {
-    <cdk-virtual-scroll-viewport [itemSize]="rowSize" class="mt-6 h-[70vh]">
-      <app-card-row
-        *cdkVirtualFor="let card of filtered()"
-        [style.height.px]="rowSize"
-        [card]="card"
-        [checked]="selected().has(card.id)"
-        (toggled)="toggle(card.id)"
-        (removed)="askRemoveOne(card.id)"
-      />
-    </cdk-virtual-scroll-viewport>
+    <div class="mt-6 h-[70vh] overflow-y-auto" role="list">
+      @for (card of filtered(); track card.id) {
+        <app-card-row
+          role="listitem"
+          class="[contain-intrinsic-size:auto_96px] [content-visibility:auto]"
+          [card]="card"
+          [checked]="selected().has(card.id)"
+          (toggled)="toggle(card.id)"
+          (removed)="askRemoveOne(card.id)"
+        />
+      }
+    </div>
   }
 </div>
 

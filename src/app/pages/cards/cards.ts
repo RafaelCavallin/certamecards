@@ -1,4 +1,3 @@
-import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -18,11 +17,9 @@ import { summarizeTags } from '../../domain/tag-catalog';
 import { filterCardsByTags } from '../../domain/tag-filter';
 import type { Card } from '../../domain/db';
 
-const ROW_SIZE = 124;
-
 @Component({
   selector: 'app-cards',
-  imports: [ScrollingModule, ConfirmDialog, TagFilter, CardRow],
+  imports: [ConfirmDialog, TagFilter, CardRow],
   templateUrl: './cards.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -30,7 +27,6 @@ export class Cards {
   private readonly deckStore = inject(DeckStore);
   private readonly pendingDelete = signal<string[]>([]);
   private readonly confirmDialog = viewChild.required(ConfirmDialog);
-  readonly rowSize = ROW_SIZE;
   readonly deckName = computed(() => this.deckStore.deck()?.name ?? '');
   readonly cards = signal<Card[] | undefined>(undefined);
   readonly query = signal('');

@@ -1,7 +1,7 @@
 import { createEmptyCard } from 'ts-fsrs';
 import { db, uid, type Card } from './db';
-import { normalizeTags } from './tags';
-import { normalizeCardMarks } from './text-marks-normalize';
+import { normalizeCardContent } from './card-content';
+import { tombstoneImagesOfCards } from './card-images';
 import type { CardMarks } from './text-marks';
 
 export interface CardContent {
@@ -36,11 +36,7 @@ export function newCardRecord(input: NewCardInput, now: number): Card {
   return {
     id: uid(),
     deckId: input.deckId,
-    front: input.front.trim(),
-    back: input.back.trim(),
-    notes: input.notes.trim(),
-    marks: normalizeCardMarks(input.marks),
-    tags: normalizeTags(input.tags),
+    ...normalizeCardContent(input),
     due: empty.due.getTime(),
     stability: empty.stability,
     difficulty: empty.difficulty,
@@ -63,18 +59,15 @@ export function newCardRecord(input: NewCardInput, now: number): Card {
  * gerar log de revisão.
  */
 export async function updateCardContent(cardId: string, content: CardContent): Promise<CardContent> {
-  const saved: CardContent = {
-    front: content.front.trim(),
-    back: content.back.trim(),
-    notes: content.notes.trim(),
-    marks: normalizeCardMarks(content.marks),
-    tags: normalizeTags(content.tags),
-  };
+  const saved = normalizeCardContent(content);
   await db.cards.update(cardId, { ...saved, updatedAt: Date.now() });
   return saved;
 }
 
 export async function deleteCards(cardIds: string[]): Promise<void> {
   const now = Date.now();
-  await db.cards.where('id').anyOf(cardIds).modify({ deletedAt: now, updatedAt: now });
+  await db.transaction('rw', db.cards, db.cardImages, db.imageBlobs, async () => {
+    await db.cards.where('id').anyOf(cardIds).modify({ deletedAt: now, updatedAt: now });
+    await tombstoneImagesOfCards(cardIds, now);
+  });
 }

@@ -1,0 +1,20 @@
+@if (images(); as list) {
+  @if (list.length > 0) {
+    <ul class="mt-5 grid grid-cols-3 gap-2 sm:grid-cols-4" aria-label="Imagens do cartão">
+      @for (item of list; track item.image.id; let i = $index) {
+        <li class="aspect-square">
+          <button
+            type="button"
+            (click)="open(i, $event)"
+            [disabled]="!item.blob"
+            [attr.aria-label]="'Abrir em tela cheia: ' + altOf(item, i, list.length)"
+            class="block h-full w-full rounded-xl"
+          >
+            <app-image-thumb [blob]="item.blob" [alt]="altOf(item, i, list.length)" />
+          </button>
+        </li>
+      }
+    </ul>
+    <app-image-viewer [images]="list" />
+  }
+}

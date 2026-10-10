@@ -8,7 +8,7 @@ import type { Card } from '../../domain/db';
   selector: 'app-card-row',
   imports: [RouterLink, MarkedText, TagChips],
   templateUrl: './card-row.html',
-  host: { class: 'flex items-start gap-3 overflow-hidden border-b border-line py-4' },
+  host: { class: 'flex items-start gap-3 overflow-hidden border-b border-line py-4 pr-4' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardRow {

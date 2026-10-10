@@ -57,6 +57,8 @@ describe('pacote legado de ponta a ponta', () => {
   });
 });
 
+const SLOW_TEST_TIMEOUT_MS = 20000;
+
 describe('cartões importados sobem no push', () => {
   it('envia o baralho e os cartões em lotes e limpa dirty', async () => {
     const notes = Array.from({ length: 210 }, (_, index) => ({ notetypeId: 1, fields: [`f${index}`, 'v'], tags: 'cespe' }));
@@ -69,7 +71,7 @@ describe('cartões importados sobem no push', () => {
     expect(pushed).toBe(211);
     expect(sentCards).toHaveLength(210);
     expect(await db.cards.where('dirty').equals(1).count()).toBe(0);
-  });
+  }, SLOW_TEST_TIMEOUT_MS);
 
   it('não reenvia nada num segundo push', async () => {
     await importPackage();

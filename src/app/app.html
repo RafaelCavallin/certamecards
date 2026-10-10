@@ -13,7 +13,7 @@
       <button
         type="button"
         (click)="openSwitcher()"
-        class="mt-8 flex w-full items-center justify-between gap-2 rounded-xl border border-line bg-surface px-3 py-3 text-left transition hover:border-signal"
+        class="mt-8 flex w-full items-center justify-between gap-2 rounded-xl border border-edge bg-surface px-3 py-3 text-left transition hover:border-signal"
       >
         <span class="min-w-0 truncate text-meta text-text">{{ activeDeck.name }}</span>
         <app-due-badge [count]="totalDue()" label="para revisar em todos os baralhos" />

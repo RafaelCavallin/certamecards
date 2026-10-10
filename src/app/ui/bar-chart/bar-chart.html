@@ -1,31 +1,26 @@
-<svg
-  [attr.width]="width"
-  [attr.height]="height"
-  [attr.viewBox]="'0 0 ' + width + ' ' + height"
+<div
   role="img"
   aria-label="Previsão de cartões vencendo nos próximos 14 dias"
-  class="w-full"
+  class="flex h-40 items-end gap-1 border-b border-line"
 >
   @for (bar of bars(); track bar.day) {
-    <rect
-      [attr.x]="bar.x"
-      [attr.y]="bar.y"
-      [attr.width]="bar.width"
-      [attr.height]="bar.height"
-      rx="3"
-      [class]="bar.highlight ? 'fill-signal' : 'fill-line'"
-    >
-      <title>{{ barTitle(bar) }}</title>
-    </rect>
-    @if (bar.showLabel) {
-      <text
-        [attr.x]="bar.x + bar.width / 2"
-        [attr.y]="bar.labelY"
-        text-anchor="middle"
-        class="fill-muted font-mono text-label"
-      >
-        {{ bar.day }}
-      </text>
-    }
+    <div class="flex h-full min-w-0 flex-1 items-end" [attr.title]="bar.title">
+      <div
+        class="w-full rounded-t-[3px]"
+        [class]="bar.highlight ? 'bg-signal' : 'bg-edge'"
+        [style.height.%]="bar.heightPercent"
+      ></div>
+    </div>
   }
-</svg>
+</div>
+<div class="mt-1 flex gap-1" aria-hidden="true">
+  @for (bar of bars(); track bar.day) {
+    <div class="relative h-5 min-w-0 flex-1">
+      @if (bar.showLabel) {
+        <span class="absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-label text-muted">
+          {{ bar.day }}
+        </span>
+      }
+    </div>
+  }
+</div>

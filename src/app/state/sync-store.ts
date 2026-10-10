@@ -2,9 +2,10 @@ import { DestroyRef, Service, effect, inject, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthStore } from './auth-store';
+import { browserStorage } from '../domain/local-storage';
 import { syncNow, type SyncOutcome, type SyncReason } from '../domain/sync';
+import { readLastSyncAt, writeLastSyncAt } from '../domain/sync-storage';
 
-const LAST_SYNC_KEY = 'certamecards.lastSync';
 export type SyncStatus = 'disabled' | 'offline' | 'syncing' | 'synced' | 'error' | 'signed-out';
 
 @Service()
@@ -13,7 +14,8 @@ export class SyncStore {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly statusSignal = signal<SyncStatus>('disabled');
-  private readonly lastSyncSignal = signal<number>(Number(localStorage.getItem(LAST_SYNC_KEY)) || 0);
+  private readonly storage = browserStorage();
+  private readonly lastSyncSignal = signal<number>(readLastSyncAt(this.storage));
   readonly status = this.statusSignal.asReadonly();
   readonly lastSyncAt = this.lastSyncSignal.asReadonly();
 
@@ -31,7 +33,7 @@ export class SyncStore {
 
   private recordSuccess(at: number): void {
     this.lastSyncSignal.set(at);
-    localStorage.setItem(LAST_SYNC_KEY, String(at));
+    writeLastSyncAt(this.storage, at);
   }
 
   private registerTriggers(): void {

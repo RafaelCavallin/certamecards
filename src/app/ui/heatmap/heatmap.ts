@@ -15,10 +15,10 @@ import {
 } from '../../domain/heatmap-grid';
 
 const INTENSITY_CLASS: Record<HeatmapIntensity, string> = {
-  empty: 'fill-line',
-  low: 'fill-muted',
-  mid: 'fill-signal/50',
-  high: 'fill-signal',
+  empty: 'fill-heat-0',
+  low: 'fill-heat-1',
+  mid: 'fill-heat-2',
+  high: 'fill-heat-3',
 };
 
 /** Constância dos últimos 10 meses — grade de retângulos em SVG, sem lib de gráfico. */

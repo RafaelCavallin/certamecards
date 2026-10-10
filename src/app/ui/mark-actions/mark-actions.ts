@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import type { MarkKind, Marks } from '../../domain/text-marks';
 
 const PILL =
-  'rounded-full border border-line px-3 py-1.5 font-mono text-label uppercase tracking-wider text-muted transition hover:border-signal hover:text-signal';
+  'rounded-full border border-edge px-3 py-1.5 font-mono text-label uppercase tracking-wider text-muted transition hover:border-signal hover:text-signal';
 
 function summarizeMarks(marks: Marks): string {
   const parts: string[] = [];

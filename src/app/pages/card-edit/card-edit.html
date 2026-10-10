@@ -3,18 +3,18 @@
     ← Voltar
   </button>
 
-  @if (card() === undefined) {
+  @if (draft() === undefined) {
     <p class="mt-6 text-meta text-muted">Carregando…</p>
-  } @else if (card() === null) {
-    <p class="mt-6 text-meta text-muted">Cartão não encontrado.</p>
-  } @else {
+  } @else if (draft(); as loaded) {
     <div class="mt-4">
       <app-card-form
         title="Editar cartão"
         submitLabel="Salvar alterações"
-        [initial]="initial()"
+        [initial]="loaded"
         [onSubmit]="save"
       />
     </div>
+  } @else {
+    <p class="mt-6 text-meta text-muted">Cartão não encontrado.</p>
   }
 </div>

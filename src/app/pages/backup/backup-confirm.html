@@ -1,0 +1,15 @@
+@if (session.confirmation(); as confirmation) {
+  <div role="alert" class="rounded-2xl border border-miss p-4">
+    <h2 tabindex="-1" data-step-focus class="font-display text-body font-semibold text-miss outline-none">Confirme antes de restaurar</h2>
+    @for (warning of confirmation.warnings; track warning) {
+      <p class="mt-3 text-meta">{{ warning }}</p>
+    }
+    <button
+      type="button"
+      (click)="session.run()"
+      class="mt-4 min-h-11 rounded-full border border-miss px-6 py-3 text-body font-medium text-miss transition hover:bg-miss/10"
+    >
+      {{ confirmation.action }}
+    </button>
+  </div>
+}

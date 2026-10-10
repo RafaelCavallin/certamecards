@@ -1,14 +1,20 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SettingsBackup } from './settings-backup';
+import { SettingsImages } from './settings-images';
+import { SettingsTheme } from './settings-theme';
 import { AuthStore } from '../../state/auth-store';
 import { SyncStore } from '../../state/sync-store';
+import { liveQuerySignal } from '../../state/live-query';
+import { pendingUploadCount } from '../../domain/card-images';
 import { formatRelativeSync } from '../../domain/format-relative-time';
+import { pendingUploadsLabel } from '../../domain/image-labels';
 
 const APP_VERSION = '0.1.0';
 
 @Component({
   selector: 'app-settings',
-  imports: [RouterLink],
+  imports: [RouterLink, SettingsBackup, SettingsImages, SettingsTheme],
   templateUrl: './settings.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -17,6 +23,9 @@ export class Settings {
   readonly sync = inject(SyncStore);
 
   readonly version = APP_VERSION;
+  private readonly pending = liveQuerySignal(pendingUploadCount);
+  readonly pendingLabel = computed(() => ((this.pending() ?? 0) > 0 ? pendingUploadsLabel(this.pending() ?? 0) : null));
+
   async syncNow(): Promise<void> {
     await this.sync.syncNow('manual');
   }

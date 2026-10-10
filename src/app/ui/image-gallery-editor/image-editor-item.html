@@ -1,0 +1,49 @@
+<div class="min-w-0">
+  <div cdkDragHandle class="aspect-square cursor-grab">
+    <app-image-thumb [blob]="item().blob" [alt]="alt()" />
+  </div>
+  <div class="mt-2 flex flex-wrap items-center gap-1">
+    <button
+      type="button"
+      (click)="move.emit(-1)"
+      [disabled]="index() === 0"
+      [attr.aria-label]="'Mover a imagem ' + position() + ' para a esquerda'"
+      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-edge text-meta text-muted hover:text-text disabled:opacity-40"
+    >
+      ←
+    </button>
+    <button
+      type="button"
+      (click)="move.emit(1)"
+      [disabled]="index() === total() - 1"
+      [attr.aria-label]="'Mover a imagem ' + position() + ' para a direita'"
+      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-edge text-meta text-muted hover:text-text disabled:opacity-40"
+    >
+      →
+    </button>
+    <button
+      type="button"
+      (click)="remove.emit()"
+      [attr.aria-label]="'Remover a imagem ' + position()"
+      class="min-h-11 rounded-xl px-3 text-meta text-miss hover:underline"
+    >
+      Remover
+    </button>
+  </div>
+  <label class="mt-2 block font-mono text-label uppercase tracking-wider text-muted">
+    Legenda
+    <input
+      #caption
+      type="text"
+      [value]="item().caption"
+      [attr.maxlength]="captionMax"
+      [attr.aria-label]="'Legenda da imagem ' + position()"
+      (input)="onCaption(caption)"
+      placeholder="Opcional"
+      class="mt-1 min-h-11 w-full rounded-xl border border-edge bg-surface px-3 py-2 text-meta normal-case tracking-normal placeholder:text-placeholder-strong"
+    />
+  </label>
+  @if (counter(); as text) {
+    <p class="mt-1 text-label text-muted">{{ text }}</p>
+  }
+</div>

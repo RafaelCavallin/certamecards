@@ -28,7 +28,7 @@
             type="button"
             (click)="edit.emit(item.card)"
             [attr.aria-label]="'Editar cartão: ' + item.card.front"
-            class="min-h-11 shrink-0 rounded-full border border-line px-4 py-2 font-mono text-label uppercase tracking-wider text-muted transition hover:border-signal hover:text-signal"
+            class="min-h-11 shrink-0 rounded-full border border-edge px-4 py-2 font-mono text-label uppercase tracking-wider text-muted transition hover:border-signal hover:text-signal"
           >
             Editar
           </button>
@@ -48,7 +48,7 @@
     <button
       type="button"
       (click)="home.emit()"
-      class="min-h-11 rounded-full border border-line px-6 py-3 text-meta transition hover:border-signal"
+      class="min-h-11 rounded-full border border-edge px-6 py-3 text-meta transition hover:border-signal"
     >
       Voltar ao início
     </button>
