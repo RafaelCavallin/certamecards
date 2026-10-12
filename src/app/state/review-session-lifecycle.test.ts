@@ -24,7 +24,7 @@ describe('sessão de revisão', () => {
         { provide: DeckStore, useValue: { deck: signal(null) } },
         provideRouter([
           { path: '', component: ExitPage },
-          { ...reviewRoute, canActivate: [] },
+          { ...reviewRoute, loadComponent: undefined, component: Review, canActivate: [] },
         ]),
       ],
     });
