@@ -52,7 +52,7 @@ Requisitos próprios desta entrega, derivados de RF46–RF50:
 
 **Filtro na lista de Cartões (RF48)**
 
-- **RF48a**: A lista de Cartões ganha o controle “Etiquetas”, que mostra as etiquetas presentes no baralho ativo, cada uma com a sua contagem. Escolher uma ou mais restringe a lista aos cartões que têm **todas** as escolhidas (E), combinável com a busca por texto.
+- **RF48a**: A lista de Cartões ganha o controle “Etiquetas”, que mostra as etiquetas presentes no baralho ativo, cada uma com a sua contagem. Escolher uma ou mais restringe a lista aos cartões que têm **pelo menos uma** das escolhidas (OU, como no “Estudar só” e em Difíceis), combinável com a busca por texto. A opção “Sem etiqueta” vem primeiro quando o baralho tem cartões sem etiqueta e ao menos uma etiqueta, e entra no OU como as demais.
 - **RF48b**: As etiquetas escolhidas ficam visíveis acima da lista como chips removíveis, junto com “Limpar”. A contagem da lista reflete busca e filtro juntos.
 - **RF48c**: Cada item da lista mostra as etiquetas do cartão como chips pequenos, depois do texto. Se não couberem numa linha, mostra as que cabem e “+N”.
 - **RF48d**: O filtro da lista vale enquanto a tela está aberta e é limpo ao trocar de baralho. Seleção múltipla e exclusão em lote (RF32) agem sobre o resultado filtrado.
@@ -82,7 +82,7 @@ Texto completo no documento-mãe:
 | Critério | Requisitos | Resumo |
 | --- | --- | --- |
 | CA-24 | RF46, RF47 | “pegadinha” num cartão com “Pegadinha” não cria etiqueta nova; “peg” em outro cartão sugere “Pegadinha”. |
-| CA-25 | RF48 | Com “CESPE” e “Art. 37” escolhidas na lista, só aparecem cartões com as duas. |
+| CA-25 | RF48 | Com “CESPE” e “Art. 37” escolhidas na lista, aparecem os cartões com qualquer uma das duas (OU). |
 | CA-26 | RF49, US12 | Fila de 40 com 12 “CESPE”: “Estudar só: CESPE” mostra 12 e a sessão só traz esses 12; limpar volta a 40 menos os revisados. |
 | CA-27 | RF50 | Renomear “Cespe” para “CESPE” com “CESPE” existente junta as duas, sem duplicata em nenhum cartão. |
 

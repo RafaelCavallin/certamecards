@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { resetDb } from '../../test/db-helpers';
 import { makeDeck, makeTaggedCard } from '../../test/card-fixtures';
 import { db } from './db';
-import { countUntaggedCards, listDeckTags, listTagCatalog, suggestTags, summarizeTags } from './tag-catalog';
+import { countUntaggedCards, listTagCatalog, suggestTags, summarizeTags } from './tag-catalog';
 import type { TagSummary } from './tags';
 
 afterEach(resetDb);
@@ -73,15 +73,6 @@ describe('listTagCatalog', () => {
     ]);
 
     expect(await listTagCatalog()).toEqual([{ key: 'x', name: 'x', count: 2 }]);
-  });
-
-  it('listDeckTags considera só o baralho pedido', async () => {
-    await db.cards.bulkAdd([
-      makeTaggedCard('a', ['x']),
-      makeTaggedCard('b', ['y'], { deckId: 'deck-2' }),
-    ]);
-
-    expect(await listDeckTags('deck-2')).toEqual([{ key: 'y', name: 'y', count: 1 }]);
   });
 });
 

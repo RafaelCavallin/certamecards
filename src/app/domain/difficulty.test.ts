@@ -12,6 +12,7 @@ import {
   type DifficultCard,
   type ErrorHistory,
 } from './difficulty';
+import { UNTAGGED_KEY } from './tag-filter';
 
 const NOW = Date.parse('2026-03-09T12:00:00Z');
 
@@ -134,9 +135,27 @@ describe('filtro por etiqueta nos difíceis', () => {
     expect(filterDifficultByTags(list, ['outra'])).toEqual([]);
   });
 
-  it('conta as etiquetas só entre os difíceis', () => {
+  it('conta as etiquetas só entre os difíceis, com "Sem etiqueta" primeiro', () => {
     const options = difficultTagOptions(list);
 
-    expect(options.map((option) => [option.name, option.count])).toEqual([['CESPE', 3], ['FGV', 2]]);
+    expect(options.map((option) => [option.name, option.count])).toEqual([
+      ['Sem etiqueta', 1],
+      ['CESPE', 3],
+      ['FGV', 2],
+    ]);
+  });
+
+  it('"Sem etiqueta" sozinha traz só os sem etiqueta', () => {
+    const result = filterDifficultByTags(list, [UNTAGGED_KEY]);
+
+    expect(result.map((entry) => entry.card.id)).toEqual(['none']);
+  });
+
+  it('"Sem etiqueta" se soma às etiquetas escolhidas (OU)', () => {
+    expect(filterDifficultByTags(list, ['fgv', UNTAGGED_KEY])).toHaveLength(3);
+  });
+
+  it('não oferece "Sem etiqueta" quando nenhum difícil tem etiqueta', () => {
+    expect(difficultTagOptions([item('a', []), item('b', [])])).toEqual([]);
   });
 });

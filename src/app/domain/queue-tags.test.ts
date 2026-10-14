@@ -5,6 +5,7 @@ import { makeTaggedCard } from '../../test/card-fixtures';
 import { db, type Card, type Deck } from './db';
 import { buildQueue } from './queue';
 import { tagQueueCounts } from './queue-tags';
+import { UNTAGGED_KEY } from './tag-filter';
 
 const NOW = new Date('2026-03-09T12:00:00Z');
 const DAY = 86_400_000;
@@ -49,6 +50,16 @@ describe('buildQueue com filtro de etiquetas', () => {
     const none = await buildQueue(deckWith(), { tagKeys: [] });
 
     expect([only.length, either.length, none.length]).toEqual([5, 9, 40]);
+  });
+
+  it('"Sem etiqueta" traz só os sem etiqueta e se soma às outras chaves', async () => {
+    await db.cards.bulkAdd([...manyDue('c', 5, ['CESPE']), ...manyDue('s', 3, [])]);
+
+    const untagged = await buildQueue(deckWith(), { tagKeys: [UNTAGGED_KEY] });
+    const either = await buildQueue(deckWith(), { tagKeys: ['cespe', UNTAGGED_KEY] });
+
+    expect(untagged.map((card) => card.id)).toEqual(['s0', 's1', 's2']);
+    expect(either).toHaveLength(8);
   });
 
   it('aplica o limite de novos depois do filtro', async () => {

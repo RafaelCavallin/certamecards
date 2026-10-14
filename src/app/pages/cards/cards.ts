@@ -14,7 +14,7 @@ import { DeckStore } from '../../state/deck-store';
 import { deleteCards, liveCards } from '../../domain/cards';
 import { searchCards } from '../../domain/card-search';
 import { summarizeTags } from '../../domain/tag-catalog';
-import { filterCardsByTags } from '../../domain/tag-filter';
+import { countUntagged, filterCardsByTags, withUntaggedOption } from '../../domain/tag-filter';
 import type { Card } from '../../domain/db';
 
 @Component({
@@ -33,7 +33,10 @@ export class Cards {
   readonly selected = signal<Set<string>>(new Set());
 
   readonly selectedTags = signal<string[]>([]);
-  readonly tagOptions = computed(() => summarizeTags(this.cards() ?? []));
+  readonly tagOptions = computed(() => {
+    const cards = this.cards() ?? [];
+    return withUntaggedOption(summarizeTags(cards), countUntagged(cards));
+  });
   readonly activeTags = computed(() => {
     const known = new Set(this.tagOptions().map((option) => option.key));
     return this.selectedTags().filter((key) => known.has(key));

@@ -17,7 +17,7 @@ A fila ganha um filtro opcional. `buildQueue` é refatorada em “carregar o con
 | domain | `card-limits.ts` | mod. | `TAGS_MAX = 20`, `TAG_MAX_LENGTH = 40`. `validateCardContent` passa a checar `tags.length ≤ 20`. |
 | domain | `tags.ts` | novo | `normalizeTag`, `tagKey`, `splitTagInput`, `normalizeTags` (dedup pela chave, a primeira vence, descarta inválidas, corta em 20), `addTagInput` (resultado discriminado para o campo). |
 | domain | `tag-catalog.ts` | novo | `summarizeTags(cards)` → `TagSummary[]`; `listTagCatalog()` (todos os baralhos vivos); `listDeckTags(deckId)`; `suggestTags`; `compareTagNames` (ordem alfabética sem acento). |
-| domain | `tag-filter.ts` | novo | `hasAllTags`, `hasAnyTag`, `filterCardsByTags` (E, para a lista). |
+| domain | `tag-filter.ts` | novo | `hasAnyTag`, `filterCardsByTags` (OU, como a fila e os Difíceis), `UNTAGGED_KEY`, `withUntaggedOption`. |
 | domain | `tag-chips.ts` | novo | `visibleTagChips(tags, budget)` → `{ shown, hiddenCount }` para o “+N” da lista (RF48c). |
 | domain | `tag-bulk.ts` | novo | `planTagRename` (puro: `rename` / `merge` / `invalid`), `renameTag`, `deleteTag`, numa transação. |
 | domain | `study-tags.ts` | novo | Puro: `parseStudyTags`, `reconcileStudyTags`, `renameStudyTag`, `removeStudyTag` sobre `StudyTagsByDeck`. |
@@ -44,7 +44,7 @@ A fila ganha um filtro opcional. `buildQueue` é refatorada em “carregar o con
 ```
 card-form ─ tag-input ─(liveQuerySignal)─ listTagCatalog ─┐
     └─ onSubmit ─ createCard/updateCardContent ─ normalizeTags ─ Dexie (hook: dirty=1)
-cards ─ liveCards + filterCardsByTags(E) + searchCards ─ card-row ─ tag-chips
+cards ─ liveCards + filterCardsByTags(OU) + searchCards ─ card-row ─ tag-chips
 home ─ tag-filter-store.keysFor(deck) ─ buildQueue(deck, {tagKeys}) (OU) + tagQueueCounts
 review-session ─ tag-filter-store ─ buildQueue(deck, {tagKeys})
 tags page ─(liveQuerySignal) listTagCatalog ─ planTagRename ─ renameTag/deleteTag (1 transação)
@@ -71,12 +71,11 @@ addTagInput(input: TagInputRequest): TagInputResult
 // domain/tag-catalog.ts
 summarizeTags(cards: readonly Card[]): TagSummary[]
 listTagCatalog(): Promise<TagSummary[]>            // cartões vivos de baralhos vivos
-listDeckTags(deckId: string): Promise<TagSummary[]>
 suggestTags(input: SuggestInput): TagSummary[]     // começo de palavra, por contagem desc.
 
 // domain/tag-filter.ts
-filterCardsByTags(cards: readonly Card[], keys: readonly string[]): Card[]  // E
-hasAnyTag(card: Card, keys: ReadonlySet<string>): boolean                   // OU
+filterCardsByTags(cards: readonly Card[], keys: readonly string[]): Card[]  // OU
+hasAnyTag(card: Card, keys: ReadonlySet<string>): boolean                   // OU; UNTAGGED_KEY casa cartão sem etiqueta
 ```
 
 ```ts
@@ -253,7 +252,7 @@ Vitest com `fake-indexeddb`, `src/test/db-helpers.ts` (`resetDb` no `afterEach`)
 | ID | Nome do caso de teste | Critérios de aceitação | Resultado esperado |
 |----|-----------------------|------------------------|--------------------|
 | TU-18 | `tagKey` e `addTagInput` com caixa e acento diferentes | CA-24, CA-E3 | “pegadinha” com “Pegadinha” nos chips não muda a lista; “cespe” com “CESPE” no catálogo vira o chip “CESPE”. |
-| TU-19 | `filterCardsByTags` (E) combinado com `searchCards` | CA-25, CA-E6 | Com “CESPE” + “Art. 37”, só os cartões com as duas; a busca por texto restringe o resultado do filtro, e a ordem de aplicação não muda o resultado. |
+| TU-19 | `filterCardsByTags` (OU) combinado com `searchCards` | CA-25, CA-E6 | Com “CESPE” + “Art. 37”, os cartões com qualquer uma das duas; a busca por texto restringe o resultado do filtro, e a ordem de aplicação não muda o resultado. |
 | TU-20 | `buildQueue` com filtro de etiquetas (OU) e limites depois do filtro | CA-26, CA-E7 | 40 na fila, 12 com “CESPE” → 12; “CESPE, FGV” com 5/4/2 → 11; com 30 novos filtrados e limite 10 → ≤ 10 novos. |
 | TU-E1 | `normalizeTag` e `splitTagInput` com espaços, vírgulas vazias e quebras de linha | CA-E1 | “ CESPE ,  Art.   37 , , pegadinha” → `["CESPE", "Art. 37", "pegadinha"]`. |
 | TU-E2 | `addTagInput` nos limites 20 e 40 | CA-E2 | 21ª rejeitada com `limit`; 41 caracteres rejeitada com `too-long`; 40 caracteres aceita; colar 3 com 19 chips adiciona 1. |

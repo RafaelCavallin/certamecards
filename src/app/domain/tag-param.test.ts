@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { UNTAGGED_KEY } from './tag-filter';
 import { parseTagParam, serializeTagParam } from './tag-param';
 
 describe('parseTagParam', () => {
@@ -9,6 +10,10 @@ describe('parseTagParam', () => {
   it('normaliza, descarta vazios e duplicatas', () => {
     expect(parseTagParam('CESPE,,cespe, fgv ')).toEqual(['cespe', 'fgv']);
   });
+
+  it('preserva a chave de "Sem etiqueta" e trata a minúscula como etiqueta comum', () => {
+    expect(parseTagParam(`${UNTAGGED_KEY},sem-etiqueta`)).toEqual([UNTAGGED_KEY, 'sem-etiqueta']);
+  });
 });
 
 describe('serializeTagParam', () => {
@@ -17,7 +22,7 @@ describe('serializeTagParam', () => {
   });
 
   it('preserva as chaves ida e volta', () => {
-    const keys = ['cespe', 'art. 37'];
+    const keys = ['cespe', 'art. 37', UNTAGGED_KEY];
 
     expect(parseTagParam(serializeTagParam(keys))).toEqual(keys);
   });

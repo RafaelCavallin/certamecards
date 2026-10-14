@@ -5,6 +5,7 @@ import { makeDeck, makeTaggedCard } from '../../test/card-fixtures';
 import { db, type Card } from './db';
 import { loadHomeSnapshot } from './home-data';
 import { homeView } from './home-summary';
+import { UNTAGGED_KEY } from './tag-filter';
 
 const NOW = new Date('2026-03-09T12:00:00Z');
 const DAY = 86_400_000;
@@ -31,7 +32,31 @@ describe('loadHomeSnapshot', () => {
 
     expect(snapshot.queueSize).toBe(3);
     expect(snapshot.filter).toBeNull();
-    expect(snapshot.options.map((option) => [option.key, option.count])).toEqual([['cespe', 2], ['fgv', 1]]);
+    expect(snapshot.options.map((option) => [option.key, option.count])).toEqual([
+      [UNTAGGED_KEY, 1],
+      ['cespe', 2],
+      ['fgv', 1],
+    ]);
+  });
+
+  it('filtra por "Sem etiqueta", mantém a chave para reconciliar e mostra o nome', async () => {
+    await db.cards.bulkAdd([dueCard('a', ['CESPE']), dueCard('b', []), dueCard('c', [])]);
+
+    const snapshot = await loadHomeSnapshot(makeDeck('deck-1'), [UNTAGGED_KEY]);
+
+    expect(snapshot.queueSize).toBe(2);
+    expect(snapshot.existingKeys.has(UNTAGGED_KEY)).toBe(true);
+    expect(snapshot.filter).toEqual({ names: ['Sem etiqueta'], unfilteredSize: 3 });
+  });
+
+  it('não oferece "Sem etiqueta" quando o baralho não tem etiquetas', async () => {
+    await db.cards.bulkAdd([dueCard('a', []), dueCard('b', [])]);
+
+    const snapshot = await loadHomeSnapshot(makeDeck('deck-1'), [UNTAGGED_KEY]);
+
+    expect(snapshot.options).toEqual([]);
+    expect(snapshot.queueSize).toBe(2);
+    expect(snapshot.filter).toBeNull();
   });
 
   it('com filtro conta só os filtrados e informa o total sem filtro', async () => {

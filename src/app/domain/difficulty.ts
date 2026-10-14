@@ -1,7 +1,7 @@
 import { DAY } from './dates';
 import type { Card, ReviewLog } from './db';
 import { summarizeTags } from './tag-catalog';
-import { hasAnyTag } from './tag-filter';
+import { countUntagged, hasAnyTag, withUntaggedOption } from './tag-filter';
 import type { TagSummary } from './tags';
 
 export const LAPSE_WEIGHT = 2;
@@ -87,5 +87,6 @@ export function filterDifficultByTags(list: readonly DifficultCard[], keys: read
 }
 
 export function difficultTagOptions(list: readonly DifficultCard[]): TagSummary[] {
-  return summarizeTags(list.map((item) => item.card));
+  const cards = list.map((item) => item.card);
+  return withUntaggedOption(summarizeTags(cards), countUntagged(cards));
 }

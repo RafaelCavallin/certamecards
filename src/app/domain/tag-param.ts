@@ -1,3 +1,4 @@
+import { UNTAGGED_KEY } from './tag-filter';
 import { tagKey } from './tags';
 
 export const TAG_PARAM = 'etiquetas';
@@ -7,7 +8,7 @@ export function parseTagParam(raw: string | null | undefined): string[] {
   if (!raw) return [];
   const keys = raw
     .split(TAG_PARAM_SEPARATOR)
-    .map(tagKey)
+    .map((token) => (token === UNTAGGED_KEY ? token : tagKey(token)))
     .filter((key) => key.length > 0);
   return [...new Set(keys)];
 }
