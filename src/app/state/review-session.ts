@@ -1,16 +1,18 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { DeckStore } from './deck-store';
+import { ImagePrefetch } from './image-prefetch';
+import { TagFilterStore } from './tag-filter-store';
 import { buildQueue } from '../domain/queue';
 import { answer as answerCard, type BinaryRating } from '../domain/scheduler';
 import type { Card } from '../domain/db';
 
-/**
- * Estado da sessão de revisão. Provida na rota `revisar` (não é root): a fila e o índice
- * não podem sobreviver a uma navegação para fora da revisão.
- */
+const PREFETCH_AHEAD = 3;
+
 @Injectable()
 export class ReviewSession {
   private readonly deckStore = inject(DeckStore);
+  private readonly tagFilter = inject(TagFilterStore);
+  private readonly prefetch = inject(ImagePrefetch);
   private readonly queueSignal = signal<Card[] | null>(null);
   private readonly indexSignal = signal(0);
   private readonly answeringSignal = signal(false);
@@ -31,12 +33,16 @@ export class ReviewSession {
       const deck = this.deckStore.deck();
       if (!deck || loaded) return;
       loaded = true;
-      void buildQueue(deck).then((queue) => this.queueSignal.set(queue));
+      void buildQueue(deck, { tagKeys: this.tagFilter.keysFor(deck.id) }).then((queue) => this.queueSignal.set(queue));
     });
     effect(() => {
       this.currentId();
       this.revealed.set(false);
       this.shownAt = Date.now();
+    });
+    effect(() => {
+      const upcoming = this.queueSignal()?.slice(this.indexSignal(), this.indexSignal() + PREFETCH_AHEAD) ?? [];
+      void this.prefetch.request(upcoming.map((card) => card.id), 'queue');
     });
   }
 

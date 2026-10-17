@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { resetDb } from '../../test/db-helpers';
-import { createCard, deleteCards, liveCards, updateCardContent } from './cards';
+import { createCard, deleteCards, getCard, liveCards, updateCardContent } from './cards';
 import { db } from './db';
 import { EMPTY_CARD_MARKS, type CardMarks } from './text-marks';
 
@@ -19,6 +19,7 @@ describe('createCard', () => {
       back: 'CF/88, art. 82.',
       notes: '',
       marks: EMPTY_CARD_MARKS,
+      tags: [],
     });
 
     expect(card.front).toBe('O mandato é de quatro anos.');
@@ -39,6 +40,7 @@ describe('updateCardContent', () => {
       back: 'Verso original',
       notes: '',
       marks: EMPTY_CARD_MARKS,
+      tags: [],
     });
     const before = (await db.cards.get(created.id))!;
 
@@ -47,6 +49,7 @@ describe('updateCardContent', () => {
       back: 'Verso corrigido',
       notes: 'Nova nota',
       marks: marksWithEmphasis,
+      tags: [],
     });
 
     const after = (await db.cards.get(created.id))!;
@@ -64,8 +67,8 @@ describe('updateCardContent', () => {
 
 describe('deleteCards', () => {
   it('tombstona todos os ids informados', async () => {
-    const a = await createCard({ deckId: 'd1', front: 'A', back: 'A', notes: '', marks: EMPTY_CARD_MARKS });
-    const b = await createCard({ deckId: 'd1', front: 'B', back: 'B', notes: '', marks: EMPTY_CARD_MARKS });
+    const a = await createCard({ deckId: 'd1', front: 'A', back: 'A', notes: '', marks: EMPTY_CARD_MARKS, tags: [] });
+    const b = await createCard({ deckId: 'd1', front: 'B', back: 'B', notes: '', marks: EMPTY_CARD_MARKS, tags: [] });
 
     await deleteCards([a.id, b.id]);
 
@@ -74,11 +77,27 @@ describe('deleteCards', () => {
   });
 });
 
+describe('getCard', () => {
+  it('devolve o cartão pelo id', async () => {
+    const created = await createCard({ deckId: 'd1', front: 'A', back: 'A', notes: '', marks: EMPTY_CARD_MARKS, tags: [] });
+
+    const found = await getCard(created.id);
+
+    expect(found?.id).toBe(created.id);
+  });
+
+  it('devolve undefined para id inexistente', async () => {
+    const found = await getCard('id-inexistente');
+
+    expect(found).toBeUndefined();
+  });
+});
+
 describe('liveCards', () => {
   it('devolve só os cartões vivos do baralho pedido', async () => {
-    const alive = await createCard({ deckId: 'd1', front: 'A', back: 'A', notes: '', marks: EMPTY_CARD_MARKS });
-    const dead = await createCard({ deckId: 'd1', front: 'B', back: 'B', notes: '', marks: EMPTY_CARD_MARKS });
-    await createCard({ deckId: 'outro', front: 'C', back: 'C', notes: '', marks: EMPTY_CARD_MARKS });
+    const alive = await createCard({ deckId: 'd1', front: 'A', back: 'A', notes: '', marks: EMPTY_CARD_MARKS, tags: [] });
+    const dead = await createCard({ deckId: 'd1', front: 'B', back: 'B', notes: '', marks: EMPTY_CARD_MARKS, tags: [] });
+    await createCard({ deckId: 'outro', front: 'C', back: 'C', notes: '', marks: EMPTY_CARD_MARKS, tags: [] });
     await deleteCards([dead.id]);
 
     const ids = await liveCards('d1').primaryKeys();

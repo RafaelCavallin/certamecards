@@ -1,0 +1,19 @@
+:root[data-theme='light'] {
+  --ink: #f7f6fb;
+  --surface: #ffffff;
+  --line: #dcd9ec;
+  --text: #1c1b36;
+  --muted: #5e5c82;
+  --signal: #8c5b00;
+  --on-signal: #ffffff;
+  --hit: #076649;
+  --miss: #a31c46;
+  --edge: #8a87ad;
+  --placeholder: #6e6c91;
+  --placeholder-strong: #6e6c91;
+  --scrim: color-mix(in oklab, #1c1b36 40%, transparent);
+  --heat-0: #dcd9ec;
+  --heat-1: #a9a6c8;
+  --heat-2: #b97a12;
+  --heat-3: #6e4700;
+}

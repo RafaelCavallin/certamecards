@@ -1,0 +1,20 @@
+<fieldset>
+  <legend class="font-mono text-label uppercase tracking-wider text-muted">Aparência</legend>
+  <div class="mt-4 flex gap-1 rounded-xl border border-edge p-1">
+    @for (option of options; track option.value) {
+      <label
+        class="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-lg px-2 py-2 text-center text-meta transition has-[:checked]:bg-signal has-[:checked]:text-on-signal has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-signal"
+      >
+        <input
+          type="radio"
+          name="theme"
+          class="sr-only"
+          [value]="option.value"
+          [checked]="store.preference() === option.value"
+          (change)="store.setPreference(option.value)"
+        />
+        {{ option.label }}
+      </label>
+    }
+  </div>
+</fieldset>

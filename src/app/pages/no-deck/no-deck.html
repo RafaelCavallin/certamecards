@@ -4,12 +4,13 @@
 
   <div class="mt-6 flex w-full gap-2">
     <input
+      #nameInput
       [value]="name()"
-      (input)="name.set($any($event.target).value)"
+      (input)="name.set(nameInput.value)"
       (keydown.enter)="create()"
       [disabled]="busy()"
       placeholder="Nome do baralho"
-      class="min-w-0 flex-1 rounded-xl border border-line bg-surface px-4 py-3 text-body outline-none focus:border-signal disabled:opacity-60"
+      class="min-w-0 flex-1 rounded-xl border border-edge bg-surface px-4 py-3 text-body outline-none focus:border-signal disabled:opacity-60"
     />
     <button
       type="button"
@@ -25,4 +26,9 @@
   @if (error(); as message) {
     <p class="mt-3 text-meta text-miss">{{ message }}</p>
   }
+
+  <p class="mt-8 text-meta text-muted">Já usa o Anki?</p>
+  <a routerLink="/importar" class="mt-2 inline-flex min-h-11 items-center rounded-xl border border-edge px-5 py-3 text-body hover:border-signal">
+    Importar do Anki
+  </a>
 </div>

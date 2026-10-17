@@ -1,4 +1,4 @@
-<div class="mx-auto flex min-h-[70vh] max-w-2xl flex-col justify-center px-5 py-10">
+<div class="mx-auto flex min-h-[70vh] max-w-2xl flex-col justify-center px-5 py-10 xl:max-w-5xl xl:px-10">
   @if (view(); as v) {
     @if (v.kind === 'loading') {
       <div aria-hidden="true">
@@ -22,37 +22,62 @@
         Criar primeiro cartão
       </button>
     } @else {
-      <p class="font-mono text-label uppercase tracking-[0.25em] text-signal">Hoje</p>
-      <p class="mt-5 font-display text-front-long tabular-nums sm:text-front">
-        {{ v.queueSize ?? 0 }}
-      </p>
-      <p class="mt-3 text-body text-muted">
-        {{ v.queueSize === 1 ? 'cartão para revisar' : 'cartões para revisar'
-        }}{{ v.queueSize ? ' · cerca de ' + v.minutes + ' min' : '' }}
-      </p>
-      <button
-        type="button"
-        (click)="goStudy()"
-        [disabled]="!v.queueSize"
-        [attr.aria-busy]="v.queueSize === null"
-        class="mt-10 self-start rounded-full bg-signal px-8 py-4 text-meta font-medium text-on-signal transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-surface disabled:text-muted"
-      >
-        {{ studyLabel() }}
-      </button>
+      <div class="xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start xl:gap-x-16">
+        <section class="flex min-w-0 flex-col" aria-label="Hoje">
+          <p class="font-mono text-label uppercase tracking-[0.25em] text-signal">Hoje</p>
+          @if (v.kind === 'filtered-empty') {
+            <p class="mt-5 font-display text-front-long tabular-nums sm:text-front">0</p>
+            <p class="mt-3 break-words text-body text-muted" role="status" aria-live="polite">
+              Nenhum cartão de {{ v.filter.names.join(', ') }} para hoje. Sem o filtro, são
+              {{ v.filter.unfilteredSize }}.
+            </p>
+            <button
+              type="button"
+              (click)="clearFilter()"
+              class="mt-10 min-h-11 self-start rounded-full bg-signal px-8 py-4 text-meta font-medium text-on-signal transition hover:brightness-110"
+            >
+              Limpar filtro
+            </button>
+          } @else {
+            <p class="mt-5 font-display text-front-long tabular-nums sm:text-front">
+              {{ v.queueSize ?? 0 }}
+            </p>
+            <p class="mt-3 text-body text-muted" aria-live="polite">
+              {{ v.queueSize === 1 ? 'cartão para revisar' : 'cartões para revisar'
+              }}{{ v.queueSize ? ' · cerca de ' + v.minutes + ' min' : '' }}
+            </p>
+            <button
+              type="button"
+              (click)="goStudy()"
+              [disabled]="!v.queueSize"
+              [attr.aria-busy]="v.queueSize === null"
+              class="mt-10 self-start rounded-full bg-signal px-8 py-4 text-meta font-medium text-on-signal transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-surface disabled:text-muted"
+            >
+              {{ studyLabel() }}
+            </button>
+          }
+          <app-study-filter [options]="options()" [selected]="studyKeys()" (selectedChange)="setStudyKeys($event)" />
+          <app-difficult-shortcut />
 
-      @if (hasHistory()) {
-        <button
-          type="button"
-          (click)="goProgress()"
-          aria-label="Ver progresso"
-          class="mt-14 rounded-xl border border-transparent p-2 text-left transition hover:border-line"
-        >
-          <app-heatmap [counts]="byDay()" />
-          <span class="mt-2 block font-mono text-label uppercase tracking-wider text-muted"
-            >Ver progresso →</span
-          >
-        </button>
-      }
+          @if (hasHistory()) {
+            <button
+              type="button"
+              (click)="goProgress()"
+              aria-label="Ver progresso"
+              class="mt-14 min-w-0 max-w-full self-start rounded-xl border border-transparent p-2 text-left transition hover:border-line"
+            >
+              <app-heatmap [counts]="byDay()" />
+              <span class="mt-2 block font-mono text-label uppercase tracking-wider text-muted"
+                >Ver progresso →</span
+              >
+            </button>
+          }
+        </section>
+
+        @if (rhythm(); as r) {
+          <app-rhythm-panel class="mt-12 block xl:mt-0" [rhythm]="r" />
+        }
+      </div>
     }
   }
 </div>

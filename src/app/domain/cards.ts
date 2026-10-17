@@ -1,6 +1,7 @@
 import { createEmptyCard } from 'ts-fsrs';
 import { db, uid, type Card } from './db';
-import { normalizeCardMarks } from './text-marks-normalize';
+import { normalizeCardContent } from './card-content';
+import { tombstoneImagesOfCards } from './card-images';
 import type { CardMarks } from './text-marks';
 
 export interface CardContent {
@@ -8,6 +9,7 @@ export interface CardContent {
   back: string;
   notes: string;
   marks: CardMarks;
+  tags: string[];
 }
 
 export interface NewCardInput extends CardContent {
@@ -19,17 +21,22 @@ export function liveCards(deckId: string) {
   return db.cards.where('[deckId+deletedAt]').equals([deckId, 0]);
 }
 
+export async function getCard(cardId: string): Promise<Card | undefined> {
+  return db.cards.get(cardId);
+}
+
 export async function createCard(input: NewCardInput): Promise<Card> {
-  const empty = createEmptyCard(new Date());
-  const now = Date.now();
-  const card: Card = {
+  const card = newCardRecord(input, Date.now());
+  await db.cards.add(card);
+  return card;
+}
+
+export function newCardRecord(input: NewCardInput, now: number): Card {
+  const empty = createEmptyCard(new Date(now));
+  return {
     id: uid(),
     deckId: input.deckId,
-    front: input.front.trim(),
-    back: input.back.trim(),
-    notes: input.notes.trim(),
-    marks: normalizeCardMarks(input.marks),
-    tags: [],
+    ...normalizeCardContent(input),
     due: empty.due.getTime(),
     stability: empty.stability,
     difficulty: empty.difficulty,
@@ -44,8 +51,6 @@ export async function createCard(input: NewCardInput): Promise<Card> {
     deletedAt: 0,
     dirty: 1,
   };
-  await db.cards.add(card);
-  return card;
 }
 
 /**
@@ -53,17 +58,16 @@ export async function createCard(input: NewCardInput): Promise<Card> {
  * scheduler: editar o texto não é uma resposta e não pode reagendar nem
  * gerar log de revisão.
  */
-export async function updateCardContent(cardId: string, content: CardContent): Promise<void> {
-  await db.cards.update(cardId, {
-    front: content.front.trim(),
-    back: content.back.trim(),
-    notes: content.notes.trim(),
-    marks: normalizeCardMarks(content.marks),
-    updatedAt: Date.now(),
-  });
+export async function updateCardContent(cardId: string, content: CardContent): Promise<CardContent> {
+  const saved = normalizeCardContent(content);
+  await db.cards.update(cardId, { ...saved, updatedAt: Date.now() });
+  return saved;
 }
 
 export async function deleteCards(cardIds: string[]): Promise<void> {
   const now = Date.now();
-  await db.cards.where('id').anyOf(cardIds).modify({ deletedAt: now, updatedAt: now });
+  await db.transaction('rw', db.cards, db.cardImages, db.imageBlobs, async () => {
+    await db.cards.where('id').anyOf(cardIds).modify({ deletedAt: now, updatedAt: now });
+    await tombstoneImagesOfCards(cardIds, now);
+  });
 }

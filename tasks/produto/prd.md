@@ -31,15 +31,15 @@ Este documento é a referência de produto; não é executado diretamente. Cada 
 
 | Entrega | Pasta | Escopo | Estado |
 | --- | --- | --- | --- |
-| Fase 1 — MVP offline | [prd-mvp-offline](../prd-mvp-offline/prd.md) | F1–F7, F9 sem conta, F10, RF36 | PRD e TechSpec prontos |
-| Fase 1 — Conta e sincronização | [prd-conta-sync](../prd-conta-sync/prd.md) | F8 (RF37–RF41), conta em F9 | PRD e TechSpec prontos |
-| Fase 2 — Tema claro | `prd-tema-claro` | F16 | a criar ao iniciar |
-| Fase 2 — Etiquetas | `prd-etiquetas` | F11 | a criar ao iniciar |
-| Fase 2 — Difíceis e reforço | `prd-dificeis-reforco` | F12 | a criar ao iniciar |
-| Fase 2 — Importação do Anki | `prd-importacao-anki` | F14 | a criar ao iniciar |
-| Fase 2 — Meta e lembrete | `prd-meta-lembrete` | F13 | a criar ao iniciar |
-| Fase 2 — Imagens nas Notas | `prd-imagens-notas` | F17 | a criar ao iniciar |
-| Fase 2 — Backup e restauração | `prd-backup` | F15 | a criar ao iniciar |
+| Fase 1 — MVP offline | [prd-mvp-offline](../prd-mvp-offline/prd.md) | F1–F7, F9 sem conta, F10, RF36 | Concluída — QA aprovado |
+| Fase 1 — Conta e sincronização | [prd-conta-sync](../prd-conta-sync/prd.md) | F8 (RF37–RF41), conta em F9 | Concluída — QA aprovado |
+| Fase 2 — Tema claro | [prd-tema-claro](../prd-tema-claro/prd.md) | F16 | Concluída — QA aprovado |
+| Fase 2 — Etiquetas | [prd-etiquetas](../prd-etiquetas/prd.md) | F11 | Concluída — QA aprovado |
+| Fase 2 — Difíceis e reforço | [prd-dificeis-reforco](../prd-dificeis-reforco/prd.md) | F12 | Concluída — QA aprovado com ressalva de desempenho |
+| Fase 2 — Importação do Anki | [prd-importacao-anki](../prd-importacao-anki/prd.md) | F14 | Concluída — QA aprovado |
+| Fase 2 — Meta e lembrete | [prd-meta-lembrete](../prd-meta-lembrete/prd.md) | F13 | PRD pronto |
+| Fase 2 — Imagens nas Notas | [prd-imagens-notas](../prd-imagens-notas/prd.md) | F17 | Concluída — QA aprovado com ressalvas (aparelho real) |
+| Fase 2 — Backup e restauração | [prd-backup](../prd-backup/prd.md) | F15 | Concluída — QA aprovado com ressalvas (desempenho não medido) |
 
 A ordem da Fase 2 é a da seção “Sequenciamento do desenvolvimento” da [TechSpec](techspec.md). Uma mudança de produto que afete mais de uma entrega é feita primeiro aqui e depois refletida nos recortes.
 
@@ -295,7 +295,7 @@ Esquemas, tabelas fotografadas e mapas mentais anexados ao cartão.
 - **Estilos**: os mesmos tokens de cor, fontes e padrões visuais do Lingo (Tailwind), com a escala tipográfica aumentada descrita acima.
 - **Algoritmo**: FSRS com retenção alvo de 0,90 e avaliação binária.
 - **Segurança e privacidade**: dados pessoais de estudo; isolamento por usuário garantido no banco (RLS, chave composta `user_id + id`); nenhuma chave secreta no bundle; só email e nome são coletados.
-- **Ambientes isolados**: desenvolvimento nunca aponta para o banco de produção (mesmo modelo local / preview / produção do Lingo).
+- **Ambientes isolados**: desenvolvimento usa Supabase local, preview não configura sincronização e só produção aponta para o banco remoto.
 - **Desempenho**: primeira carga ≤ 3 s em 4G no celular; resposta a um cartão ≤ 150 ms; lista fluida com 5.000 cartões; sincronização paginada (500 linhas por página).
 
 ## Fora do escopo

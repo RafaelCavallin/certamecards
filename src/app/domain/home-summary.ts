@@ -1,12 +1,19 @@
+export interface HomeFilterInfo {
+  names: string[];
+  unfilteredSize: number;
+}
+
 export type HomeView =
   | { kind: 'loading' }
   | { kind: 'onboarding' }
-  | { kind: 'today'; queueSize: number | null; minutes: number };
+  | { kind: 'filtered-empty'; filter: HomeFilterInfo }
+  | { kind: 'today'; queueSize: number | null; minutes: number; filter: HomeFilterInfo | null };
 
 export interface HomeViewInput {
   total: number | undefined;
   queueSize: number | null;
   minutes: number;
+  filter?: HomeFilterInfo | null;
 }
 
 /**
@@ -17,7 +24,9 @@ export interface HomeViewInput {
 export function homeView(input: HomeViewInput): HomeView {
   if (input.total === undefined) return { kind: 'loading' };
   if (input.total === 0) return { kind: 'onboarding' };
-  return { kind: 'today', queueSize: input.queueSize, minutes: input.minutes };
+  const filter = input.filter ?? null;
+  if (filter && input.queueSize === 0) return { kind: 'filtered-empty', filter };
+  return { kind: 'today', queueSize: input.queueSize, minutes: input.minutes, filter };
 }
 
 /**

@@ -1,56 +1,75 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  input,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, computed, effect, input, signal, viewChild } from '@angular/core';
+import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
+import { ImageGalleryEditor } from '../image-gallery-editor/image-gallery-editor';
 import { MarkableField } from '../markable-field/markable-field';
-import { charCounterLabel } from '../../domain/char-counter';
+import { TagInput } from '../tag-input/tag-input';
+import { CardFormFields } from './card-form-fields';
 import { BACK_MAX, FRONT_MAX, NOTES_MAX, validateCardContent } from '../../domain/card-limits';
-import type { CardContent } from '../../domain/cards';
-import type { Marks } from '../../domain/text-marks';
+import { emptyDraft, hasDraftChanges, type CardDraft } from '../../domain/card-draft';
+import { waitingImagesLabel } from '../../domain/image-labels';
+import { pastedImages } from '../../domain/image-input';
 
-const EMPTY_MARKS: Marks = { cloze: [], emphasis: [] };
-
-/** Formulário compartilhado por criar e editar um cartão — quem chama decide o que fazer com o conteúdo salvo. */
 @Component({
   selector: 'app-card-form',
-  imports: [MarkableField],
+  imports: [MarkableField, TagInput, ImageGalleryEditor, ConfirmDialog],
   templateUrl: './card-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardForm {
   readonly title = input.required<string>();
   readonly submitLabel = input.required<string>();
-  readonly initial = input<CardContent | null>(null);
-  readonly onSubmit = input.required<(content: CardContent) => Promise<void>>();
+  readonly initial = input<CardDraft | null>(null);
+  readonly onSubmit = input.required<(draft: CardDraft) => Promise<void>>();
   readonly frontMax = FRONT_MAX;
   readonly backMax = BACK_MAX;
   readonly notesMax = NOTES_MAX;
-  readonly front = signal('');
-  readonly back = signal('');
-  readonly notes = signal('');
-  readonly frontMarks = signal<Marks>(EMPTY_MARKS);
-  readonly backMarks = signal<Marks>(EMPTY_MARKS);
-  readonly notesMarks = signal<Marks>(EMPTY_MARKS);
+  readonly fields = new CardFormFields();
   readonly error = signal<string | null>(null);
   readonly saving = signal(false);
+  private readonly baseline = signal<CardDraft>(emptyDraft());
   private readonly frontField = viewChild<MarkableField>('frontField');
-  readonly ready = computed(() => this.front().trim().length > 0 && this.back().trim().length > 0);
-  readonly frontCounter = computed(() => charCounterLabel(this.front().length, this.frontMax));
-  readonly backCounter = computed(() => charCounterLabel(this.back().length, this.backMax));
-  readonly notesCounter = computed(() => charCounterLabel(this.notes().length, this.notesMax));
+  private readonly gallery = viewChild.required(ImageGalleryEditor);
+  private readonly discardDialog = viewChild.required(ConfirmDialog);
+  readonly submitText = computed(() => {
+    if (this.saving()) return 'Salvando…';
+    const waiting = this.fields.pending();
+    return waiting > 0 ? waitingImagesLabel(waiting) : this.submitLabel();
+  });
 
   constructor() {
-    effect(() => this.loadInitial(this.initial()));
+    effect(() => {
+      const draft = this.initial();
+      if (!draft) return;
+      this.fields.load(draft);
+      this.baseline.set(draft);
+    });
+  }
+
+  hasChanges(): boolean {
+    return hasDraftChanges(this.baseline(), this.fields.build());
+  }
+
+  async confirmDiscard(): Promise<boolean> {
+    return !this.hasChanges() || this.discardDialog().ask();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  warnBeforeUnload(event: BeforeUnloadEvent): void {
+    if (this.hasChanges()) event.preventDefault();
+  }
+
+  @HostListener('paste', ['$event'])
+  onPaste(event: ClipboardEvent): void {
+    const data = event.clipboardData;
+    const images = pastedImages({ types: [...(data?.types ?? [])], files: [...(data?.files ?? [])] });
+    if (images.length === 0) return;
+    event.preventDefault();
+    void this.gallery().addFiles(images);
   }
 
   async submit(): Promise<void> {
-    const content = this.buildContent();
-    const validation = validateCardContent(content);
+    const draft = this.fields.build();
+    const validation = validateCardContent(draft.content);
     if (!validation.valid) {
       this.error.set(validation.errors[0]);
       return;
@@ -58,8 +77,8 @@ export class CardForm {
     this.error.set(null);
     this.saving.set(true);
     try {
-      await this.onSubmit()(content);
-      if (!this.initial()) this.resetFields();
+      await this.onSubmit()(draft);
+      this.afterSave(draft);
     } catch (e: unknown) {
       this.error.set(e instanceof Error ? e.message : 'Não foi possível salvar o cartão.');
     } finally {
@@ -67,32 +86,13 @@ export class CardForm {
     }
   }
 
-  private loadInitial(content: CardContent | null): void {
-    if (!content) return;
-    this.front.set(content.front);
-    this.back.set(content.back);
-    this.notes.set(content.notes);
-    this.frontMarks.set(content.marks.front);
-    this.backMarks.set(content.marks.back);
-    this.notesMarks.set(content.marks.notes);
-  }
-
-  private buildContent(): CardContent {
-    return {
-      front: this.front(),
-      back: this.back(),
-      notes: this.notes(),
-      marks: { front: this.frontMarks(), back: this.backMarks(), notes: this.notesMarks() },
-    };
-  }
-
-  private resetFields(): void {
-    this.front.set('');
-    this.back.set('');
-    this.notes.set('');
-    this.frontMarks.set(EMPTY_MARKS);
-    this.backMarks.set(EMPTY_MARKS);
-    this.notesMarks.set(EMPTY_MARKS);
+  private afterSave(draft: CardDraft): void {
+    if (this.initial()) {
+      this.baseline.set(draft);
+      return;
+    }
+    this.fields.reset();
+    this.baseline.set(emptyDraft());
     this.frontField()?.focus();
   }
 }

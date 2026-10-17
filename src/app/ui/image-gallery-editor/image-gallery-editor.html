@@ -1,0 +1,62 @@
+<section class="mt-6" aria-labelledby="gallery-heading" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+  <div class="flex items-baseline justify-between">
+    <h3 id="gallery-heading" class="font-mono text-label uppercase tracking-wider text-muted">Imagens</h3>
+    <p class="text-label text-muted">{{ countLabel() }}</p>
+  </div>
+
+  @if (items().length > 0 || pending() > 0) {
+    <ul
+      cdkDropList
+      cdkDropListOrientation="mixed"
+      [cdkDropListDisabled]="touchOnly"
+      (cdkDropListDropped)="reorder($event)"
+      class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3"
+    >
+      @for (item of items(); track item.id; let i = $index) {
+        <li cdkDrag class="min-w-0">
+          <app-image-editor-item
+            [item]="item"
+            [index]="i"
+            [total]="items().length"
+            (move)="move(i, $event)"
+            (remove)="remove(item.id)"
+            (captionChange)="caption(item.id, $event)"
+          />
+        </li>
+      }
+      @for (slot of slots(); track slot) {
+        <li role="status" class="flex aspect-square items-center justify-center rounded-xl border border-dashed border-line p-3 text-center text-meta text-muted">
+          Preparando imagem…
+        </li>
+      }
+    </ul>
+  }
+
+  <div class="mt-3 flex flex-wrap gap-3">
+    <button
+      type="button"
+      (click)="fileInput.click()"
+      [disabled]="full()"
+      class="min-h-11 rounded-xl border border-edge px-5 py-3 text-body hover:border-signal disabled:text-muted disabled:opacity-60"
+    >
+      Adicionar imagem
+    </button>
+    @if (touchOnly) {
+      <button
+        type="button"
+        (click)="cameraInput.click()"
+        [disabled]="full()"
+        class="min-h-11 rounded-xl border border-edge px-5 py-3 text-body hover:border-signal disabled:text-muted disabled:opacity-60"
+      >
+        Tirar foto
+      </button>
+    }
+  </div>
+  <input #fileInput type="file" accept="image/*" multiple hidden aria-label="Escolher imagens" (change)="onPicked(fileInput)" />
+  <input #cameraInput type="file" accept="image/*" capture="environment" hidden aria-label="Tirar foto" (change)="onPicked(cameraInput)" />
+
+  <p role="status" aria-live="polite" class="mt-2 text-label text-muted">{{ notice() }}</p>
+  @if (error(); as message) {
+    <p role="alert" class="mt-1 text-meta text-miss">{{ message }}</p>
+  }
+</section>

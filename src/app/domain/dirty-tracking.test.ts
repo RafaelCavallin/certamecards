@@ -60,3 +60,37 @@ describe('trackDirty', () => {
     expect((await testDb.withDeletedAt.get('a'))!.dirty).toBe(0);
   });
 });
+
+describe('trackDirty com campos só locais', () => {
+  const localDb = new Dexie('dirty-tracking-local-test') as Dexie & { rows: EntityTable<Row & { state?: string }, 'id'> };
+  localDb.version(1).stores({ rows: 'id' });
+  trackDirty(localDb.rows, true, ['state']);
+
+  afterEach(async () => {
+    await localDb.rows.clear();
+  });
+
+  it('não suja a linha quando só o campo local muda', async () => {
+    await localDb.rows.add({ id: 'a', state: 'x', dirty: 0 });
+
+    await localDb.rows.update('a', { state: 'y' });
+
+    expect(await localDb.rows.get('a')).toMatchObject({ state: 'y', dirty: 0 });
+  });
+
+  it('suja a linha quando um campo sincronizável muda junto com o local', async () => {
+    await localDb.rows.add({ id: 'a', state: 'x', label: 'um', dirty: 0 });
+
+    await localDb.rows.update('a', { state: 'y', label: 'dois' });
+
+    expect((await localDb.rows.get('a'))?.dirty).toBe(1);
+  });
+
+  it('continua sujando a linha quando só um campo comum muda', async () => {
+    await localDb.rows.add({ id: 'a', label: 'um', dirty: 0 });
+
+    await localDb.rows.update('a', { label: 'dois' });
+
+    expect((await localDb.rows.get('a'))?.dirty).toBe(1);
+  });
+});

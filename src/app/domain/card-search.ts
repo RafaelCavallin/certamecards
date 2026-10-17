@@ -1,6 +1,5 @@
 import type { Card } from './db';
-
-const DIACRITICS_PATTERN = /[̀-ͯ]/g;
+import { DIACRITICS_PATTERN } from './tags';
 
 function normalize(text: string): string {
   return text.normalize('NFD').replace(DIACRITICS_PATTERN, '').toLowerCase();

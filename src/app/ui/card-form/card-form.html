@@ -5,15 +5,15 @@
   <div class="mt-2 normal-case tracking-normal">
     <app-markable-field
       #frontField
-      [(value)]="front"
-      [(marks)]="frontMarks"
+      [(value)]="fields.front"
+      [(marks)]="fields.frontMarks"
       [maxLength]="frontMax"
       placeholder="Ex.: o mandato do prefeito é de quatro anos."
       textClass="text-front"
     />
   </div>
 </label>
-@if (frontCounter(); as counter) {
+@if (fields.frontCounter(); as counter) {
   <p class="mt-1 text-label text-muted">{{ counter }}</p>
 }
 
@@ -21,8 +21,8 @@
   Verso
   <div class="mt-2 normal-case tracking-normal">
     <app-markable-field
-      [(value)]="back"
-      [(marks)]="backMarks"
+      [(value)]="fields.back"
+      [(marks)]="fields.backMarks"
       [allowCloze]="false"
       [maxLength]="backMax"
       placeholder="Resposta"
@@ -30,7 +30,7 @@
     />
   </div>
 </label>
-@if (backCounter(); as counter) {
+@if (fields.backCounter(); as counter) {
   <p class="mt-1 text-label text-muted">{{ counter }}</p>
 }
 
@@ -38,8 +38,8 @@
   Notas
   <div class="mt-2 normal-case tracking-normal">
     <app-markable-field
-      [(value)]="notes"
-      [(marks)]="notesMarks"
+      [(value)]="fields.notes"
+      [(marks)]="fields.notesMarks"
       [allowCloze]="false"
       [minRows]="6"
       [maxLength]="notesMax"
@@ -48,9 +48,13 @@
     />
   </div>
 </label>
-@if (notesCounter(); as counter) {
+@if (fields.notesCounter(); as counter) {
   <p class="mt-1 text-label text-muted">{{ counter }}</p>
 }
+
+<app-image-gallery-editor [(items)]="fields.gallery" [(pending)]="fields.pending" />
+
+<app-tag-input [(tags)]="fields.tags" />
 
 @if (error(); as message) {
   <p class="mt-4 text-meta text-miss">{{ message }}</p>
@@ -59,9 +63,17 @@
 <button
   type="button"
   (click)="submit()"
-  [disabled]="!ready() || saving()"
+  [disabled]="!fields.ready() || saving()"
   [attr.aria-busy]="saving()"
   class="mt-6 w-full rounded-2xl bg-signal py-4 text-body font-medium text-on-signal transition hover:brightness-110 disabled:bg-surface disabled:text-muted"
 >
-  {{ saving() ? 'Salvando…' : submitLabel() }}
+  {{ submitText() }}
 </button>
+
+<app-confirm-dialog
+  title="Descartar alterações?"
+  message="O que você mudou neste cartão ainda não foi salvo."
+  confirmLabel="Descartar"
+  cancelLabel="Continuar editando"
+  tone="neutral"
+/>

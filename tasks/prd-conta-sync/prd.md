@@ -4,7 +4,7 @@
 
 ## Visão geral
 
-Conta opcional por email e senha e sincronização por linha entre aparelhos, como no Lingo. O app continua funcionando por completo sem conta; a nuvem é uma camada oportunista sobre os dados locais que o MVP offline já grava. Termina com a Fase 1 em produção: migration aplicada no projeto `certamecards-prod` e promoção da `des` para `prod`.
+Conta opcional por email e senha e sincronização por linha entre aparelhos, como no Lingo. O app continua funcionando por completo sem conta; a nuvem é uma camada oportunista sobre os dados locais que o MVP offline já grava. Termina com a Fase 1 em produção: migration aplicada no banco remoto `certamecards` e promoção da `des` para `prod`, somente após pedido explícito do Rafael.
 
 ## Objetivos
 
@@ -52,7 +52,7 @@ Igual ao documento-mãe. Fluxos novos:
 
 ## Restrições técnicas de alto nível
 
-As do documento-mãe, em especial: Supabase (Postgres + Auth + RLS + RPC), isolamento por usuário no banco, nenhuma chave secreta no bundle, ambientes isolados (local / preview `certamecards-dev` / produção `certamecards-prod`), sincronização paginada em 500 linhas.
+As do documento-mãe, em especial: Supabase (Postgres + Auth + RLS + RPC), isolamento por usuário no banco, nenhuma chave secreta no bundle, ambientes isolados (Supabase local no desenvolvimento / preview sem sincronização / banco remoto `certamecards` só em produção), sincronização paginada em 500 linhas.
 
 ## Fora do escopo
 

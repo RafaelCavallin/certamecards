@@ -69,14 +69,12 @@ export async function computeStats(deck: Deck): Promise<Stats> {
     liveCards(deck.id).toArray(),
     db.cards.toArray(),
   ]);
-
   const byDay = buildByDay(logs);
   const cutoff = Date.now() - RETENTION_WINDOW_DAYS * DAY;
   const recent = logs.filter((log) => log.reviewedAt >= cutoff);
   const retention30 = recent.length
     ? recent.filter((log) => log.rating === 'good').length / recent.length
     : null;
-
   return {
     retention30,
     reviews30: recent.length,

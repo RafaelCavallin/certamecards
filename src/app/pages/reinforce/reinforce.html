@@ -1,0 +1,54 @@
+@if (session.loading()) {
+  <div class="mx-auto flex min-h-[60vh] max-w-2xl items-center justify-center px-5">
+    <p class="text-meta text-muted">Montando o reforço…</p>
+  </div>
+} @else if (session.current(); as card) {
+  <app-session-shell [position]="position()" [progress]="percent()" (exit)="exit()">
+    <p
+      banner
+      class="mb-3 rounded-xl border border-signal/40 bg-signal/10 px-3 py-2 font-mono text-label text-signal"
+    >
+      Reforço — não mexe na sua agenda
+    </p>
+    @if (session.again()) {
+      <p class="mb-3 font-mono text-label uppercase tracking-wider text-miss">de novo</p>
+    }
+    <app-card-face [card]="card" [revealed]="session.revealed()" />
+    <button
+      type="button"
+      (click)="openEdit(card)"
+      class="mt-6 min-h-11 self-start font-mono text-label text-muted hover:text-signal"
+    >
+      Editar cartão
+    </button>
+    <app-answer-bar
+      footer
+      [revealed]="session.revealed()"
+      [answering]="false"
+      (reveal)="session.reveal()"
+      (again)="session.answer('again')"
+      (good)="session.answer('good')"
+    />
+  </app-session-shell>
+} @else if (session.summary(); as summary) {
+  <app-reinforce-summary
+    [summary]="summary"
+    [missed]="session.missedItems()"
+    [backParams]="backParams()"
+    (edit)="openEdit($event)"
+    (home)="goHome()"
+  />
+} @else {
+  <div class="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-start justify-center px-5">
+    <h1 class="font-display text-front">Nenhum cartão difícil para reforçar</h1>
+    <a
+      routerLink="/dificeis"
+      [queryParams]="backParams()"
+      class="mt-8 inline-flex min-h-11 items-center rounded-full bg-signal px-6 py-3 text-meta font-medium text-on-signal transition hover:brightness-110"
+    >
+      Voltar para Difíceis
+    </a>
+  </div>
+}
+
+<app-card-edit-dialog (saved)="session.replaceCard($event)" />

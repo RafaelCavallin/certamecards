@@ -6,6 +6,16 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#14142B" />
+    <script>
+      try {
+        const preference = localStorage.getItem('certamecards.theme');
+        const systemDark = matchMedia('(prefers-color-scheme: dark)').matches;
+        if (preference === 'light' || (preference === 'system' && !systemDark)) {
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.querySelector('meta[name=theme-color]').setAttribute('content', '#F7F6FB');
+        }
+      } catch {}
+    </script>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="manifest" href="manifest.webmanifest" />
   </head>

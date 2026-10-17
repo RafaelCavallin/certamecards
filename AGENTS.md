@@ -36,10 +36,10 @@ tasks/prd-<slug>/      Uma pasta por entrega: prd.md, techspec.md, tasks.md, tas
 ### Regras de dependência (quebrar = recusar a mudança)
 
 - `domain/` **nunca** importa `@angular/*`, `rxjs`, nem nada de `state/`, `pages/`, `ui/`.
-- `pages/` e `ui/` acessam dados só por `state/`. Nada de abrir o Dexie ou chamar o Supabase num componente.
+- `pages/` e `ui/` **nunca** abrem o Dexie (`db`) nem chamam o Supabase diretamente — sempre por uma função de `domain/`. Dentro dessa regra, dois padrões convivem: leitura reativa usa `state/live-query.ts#liveQuerySignal` (ou `liveQueryFor`, quando a consulta depende de um signal, como o baralho ativo) (direto do componente ou por trás de um serviço de `state/`); escrita pontual (criar, editar, excluir) chama a função de `domain/` direto do componente, sem precisar de um serviço de `state/` no meio. `state/` existe para estado **compartilhado entre páginas** (baralho ativo, contagem de pendentes no cabeçalho) — não é um intermediário obrigatório para toda leitura ou escrita.
 - `ui/` não importa `pages/`. Precisa de algo da página? Recebe por `input()`.
 - `src/test/` só é importado por arquivos `*.test.ts`.
-- Dexie vira signal em um único lugar: `state/live-query.ts`.
+- Dexie vira signal em um único lugar: as funções `liveQuerySignal` e `liveQueryFor` de `state/live-query.ts` — nenhum outro arquivo chama `liveQuery()` do Dexie diretamente.
 
 ### Regras de domínio que não se negociam
 
@@ -68,13 +68,25 @@ Nomes de arquivo em kebab-case sem sufixo (`home.ts`, não `home.component.ts`),
 - `input()`, `output()`, `model()`, `signal`, `computed`; `inject()` em vez de construtor; `@Service` para serviços root.
 - Controle de fluxo `@if`/`@for`/`@switch` nos templates; nunca `*ngIf`/`*ngFor`.
 - Rotas com `loadComponent` para `progress`; guards funcionais `requireDeck`/`requireNoDeck`.
+- Parâmetros de query chegam à página por `input()` com o mesmo nome (`withComponentInputBinding()` ligado em `app.config.ts`); não crie `input()` homônimo de um parâmetro de rota sem querer lê-lo.
 - Sem NgRx. RxJS só nas bordas: `state/live-query.ts`, eventos do `Router` no `sync-store` e `SwUpdate`.
 
 ## Estilo visual
 
-Os tokens são os do Lingo, declarados em `src/styles.css` como variáveis CSS mapeadas por `@theme inline` (o tema claro da Fase 2 só troca as variáveis em `[data-theme='light']`): cores `ink #14142B`, `surface #1F1F3D`, `line #32325C`, `text #EDEBFF`, `muted #9C9BC4`, `signal #F4B740`, `hit #7CE2C0`, `miss #F2789B`; fontes Bricolage Grotesque (`font-display`), Inter (`font-body`), JetBrains Mono (`font-mono`), auto-hospedadas via `@fontsource-variable`.
+Os tokens são os do Lingo, declarados em `src/styles/tokens.css` (importado por `src/styles.css`) como variáveis CSS mapeadas por `@theme inline` (o tema claro da Fase 2 só troca as variáveis em `[data-theme='light']`): cores `ink #14142B`, `surface #1F1F3D`, `line #32325C`, `text #EDEBFF`, `muted #9C9BC4`, `signal #F4B740`, `hit #7CE2C0`, `miss #F2789B`; fontes Bricolage Grotesque (`font-display`), Inter (`font-body`), JetBrains Mono (`font-mono`), auto-hospedadas via `@fontsource-variable`.
 
 Texto sobre `bg-signal` usa **`text-on-signal`**, nunca `text-ink` (no tema claro `ink` é o fundo claro). Cores sempre por token — nada de hex em template.
+
+O tema claro vive em `src/styles/theme-light.css` (`:root[data-theme='light']`, importado por `styles.css`); o escuro é o `:root`. O tema é um atributo `data-theme` no `<html>`, aplicado antes da primeira pintura pelo script inline do `index.html` e depois pelo `ThemeStore`. Além dos tokens acima, há tokens que existem para o contraste do tema claro — no escuro eles valem exatamente o que valiam as classes que substituíram:
+
+| Token | Use em | Nunca em |
+| --- | --- | --- |
+| `edge` (`border-edge`, `bg-edge`) | borda de campos, botões e links com cara de botão; barras comuns da previsão | divisórias, painéis e diálogos (esses ficam em `line`) |
+| `placeholder`, `placeholder-strong` (`placeholder:text-placeholder`) | texto de placeholder (antes `muted/40` e `muted/60`) | texto real |
+| `scrim` (`backdrop:bg-scrim`) | véu atrás de `<dialog>` e do menu ☰ (antes `bg-ink/60`) | `image-viewer`, que usa `viewer` |
+| `heat-0…3` (`fill-heat-N`) | níveis do heatmap, do vazio ao mais intenso | qualquer outro gráfico |
+
+Não declare `color-scheme` e não use `dark:` do Tailwind: o tema muda só pelas variáveis. Todo token novo precisa de valor nos dois temas e de teste de contraste em `src/app/domain/theme-palette.test.ts`.
 
 **Tipografia maior que no Lingo** — use sempre a escala semântica:
 
@@ -125,19 +137,19 @@ Desenvolvimento **nunca** fala com o banco de produção.
 | Ambiente | Banco | Quem usa |
 | --- | --- | --- |
 | Local | Supabase em Docker (`127.0.0.1:55321`) | `npm start` via `.env.local` |
-| Preview | projeto hospedado `certamecards-dev` | deploys da branch `des` (escopos Preview/Development da Vercel) |
-| Produção | projeto hospedado `certamecards-prod` | só a branch **`prod`** (escopo Production) |
+| Preview | nenhum banco; sincronização indisponível | deploys da branch `des` (escopo Preview da Vercel) |
+| Produção | projeto hospedado `certamecards` | só a branch **`prod`** (escopo Production) |
 
-- `prod` é produção, `des` é desenvolvimento; `main` não dispara deploy de produção. Só se promove para `prod` o que foi validado 100% no preview da `des`.
-- Os dois projetos Supabase são criados **fora** da integração Vercel Marketplace (ela injeta a mesma credencial nos três escopos).
+- `prod` é produção, `des` é desenvolvimento; `main` não dispara deploy de produção. Os fluxos offline são validados no preview da `des`; conta e sincronização são validadas contra o Supabase local antes da promoção.
+- O banco remoto `certamecards` é exclusivo da produção. Não configure `NG_APP_SUPABASE_URL` nem `NG_APP_SUPABASE_PUBLISHABLE_KEY` nos escopos Preview/Development da Vercel. Evite integração Marketplace que injete credenciais em todos os escopos.
 - Nunca `npx vercel env pull` sem argumento (sobrescreve `.env.local`). Use `npx vercel env pull .env.vercel-prod.bak`.
-- Só `NG_APP_SUPABASE_URL`, `NG_APP_SUPABASE_PUBLISHABLE_KEY` e (Fase 2) `NG_APP_VAPID_PUBLIC_KEY` vão para o bundle. **Nunca** `SUPABASE_SECRET_KEY`/`SERVICE_ROLE_KEY` com prefixo `NG_APP_`.
+- No escopo Production, só `NG_APP_SUPABASE_URL`, `NG_APP_SUPABASE_PUBLISHABLE_KEY` e (Fase 2) `NG_APP_VAPID_PUBLIC_KEY` vão para o bundle. **Nunca** `SUPABASE_SECRET_KEY`/`SERVICE_ROLE_KEY` com prefixo `NG_APP_`.
 
 ### Fluxo de uma migration nova
 
-1. Local: `npx supabase db reset`.
-2. Dev: `npx supabase db push --db-url "postgresql://postgres:<senha>@db.<ref-dev>.supabase.co:5432/postgres"`.
-3. Produção: só à mão, depois de validar no preview, e antes do deploy que depende dela.
+1. Local: `npx supabase db reset` e validação do banco e dos fluxos de conta/sync.
+2. Preview: validar os fluxos offline sem variáveis do Supabase.
+3. Produção: só com pedido explícito do Rafael, aplicar por `npx supabase db push --db-url "postgresql://postgres:<senha>@db.<ref-prod>.supabase.co:5432/postgres"`, antes do deploy que depende dela. Nunca usar `--linked`.
 
 Toda coluna nova em `cards`/`decks`/`user_settings` exige **reemitir `sync_push` inteira** na mesma migration (lista do insert, select e `on conflict`) e atualizar `domain/sync-rows.ts` — sem isso o campo é descartado em silêncio a cada push. Novas marcas de texto **não** precisam disso: moram no `marks jsonb`. `cards.tags` e `user_settings` (Fase 2) já estão na migration inicial; imagens e push têm migration e RPC próprias.
 
@@ -145,10 +157,10 @@ Toda coluna nova em `cards`/`decks`/`user_settings` exige **reemitir `sync_push`
 
 ```bash
 npx supabase functions serve send-reminders            # local
-npx supabase functions deploy send-reminders --project-ref <ref-dev>
+npx supabase functions deploy send-reminders --project-ref <ref-prod>  # só com pedido explícito do Rafael
 ```
 
-Segredos da função (`VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `REMINDERS_TOKEN`) vão com `npx supabase secrets set` no projeto certo — nunca no repositório. O `cron.schedule` do lembrete é aplicado à mão em cada ambiente (usa segredos do Vault); o SQL está na techspec.
+Segredos da função (`VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `REMINDERS_TOKEN`) vão com `npx supabase secrets set` no projeto certo — nunca no repositório. O `cron.schedule` do lembrete é aplicado à mão em cada ambiente (usa segredos do Vault); o SQL está na techspec. Não há deploy hospedado de desenvolvimento.
 
 ## Comandos de validação
 

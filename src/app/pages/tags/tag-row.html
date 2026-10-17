@@ -1,0 +1,51 @@
+@if (editing()) {
+  <label class="block font-mono text-label uppercase tracking-wider text-muted" [for]="'tag-' + tag().key">
+    Novo nome
+  </label>
+  <input
+    #field
+    [id]="'tag-' + tag().key"
+    [value]="draft()"
+    (input)="draft.set(field.value)"
+    (keydown.enter)="submit()"
+    (keydown.escape)="editCancelled.emit()"
+    class="mt-2 w-full rounded-xl border border-signal bg-surface px-4 py-3 text-body outline-none"
+  />
+  @if (error(); as message) {
+    <p role="alert" class="mt-2 text-meta text-miss">{{ message }}</p>
+  }
+  <div class="mt-2 flex gap-2">
+    <button type="button" (click)="submit()" class="min-h-11 rounded-xl bg-signal px-5 text-meta text-on-signal">
+      Salvar
+    </button>
+    <button type="button" (click)="editCancelled.emit()" class="min-h-11 px-4 text-meta text-muted hover:text-text">
+      Cancelar
+    </button>
+  </div>
+} @else {
+  <div class="flex items-center gap-2">
+    <span class="min-w-0 flex-1 break-words text-body">{{ tag().name }}</span>
+    <span class="font-mono text-label text-muted">
+      {{ tag().count }} {{ tag().count === 1 ? 'cartão' : 'cartões' }}
+    </span>
+    <button
+      type="button"
+      (click)="startEdit()"
+      [attr.aria-label]="'Renomear etiqueta ' + tag().name"
+      class="min-h-11 px-2 font-mono text-label uppercase text-muted hover:text-text"
+    >
+      Renomear
+    </button>
+    <button
+      type="button"
+      (click)="deleteAsked.emit()"
+      [attr.aria-label]="'Excluir etiqueta ' + tag().name"
+      class="min-h-11 px-2 font-mono text-label uppercase text-muted hover:text-miss"
+    >
+      Excluir
+    </button>
+  </div>
+  @if (error(); as message) {
+    <p role="alert" class="mt-1 text-meta text-miss">{{ message }}</p>
+  }
+}

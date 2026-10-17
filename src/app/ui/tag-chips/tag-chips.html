@@ -1,0 +1,14 @@
+@for (tag of visible().shown; track tag) {
+  <span
+    class="min-w-0 max-w-full shrink truncate rounded-full border border-line px-2.5 py-0.5 text-label text-muted"
+    >{{ tag }}</span
+  >
+}
+@if (visible().hiddenCount > 0) {
+  <span
+    class="shrink-0 rounded-full border border-line px-2.5 py-0.5 font-mono text-label text-muted"
+    [attr.title]="allTags()"
+    [attr.aria-label]="'Mais ' + visible().hiddenCount + ' etiquetas: ' + allTags()"
+    >+{{ visible().hiddenCount }}</span
+  >
+}

@@ -1,0 +1,76 @@
+:root {
+  --ink: #14142b;
+  --surface: #1f1f3d;
+  --line: #32325c;
+  --text: #edebff;
+  --muted: #9c9bc4;
+  --signal: #f4b740;
+  --on-signal: #14142b;
+  --hit: #7ce2c0;
+  --miss: #f2789b;
+  --viewer: #0b0b17;
+  --on-viewer: #f4f3ff;
+  --edge: var(--line);
+  --placeholder: color-mix(in oklab, var(--muted) 40%, transparent);
+  --placeholder-strong: color-mix(in oklab, var(--muted) 60%, transparent);
+  --scrim: color-mix(in oklab, var(--ink) 60%, transparent);
+  --heat-0: var(--line);
+  --heat-1: var(--muted);
+  --heat-2: color-mix(in oklab, var(--signal) 50%, transparent);
+  --heat-3: var(--signal);
+
+  --size-label: 14px;
+  --size-meta: 16px;
+  --size-body: 18px;
+  --size-back: 22px;
+  --size-front: 24px;
+  --size-front-long: 20px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --size-back: 24px;
+    --size-front: 30px;
+    --size-front-long: 24px;
+  }
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-signal: var(--signal);
+  --color-on-signal: var(--on-signal);
+  --color-hit: var(--hit);
+  --color-miss: var(--miss);
+  --color-viewer: var(--viewer);
+  --color-on-viewer: var(--on-viewer);
+  --color-edge: var(--edge);
+  --color-placeholder: var(--placeholder);
+  --color-placeholder-strong: var(--placeholder-strong);
+  --color-scrim: var(--scrim);
+  --color-heat-0: var(--heat-0);
+  --color-heat-1: var(--heat-1);
+  --color-heat-2: var(--heat-2);
+  --color-heat-3: var(--heat-3);
+
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, sans-serif;
+  --font-body: 'Inter Variable', ui-sans-serif, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  --text-label: var(--size-label);
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.04em;
+  --text-meta: var(--size-meta);
+  --text-meta--line-height: 1.5;
+  --text-body: var(--size-body);
+  --text-body--line-height: 1.7;
+  --text-back: var(--size-back);
+  --text-back--line-height: 1.5;
+  --text-front: var(--size-front);
+  --text-front--line-height: 1.35;
+  --text-front-long: var(--size-front-long);
+  --text-front-long--line-height: 1.35;
+}

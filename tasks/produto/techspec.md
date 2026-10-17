@@ -104,7 +104,7 @@ scripts/           write-env.mjs, check-type-scale.mjs
 | domain | `tags.ts` | novo | `normalizeTag` (apara, junta espaços), `tagKey` (minúsculas sem acento), `addTag` sem duplicar, `listTags` com contagem, `renameTag`/`deleteTag` em lote numa transação. |
 | domain | `queue.ts` | modificado | `buildQueue(deck, { tags })`: filtra antes de aplicar os limites de novos. |
 | domain | `difficulty.ts` | novo | `difficultyScore = 2 × lapses + erros em 30 dias`; `listDifficult(deckId)` com corte `DIFFICULT_THRESHOLD = 3`. |
-| domain | `reinforce.ts` | novo | `buildReinforceQueue({ deckId, tags, limit: 30 })`. Nenhuma escrita. |
+| domain | `reinforce.ts` | novo | `pickReinforceCards` (top 30 embaralhados) + máquina de estados da sessão (`startReinforce`, `answerReinforce`). Nenhuma escrita (lint + TI-11). Detalhe em [prd-dificeis-reforco](../prd-dificeis-reforco/techspec.md). |
 | domain | `settings.ts`, `goals.ts` | novo | Configurações `'me'` (LWW); `goalProgress(today, goal)`, `goalStreak(byDay, goal)`. |
 | domain | `reminder-ics.ts` | novo | `buildDailyIcs({ minute, timeZone })` — `RRULE:FREQ=DAILY`, `VALARM` no horário. |
 | domain | `anki-import.ts`, `anki-html.ts`, `anki-cloze.ts` | `services/ankiImport.ts` | Leitura do `.apkg` (idem Lingo) + `htmlToMarkedText` (quebras e negrito → destaque) + `expandCloze` (um cartão por cN) + etiquetas da nota. |
@@ -329,7 +329,7 @@ db.version(2).stores({                       // Fase 2 (F17)
 
 #### Esquema do banco (DDL)
 
-Arquivos: `supabase/migrations/20261001000000_schema.sql` (MVP, já com `tags` e `user_settings`) e `20261101000000_images_reminders.sql` (Fase 2). Validados em Postgres 16 com `auth` e `storage` simulados: aplicação limpa das duas; defaults via `coalesce` no push; LWW em cards, configurações e imagens (versão velha perde, nova vence); log duplicado ignorado; `DELETE`/`UPDATE` em logs negados; `marks` não-objeto, 21 etiquetas e imagem GIF rejeitados; isolamento entre usuários pela FK composta e pela política do Storage; `anon` sem `EXECUTE` nas RPCs; `users_due_for_reminder` só para `service_role`, respeitando horário, janela, meta (39 → envia, 40 → não) e entrega do dia.
+Arquivos: `supabase/migrations/20261001000000_schema.sql` (MVP, já com `tags` e `user_settings`) e `20261017000000_images_reminders.sql` (Fase 2). Validados em Postgres 16 com `auth` e `storage` simulados: aplicação limpa das duas; defaults via `coalesce` no push; LWW em cards, configurações e imagens (versão velha perde, nova vence); log duplicado ignorado; `DELETE`/`UPDATE` em logs negados; `marks` não-objeto, 21 etiquetas e imagem GIF rejeitados; isolamento entre usuários pela FK composta e pela política do Storage; `anon` sem `EXECUTE` nas RPCs; `users_due_for_reminder` só para `service_role`, respeitando horário, janela, meta (39 → envia, 40 → não) e entrega do dia.
 
 ```sql
 create table public.decks (
@@ -631,9 +631,9 @@ Edge Function (Deno) chamada a cada 15 min pelo `pg_cron`. Autentica o chamador 
 
 ## Pontos de integração
 
-- **Supabase Auth** — email e senha, confirmação por email ligada em preview/produção (Inbucket em `localhost:55324` no local). O SDK é carregado por `import()` dinâmico: quem não usa conta não baixa o bundle.
+- **Supabase Auth** — email e senha, confirmação por email nos ambientes com Supabase; preview sem conta (Inbucket em `localhost:55324` no local). O SDK é carregado por `import()` dinâmico: quem não usa conta não baixa o bundle.
 - **Supabase PostgREST/RPC** — ver endpoints. Erros de rede viram `offline` silencioso; erros de servidor aparecem como texto curto na tela de Conta/Ajustes, nunca bloqueiam o estudo.
-- **Vercel** — hospedagem estática do `dist/certamecards/browser`; `vercel.json` com rewrite SPA para `index.html` e `Cache-Control: no-cache` para `ngsw.json`/`ngsw-worker.js`. Variáveis `NG_APP_SUPABASE_URL` e `NG_APP_SUPABASE_PUBLISHABLE_KEY` por escopo (Development/Preview → projeto dev; Production → projeto prod). `scripts/write-env.mjs` roda no `prebuild`/`prestart` e grava `src/environments/env.ts`; sem as variáveis, grava `null` e o app segue sem conta (RF41).
+- **Vercel** — hospedagem estática do `dist/certamecards/browser`; `vercel.json` com rewrite SPA para `index.html` e `Cache-Control: no-cache` para `ngsw.json`/`ngsw-worker.js`. Variáveis `NG_APP_SUPABASE_URL` e `NG_APP_SUPABASE_PUBLISHABLE_KEY` só no escopo Production, apontando para o banco remoto `certamecards`; Development/Preview ficam sem elas. `scripts/write-env.mjs` roda no `prebuild`/`prestart` e grava `src/environments/env.ts`; sem as variáveis, grava `null` e o app segue sem conta (RF41).
 - **Service worker** — `@angular/service-worker` (`ng add @angular/pwa`): `ngsw-config.json` com o app shell e fontes em `prefetch`; sem `dataGroups` para o Supabase (nunca cachear API). Na Fase 2, `SwPush.requestSubscription` com a chave VAPID pública (`NG_APP_VAPID_PUBLIC_KEY`).
 - **Web Push (Fase 2)** — chaves VAPID geradas uma vez por ambiente; a privada só nos segredos da Edge Function. No iPhone, só funciona com o app instalado na tela de início (iOS 16.4+); a tela de lembrete explica isso e oferece o `.ics`.
 - **Anki (Fase 2)** — `.apkg` lido no navegador com JSZip + sql.js (wasm fora do precache, baixado só por quem importa), como no Lingo.
@@ -665,7 +665,7 @@ Runner: **Vitest** (o padrão do Angular desde a v21). A camada `domain/` roda n
 | TU-17 | `homeView` / `studyButtonLabel` | CA-11 | Estados loading/onboarding/today. |
 | TU-18 | `tagKey` / `addTag` com caixa e acento diferentes (Fase 2) | CA-24 | “pegadinha” não duplica “Pegadinha”. |
 | TU-19 | Filtro de etiquetas com E lógico + busca | CA-25 | Só cartões com todas as etiquetas. |
-| TU-20 | `buildQueue` com filtro de etiquetas | CA-26 | Fila com 12 de 40; limites de novos aplicados depois do filtro. |
+| TU-20 | `buildQueue` com filtro de etiquetas (OU entre as escolhidas) | CA-26 | Fila com 12 de 40; limites de novos aplicados depois do filtro. |
 | TU-21 | `difficultyScore` e corte em 3 | CA-28 | Pontuação 5 entra; 2 fica de fora. |
 | TU-22 | `goalProgress` e `goalStreak` | CA-30 | “28 / 40”; dia marcado ao chegar em 40. |
 | TU-23 | `buildDailyIcs` | CA-32 | `DTSTART` com `TZID`, `RRULE:FREQ=DAILY`, linhas ≤ 75 octetos, CRLF. |
@@ -734,7 +734,7 @@ Roteiros executados à mão com a skill `agent-browser` contra `ng serve` (e Sup
 5. **Revisão e Home (dias 8–9)** — `marked-text` (3 modos), `review-session`, `review` (com diálogo de edição), `home`, `heatmap`, `due-badge`.
 6. **Lista e Progresso (dia 10)** — `cards` (busca + virtualização + lote), `progress` (`bar-chart`), `settings`. **Fim do MVP offline** → deploy de preview.
 7. **Conta e sync (dias 11–14)** — migration no Supabase local, `supabase`, `sync-rows`, `sync*`, `auth` + testes; `auth-store`, `sync-store`, `account`, seção de conta em Ajustes.
-8. **QA e produção** — roteiro E2E completo no preview, migration manual em produção, promoção para `prod`.
+8. **QA e produção** — E2E de conta/sync no Supabase local e roteiros offline no preview, migration manual em produção, promoção para `prod`.
 
 **Fase 2** — cada fatia vai sozinha para produção, nesta ordem:
 
@@ -861,4 +861,4 @@ Origem (lingo, `des`) → destino (certamecards):
 - `.agents/rules/*`, `.agents/skills/criar-*`/`executar-*` → `.agents/` (adaptados)
 - `AGENTS.md` → `AGENTS.md` (reescrito)
 - Fase 2: `src/services/ankiImport.ts`, `components/AnkiNotePicker.tsx`, `screens/Import.tsx` → `domain/anki-*.ts`, `ui/anki-field-mapper`, `pages/import/`; `src/services/backup*.ts`, `screens/Restore.tsx`, `components/Restore*.tsx`, `BackupSection.tsx` → `domain/backup-*.ts`, `pages/backup/`, `ui/restore-preview` (sem `backupAudio*`)
-- Fase 2: `supabase/migrations/20261101000000_images_reminders.sql`, `supabase/functions/send-reminders/index.ts` (novos)
+- Fase 2: `supabase/migrations/20261017000000_images_reminders.sql`, `supabase/functions/send-reminders/index.ts` (novos)

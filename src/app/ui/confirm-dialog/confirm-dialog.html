@@ -1,15 +1,25 @@
 <dialog
   #dialog
-  class="rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-ink/60"
+  [attr.aria-label]="title()"
+  (close)="settle(false)"
+  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-scrim"
 >
   <div class="w-full max-w-sm p-5">
     <p class="font-display text-body">{{ title() }}</p>
     <p class="mt-2 text-meta text-muted">{{ message() }}</p>
     <div class="mt-5 flex justify-end gap-2">
-      <button type="button" class="rounded-xl px-4 py-2 text-meta text-muted hover:text-text" (click)="cancel()">
-        Cancelar
+      <button type="button" class="min-h-11 rounded-xl px-4 py-2 text-meta text-muted hover:text-text" (click)="cancel()">
+        {{ cancelLabel() }}
       </button>
-      <button type="button" class="rounded-xl bg-miss px-4 py-2 text-meta text-ink" (click)="confirm()">
+      <button
+        type="button"
+        class="min-h-11 rounded-xl px-4 py-2 text-meta"
+        [class.bg-miss]="tone() === 'danger'"
+        [class.text-ink]="tone() === 'danger'"
+        [class.bg-signal]="tone() === 'neutral'"
+        [class.text-on-signal]="tone() === 'neutral'"
+        (click)="confirm()"
+      >
         {{ confirmLabel() }}
       </button>
     </div>

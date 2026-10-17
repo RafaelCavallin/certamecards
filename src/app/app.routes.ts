@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
-import { requireDeck, requireNoDeck } from './state/guards';
-import { ReviewSession } from './state/review-session';
+import { confirmLeave, requireDeck, requireNoDeck } from './state/guards';
 
 export const routes: Routes = [
   {
@@ -11,7 +10,6 @@ export const routes: Routes = [
   {
     path: 'revisar',
     canActivate: [requireDeck],
-    providers: [ReviewSession],
     loadComponent: () => import('./pages/review/review').then((m) => m.Review),
   },
   {
@@ -22,12 +20,26 @@ export const routes: Routes = [
   {
     path: 'cartoes/novo',
     canActivate: [requireDeck],
+    canDeactivate: [confirmLeave],
     loadComponent: () => import('./pages/card-new/card-new').then((m) => m.CardNew),
   },
   {
     path: 'cartoes/:id',
     canActivate: [requireDeck],
+    canDeactivate: [confirmLeave],
     loadComponent: () => import('./pages/card-edit/card-edit').then((m) => m.CardEdit),
+  },
+  {
+    path: 'dificeis',
+    title: 'Difíceis',
+    canActivate: [requireDeck],
+    loadComponent: () => import('./pages/difficult/difficult').then((m) => m.Difficult),
+  },
+  {
+    path: 'reforco',
+    title: 'Reforço',
+    canActivate: [requireDeck],
+    loadComponent: () => import('./pages/reinforce/reinforce').then((m) => m.Reinforce),
   },
   {
     path: 'progresso',
@@ -38,6 +50,26 @@ export const routes: Routes = [
     path: 'ajustes',
     canActivate: [requireDeck],
     loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
+  },
+  {
+    path: 'ajustes/etiquetas',
+    canActivate: [requireDeck],
+    loadComponent: () => import('./pages/tags/tags').then((m) => m.Tags),
+  },
+  {
+    path: 'ajustes/backup',
+    title: 'Backup',
+    canActivate: [requireDeck],
+    loadComponent: () => import('./pages/backup/backup').then((m) => m.Backup),
+  },
+  {
+    path: 'importar',
+    title: 'Importar do Anki',
+    loadComponent: () => import('./pages/import/import').then((m) => m.Import),
+  },
+  {
+    path: 'conta',
+    loadComponent: () => import('./pages/account/account').then((m) => m.Account),
   },
   {
     path: 'sem-baralho',

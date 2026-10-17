@@ -30,6 +30,14 @@
       "resources": {
         "files": ["/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif)"]
       }
+    },
+    {
+      "name": "anki-reader",
+      "installMode": "lazy",
+      "updateMode": "lazy",
+      "resources": {
+        "files": ["/sqljs/*.wasm"]
+      }
     }
   ]
 }

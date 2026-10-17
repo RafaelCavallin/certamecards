@@ -1,0 +1,37 @@
+<h2 tabindex="-1" data-step-focus class="font-display text-body font-semibold outline-none">{{ title() }}</h2>
+<ul class="mt-3 space-y-1 text-meta text-muted">
+  @for (line of counts(); track line) {
+    <li>{{ line }}</li>
+  }
+</ul>
+@if (imageSize(); as size) {
+  <p class="mt-1 text-meta text-muted">Imagens: {{ size }}</p>
+}
+@if (discarded() > 0) {
+  <p class="mt-3 text-meta text-muted">{{ discarded() }} {{ discarded() === 1 ? 'item do arquivo será descartado' : 'itens do arquivo serão descartados' }} por estarem inválidos.</p>
+}
+
+<fieldset class="mt-6 space-y-3">
+  <legend class="sr-only">Como restaurar</legend>
+  @for (plan of plans; track plan) {
+    <label
+      class="flex min-h-11 cursor-pointer items-start gap-3 rounded-2xl border p-4"
+      [class.border-signal]="session.plan() === plan"
+      [class.border-edge]="session.plan() !== plan"
+    >
+      <input type="radio" name="restore-plan" class="mt-1 size-5 accent-signal" [checked]="session.plan() === plan" (change)="session.plan.set(plan)" />
+      <span>
+        <span class="block text-meta font-medium">{{ text(plan).label }}</span>
+        <span class="mt-1 block text-meta text-muted">{{ text(plan).hint }}</span>
+      </span>
+    </label>
+  }
+</fieldset>
+
+<button
+  type="button"
+  (click)="session.proceed()"
+  class="mt-6 min-h-11 rounded-full bg-signal px-8 py-3 text-body font-medium text-on-signal transition hover:brightness-110"
+>
+  Restaurar
+</button>

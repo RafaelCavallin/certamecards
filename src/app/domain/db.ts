@@ -1,73 +1,19 @@
 import Dexie, { type EntityTable } from 'dexie';
 import { trackDirty } from './dirty-tracking';
-import type { CardMarks } from './text-marks';
+import type { Card, CardImage, Deck, ImageBlobRecord, ReviewLog, SyncState, UserSettings } from './db-types';
 
-export type FsrsState = 0 | 1 | 2 | 3;
-
-export interface Deck {
-  id: string;
-  name: string;
-  newCardsPerDay: number;
-  youngLimit: number;
-  requestRetention: number;
-  fsrsParams?: number[];
-  paramsOptimizedAt?: number;
-  createdAt: number;
-  updatedAt: number;
-  deletedAt: number;
-  dirty: 0 | 1;
-}
-
-export interface Card {
-  id: string;
-  deckId: string;
-  front: string;
-  back: string;
-  notes: string;
-  marks: CardMarks;
-  tags: string[];
-  due: number;
-  stability: number;
-  difficulty: number;
-  elapsedDays: number;
-  scheduledDays: number;
-  learningSteps: number;
-  reps: number;
-  lapses: number;
-  state: FsrsState;
-  lastReview?: number;
-  createdAt: number;
-  updatedAt: number;
-  deletedAt: number;
-  dirty: 0 | 1;
-}
-
-export interface ReviewLog {
-  id: string;
-  cardId: string;
-  deckId: string;
-  rating: 'again' | 'good';
-  reviewedAt: number;
-  stateBefore: FsrsState;
-  scheduledDays: number;
-  durationMs: number;
-  dirty: 0 | 1;
-}
-
-export interface SyncState {
-  key: string;
-  value: string | number | null;
-}
-
-export interface UserSettings {
-  id: 'me';
-  dailyGoal: number | null;
-  reminderEnabled: boolean;
-  reminderMinute: number;
-  timeZone: string;
-  updatedAt: number;
-  dirty: 0 | 1;
-}
+export type {
+  BlobState,
+  Card,
+  CardImage,
+  Deck,
+  FsrsState,
+  ImageBlobRecord,
+  ImageMime,
+  ReviewLog,
+  SyncState,
+  UserSettings,
+} from './db-types';
 
 export const db = new Dexie('certamecards') as Dexie & {
   decks: EntityTable<Deck, 'id'>;
@@ -75,6 +21,8 @@ export const db = new Dexie('certamecards') as Dexie & {
   reviewLogs: EntityTable<ReviewLog, 'id'>;
   settings: EntityTable<UserSettings, 'id'>;
   syncState: EntityTable<SyncState, 'key'>;
+  cardImages: EntityTable<CardImage, 'id'>;
+  imageBlobs: EntityTable<ImageBlobRecord, 'id'>;
 };
 
 db.version(1).stores({
@@ -85,10 +33,16 @@ db.version(1).stores({
   syncState: 'key',
 });
 
+db.version(2).stores({
+  cardImages: 'id, cardId, dirty, deletedAt, blobState',
+  imageBlobs: 'id',
+});
+
 trackDirty(db.decks, true);
 trackDirty(db.cards, true);
 trackDirty(db.reviewLogs, false);
 trackDirty(db.settings, false);
+trackDirty(db.cardImages, true, ['blobState']);
 
 export function uid(): string {
   return crypto.randomUUID();

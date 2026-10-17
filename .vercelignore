@@ -1,0 +1,8 @@
+/.angular
+/coverage
+/dist
+/tasks
+/.agents
+/.claude
+/supabase
+/.env*
