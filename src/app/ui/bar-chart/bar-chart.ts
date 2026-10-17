@@ -20,6 +20,9 @@ interface Bar {
 })
 export class BarChart {
   readonly data = input.required<ForecastDay[]>();
+  readonly ariaLabel = computed(
+    () => `Previsão de cartões vencendo nos próximos ${this.data().length} dias`,
+  );
 
   readonly bars = computed<Bar[]>(() => {
     const days = this.data();

@@ -1,6 +1,6 @@
 <div
   role="img"
-  aria-label="Previsão de cartões vencendo nos próximos 14 dias"
+  [attr.aria-label]="ariaLabel()"
   class="flex h-40 items-end gap-1 border-b border-line"
 >
   @for (bar of bars(); track bar.day) {

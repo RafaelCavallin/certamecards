@@ -1,26 +1,19 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Heatmap } from '../../ui/heatmap/heatmap';
 import { DifficultShortcut } from './difficult-shortcut';
+import { RhythmPanel } from './rhythm-panel';
 import { StudyFilter } from './study-filter';
 import { DeckStore } from '../../state/deck-store';
 import { DueTick } from '../../state/due-tick';
 import { TagFilterStore } from '../../state/tag-filter-store';
-import { loadHomeSnapshot } from '../../domain/home-data';
-import { homeView, studyButtonLabel, type HomeFilterInfo } from '../../domain/home-summary';
-import type { TagSummary } from '../../domain/tags';
+import { loadHomeSnapshot, type HomeSnapshot } from '../../domain/home-data';
+import { homeView, studyButtonLabel } from '../../domain/home-summary';
 import type { Deck } from '../../domain/db';
 
 @Component({
   selector: 'app-home',
-  imports: [Heatmap, StudyFilter, DifficultShortcut],
+  imports: [Heatmap, RhythmPanel, StudyFilter, DifficultShortcut],
   templateUrl: './home.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -30,25 +23,24 @@ export class Home {
   private readonly dueTick = inject(DueTick);
   private readonly tagFilter = inject(TagFilterStore);
 
-  private readonly totalSignal = signal<number | undefined>(undefined);
-  private readonly queueSizeSignal = signal<number | null>(null);
-  private readonly minutesSignal = signal(0);
-  private readonly byDaySignal = signal<Map<string, number>>(new Map());
-  private readonly filterSignal = signal<HomeFilterInfo | null>(null);
-  readonly options = signal<TagSummary[]>([]);
+  private readonly snapshot = signal<HomeSnapshot | null>(null);
+  private readonly queueSize = signal<number | null>(null);
 
-  readonly view = computed(() =>
-    homeView({
-      total: this.totalSignal(),
-      queueSize: this.queueSizeSignal(),
-      minutes: this.minutesSignal(),
-      filter: this.filterSignal(),
-    }),
-  );
-  readonly studyLabel = computed(() => studyButtonLabel(this.queueSizeSignal()));
+  readonly view = computed(() => {
+    const snapshot = this.snapshot();
+    return homeView({
+      total: snapshot?.total,
+      queueSize: this.queueSize(),
+      minutes: snapshot?.minutes ?? 0,
+      filter: snapshot?.filter ?? null,
+    });
+  });
+  readonly studyLabel = computed(() => studyButtonLabel(this.queueSize()));
   readonly studyKeys = computed(() => this.tagFilter.keysFor(this.deckStore.deck()?.id ?? ''));
-  readonly byDay = this.byDaySignal.asReadonly();
-  readonly hasHistory = computed(() => this.byDaySignal().size > 0);
+  readonly options = computed(() => this.snapshot()?.options ?? []);
+  readonly byDay = computed(() => this.snapshot()?.byDay ?? new Map<string, number>());
+  readonly hasHistory = computed(() => this.byDay().size > 0);
+  readonly rhythm = computed(() => (this.hasHistory() ? (this.snapshot()?.rhythm ?? null) : null));
 
   constructor() {
     let lastDeckId: string | null = null;
@@ -59,7 +51,7 @@ export class Home {
       if (!deck) return;
       if (deck.id !== lastDeckId) {
         lastDeckId = deck.id;
-        this.queueSizeSignal.set(null);
+        this.queueSize.set(null);
       }
       void this.refresh(deck, keys);
     });
@@ -88,12 +80,8 @@ export class Home {
 
   private async refresh(deck: Deck, keys: string[]): Promise<void> {
     const snapshot = await loadHomeSnapshot(deck, keys);
-    this.totalSignal.set(snapshot.total);
-    this.queueSizeSignal.set(snapshot.queueSize);
-    this.minutesSignal.set(snapshot.minutes);
-    this.byDaySignal.set(snapshot.byDay);
-    this.options.set(snapshot.options);
-    this.filterSignal.set(snapshot.filter);
+    this.snapshot.set(snapshot);
+    this.queueSize.set(snapshot.queueSize);
     this.tagFilter.reconcile(deck.id, snapshot.existingKeys);
   }
 }

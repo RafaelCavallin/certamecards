@@ -1,18 +1,41 @@
 @if (options().length > 0) {
-  <div class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1">
-    <button
-      type="button"
-      (click)="open()"
-      class="min-h-11 rounded-full border border-edge px-5 py-2 text-meta transition hover:border-signal"
-    >
-      Estudar só…
-    </button>
-    @if (selected().length > 0) {
-      <p class="min-w-0 break-all text-meta text-signal" role="status" aria-live="polite">Só: {{ names() }}</p>
-      <button type="button" (click)="clear()" class="min-h-11 px-2 text-meta text-muted hover:text-text">
-        Limpar
-      </button>
+  <div class="mt-8">
+    @if (quick().chips.length > 0) {
+      <p aria-hidden="true" class="mb-3 font-mono text-label uppercase tracking-wider text-muted">Estudar só</p>
     }
+    <div role="group" aria-label="Estudar só" class="flex flex-wrap items-center gap-2">
+      @for (chip of quick().chips; track chip.key) {
+        <button
+          type="button"
+          (click)="toggle(chip.key)"
+          [attr.aria-pressed]="isSelected(chip.key)"
+          [class]="
+            'min-h-11 max-w-full rounded-full border px-4 py-2 text-meta transition ' +
+            (isSelected(chip.key)
+              ? 'border-signal bg-signal text-on-signal'
+              : 'border-edge text-text hover:border-signal')
+          "
+        >
+          <span class="break-words">{{ chip.name }}</span>
+          <span class="sr-only">, </span>
+          <span class="ml-1 font-mono text-label opacity-70">{{ chip.count }}</span>
+        </button>
+      }
+      @if (quick().hasMore) {
+        <button
+          type="button"
+          (click)="open()"
+          class="min-h-11 rounded-full border border-edge px-5 py-2 text-meta transition hover:border-signal"
+        >
+          {{ moreLabel() }}
+        </button>
+      }
+      @if (selected().length > 0) {
+        <button type="button" (click)="clear()" class="min-h-11 px-2 text-meta text-muted hover:text-text">
+          Limpar
+        </button>
+      }
+    </div>
   </div>
 }
 

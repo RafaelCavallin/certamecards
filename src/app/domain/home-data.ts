@@ -1,5 +1,6 @@
 import { liveCards } from './cards';
 import type { Deck } from './db';
+import { homeRhythm, type HomeRhythm } from './home-rhythm';
 import type { HomeFilterInfo } from './home-summary';
 import { estimateMinutes, buildQueue, queueCount } from './queue';
 import { tagQueueCounts } from './queue-tags';
@@ -16,6 +17,7 @@ export interface HomeSnapshot {
   options: TagSummary[];
   existingKeys: Set<string>;
   filter: HomeFilterInfo | null;
+  rhythm: HomeRhythm;
 }
 
 export async function loadHomeSnapshot(deck: Deck, studyKeys: readonly string[]): Promise<HomeSnapshot> {
@@ -31,7 +33,8 @@ export async function loadHomeSnapshot(deck: Deck, studyKeys: readonly string[])
   const options = tags.map((tag) => ({ ...tag, count: counts.get(tag.key) ?? 0 }));
   const filter = await describeFilter(deck, tags, activeKeys);
   const minutes = await estimateMinutes(queue.length);
-  return { total: cards.length, queueSize: queue.length, minutes, byDay: stats.byDay, options, existingKeys, filter };
+  const rhythm = homeRhythm(stats, new Date());
+  return { total: cards.length, queueSize: queue.length, minutes, byDay: stats.byDay, options, existingKeys, filter, rhythm };
 }
 
 async function describeFilter(
