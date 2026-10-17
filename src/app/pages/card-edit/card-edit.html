@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-2xl px-5 py-8">
+<div class="mx-auto max-w-2xl px-5 py-8 xl:max-w-6xl xl:px-10 2xl:max-w-7xl">
   <button type="button" (click)="back()" class="font-mono text-label text-muted hover:text-text">
     ← Voltar
   </button>
@@ -6,13 +6,16 @@
   @if (draft() === undefined) {
     <p class="mt-6 text-meta text-muted">Carregando…</p>
   } @else if (draft(); as loaded) {
-    <div class="mt-4">
+    <div class="mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start xl:gap-x-12 2xl:gap-x-16">
       <app-card-form
         title="Editar cartão"
         submitLabel="Salvar alterações"
         [initial]="loaded"
         [onSubmit]="save"
       />
+      @if (card(); as current) {
+        <app-card-info class="mt-10 block xl:sticky xl:top-8 xl:mt-0" [card]="current" />
+      }
     </div>
   } @else {
     <p class="mt-6 text-meta text-muted">Cartão não encontrado.</p>

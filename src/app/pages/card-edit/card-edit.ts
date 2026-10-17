@@ -2,13 +2,16 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CardForm } from '../../ui/card-form/card-form';
+import { CardInfo } from '../../ui/card-info/card-info';
 import { ImagePrefetch } from '../../state/image-prefetch';
 import { loadCardDraft, type CardDraft } from '../../domain/card-draft';
 import { saveCardEdit } from '../../domain/card-save';
+import { getCard } from '../../domain/cards';
+import type { Card } from '../../domain/db';
 
 @Component({
   selector: 'app-card-edit',
-  imports: [CardForm],
+  imports: [CardForm, CardInfo],
   templateUrl: './card-edit.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -20,6 +23,7 @@ export class CardEdit {
   private saved = false;
 
   readonly draft = signal<CardDraft | null | undefined>(undefined);
+  readonly card = signal<Card | undefined>(undefined);
 
   constructor() {
     void this.load();
@@ -27,7 +31,9 @@ export class CardEdit {
 
   private async load(): Promise<void> {
     await this.prefetch.request([this.cardId]);
-    this.draft.set(await loadCardDraft(this.cardId));
+    const [draft, card] = await Promise.all([loadCardDraft(this.cardId), getCard(this.cardId)]);
+    this.draft.set(draft);
+    this.card.set(card);
   }
 
   canLeave(): boolean | Promise<boolean> {
