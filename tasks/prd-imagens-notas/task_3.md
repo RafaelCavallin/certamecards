@@ -86,7 +86,7 @@ Ver [techspec.md](techspec.md):
 - `src/app/domain/{sync,sync-pull,sync-pull-page,sync-pull-apply,sync-rows,auth}.ts` e testes (modificados)
 - `src/test/fake-supabase.ts` (modificado)
 - `src/app/domain/{lww,sync-push,sync-push-dirty}.ts` — só leitura (`wins`, `chunk`, `clearDirty`)
-- `supabase/migrations/20261101000000_images_reminders.sql` — só leitura (RPC, bucket, políticas)
+- `supabase/migrations/20261017000000_images_reminders.sql` — só leitura (RPC, bucket, políticas)
 
 > **Ajustes feitos na implementação:**
 > - O `fake-supabase` ficou com `storage` em `src/test/fake-storage.ts` (limite de 100 linhas), com log ordenado de chamadas (`calls`: `rpc:…`, `upload:…`, `download:…`, `remove:…`) e `rpc` assíncrono, necessário para simular a edição durante o envio (CAS).

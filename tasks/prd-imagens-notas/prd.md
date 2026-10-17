@@ -155,7 +155,7 @@ UI e acessibilidade:
 ## Restrições técnicas de alto nível
 
 - As do documento-mãe, em especial: offline-first, escala tipográfica checada no CI, cores sempre por token, isolamento entre desenvolvimento e produção e Supabase sem servidor próprio.
-- **Schema já desenhado**: a tabela de metadados das imagens, o bucket privado do Storage e a RPC de envio estão na migration da Fase 2 (`20261101000000_images_reminders.sql`), com os limites deste PRD: 6 por cartão (posição 0–5), legenda ≤ 200, lado ≤ 2.000 px, ≤ 1,5 MB, WebP/JPEG/PNG. Mudanças nesses limites exigem migration nova. Os limites do app vêm do mesmo lugar dos limites de texto e espelham o banco.
+- **Schema já desenhado**: a tabela de metadados das imagens, o bucket privado do Storage e a RPC de envio estão na migration da Fase 2 (`20261017000000_images_reminders.sql`), com os limites deste PRD: 6 por cartão (posição 0–5), legenda ≤ 200, lado ≤ 2.000 px, ≤ 1,5 MB, WebP/JPEG/PNG. Mudanças nesses limites exigem migration nova. Os limites do app vêm do mesmo lugar dos limites de texto e espelham o banco.
 - **Integridade entre aparelhos**: outro aparelho nunca vê a lista de uma imagem cujo arquivo ainda não está na nuvem, e o envio de imagens não pode bloquear nem atrasar o de cartões e revisões.
 - **Isolamento**: cada usuário só lê, grava e apaga os arquivos da própria pasta no Storage. O bucket não é público.
 - **Privacidade**: a imagem é processada no aparelho, e os metadados da foto (localização, aparelho) são descartados antes de gravar ou enviar. Nenhum serviço de terceiros recebe as imagens.

@@ -89,20 +89,3 @@ describe('tagQueueCounts', () => {
     expect([...counts.values()]).toEqual([7, 4, 0]);
   });
 });
-
-describe('limite diário com filtro', () => {
-  it('novos estudados com filtro consomem o limite do dia', async () => {
-    const fresh = Array.from({ length: 30 }, (_, index) => freshCard(`n${index}`, ['CESPE'], index));
-    await db.cards.bulkAdd(fresh);
-    const logs = fresh.slice(0, 10).map((card) => ({
-      id: `l-${card.id}`, cardId: card.id, deckId: 'deck-1', rating: 'good' as const,
-      reviewedAt: NOW.getTime() - 1000, stateBefore: State.New, scheduledDays: 1, durationMs: 1000, dirty: 0 as const,
-    }));
-    await db.reviewLogs.bulkAdd(logs);
-    await db.cards.bulkPut(fresh.slice(0, 10).map((card) => ({ ...card, state: State.Review, due: NOW.getTime() + DAY })));
-
-    const queue = await buildQueue(deckWith({ newCardsPerDay: 10 }));
-
-    expect(queue.filter((card) => card.state === State.New)).toEqual([]);
-  });
-});

@@ -329,7 +329,7 @@ db.version(2).stores({                       // Fase 2 (F17)
 
 #### Esquema do banco (DDL)
 
-Arquivos: `supabase/migrations/20261001000000_schema.sql` (MVP, já com `tags` e `user_settings`) e `20261101000000_images_reminders.sql` (Fase 2). Validados em Postgres 16 com `auth` e `storage` simulados: aplicação limpa das duas; defaults via `coalesce` no push; LWW em cards, configurações e imagens (versão velha perde, nova vence); log duplicado ignorado; `DELETE`/`UPDATE` em logs negados; `marks` não-objeto, 21 etiquetas e imagem GIF rejeitados; isolamento entre usuários pela FK composta e pela política do Storage; `anon` sem `EXECUTE` nas RPCs; `users_due_for_reminder` só para `service_role`, respeitando horário, janela, meta (39 → envia, 40 → não) e entrega do dia.
+Arquivos: `supabase/migrations/20261001000000_schema.sql` (MVP, já com `tags` e `user_settings`) e `20261017000000_images_reminders.sql` (Fase 2). Validados em Postgres 16 com `auth` e `storage` simulados: aplicação limpa das duas; defaults via `coalesce` no push; LWW em cards, configurações e imagens (versão velha perde, nova vence); log duplicado ignorado; `DELETE`/`UPDATE` em logs negados; `marks` não-objeto, 21 etiquetas e imagem GIF rejeitados; isolamento entre usuários pela FK composta e pela política do Storage; `anon` sem `EXECUTE` nas RPCs; `users_due_for_reminder` só para `service_role`, respeitando horário, janela, meta (39 → envia, 40 → não) e entrega do dia.
 
 ```sql
 create table public.decks (
@@ -861,4 +861,4 @@ Origem (lingo, `des`) → destino (certamecards):
 - `.agents/rules/*`, `.agents/skills/criar-*`/`executar-*` → `.agents/` (adaptados)
 - `AGENTS.md` → `AGENTS.md` (reescrito)
 - Fase 2: `src/services/ankiImport.ts`, `components/AnkiNotePicker.tsx`, `screens/Import.tsx` → `domain/anki-*.ts`, `ui/anki-field-mapper`, `pages/import/`; `src/services/backup*.ts`, `screens/Restore.tsx`, `components/Restore*.tsx`, `BackupSection.tsx` → `domain/backup-*.ts`, `pages/backup/`, `ui/restore-preview` (sem `backupAudio*`)
-- Fase 2: `supabase/migrations/20261101000000_images_reminders.sql`, `supabase/functions/send-reminders/index.ts` (novos)
+- Fase 2: `supabase/migrations/20261017000000_images_reminders.sql`, `supabase/functions/send-reminders/index.ts` (novos)

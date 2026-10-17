@@ -33,7 +33,7 @@ export class CardEdit {
     await this.prefetch.request([this.cardId]);
     const [draft, card] = await Promise.all([loadCardDraft(this.cardId), getCard(this.cardId)]);
     this.draft.set(draft);
-    this.card.set(card);
+    this.card.set(draft ? card : undefined);
   }
 
   canLeave(): boolean | Promise<boolean> {

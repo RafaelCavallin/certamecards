@@ -1,4 +1,5 @@
 import { db, type Card } from './db';
+import { countUntagged } from './tag-filter';
 import { tagKey, type TagSummary } from './tags';
 
 export const SUGGESTIONS_MAX = 8;
@@ -62,7 +63,7 @@ export async function listTagCatalog(): Promise<TagSummary[]> {
 }
 
 export async function countUntaggedCards(): Promise<number> {
-  return (await listLiveCards()).filter((card) => card.tags.length === 0).length;
+  return countUntagged(await listLiveCards());
 }
 
 export function suggestTags(input: SuggestInput): TagSummary[] {

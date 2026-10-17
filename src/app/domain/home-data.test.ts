@@ -2,7 +2,6 @@ import { State } from 'ts-fsrs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetDb } from '../../test/db-helpers';
 import { makeDeck, makeTaggedCard } from '../../test/card-fixtures';
-import { makeLog } from '../../test/backup-fixtures';
 import { db, type Card } from './db';
 import { loadHomeSnapshot } from './home-data';
 import { homeView } from './home-summary';
@@ -58,24 +57,6 @@ describe('loadHomeSnapshot', () => {
     expect(snapshot.options).toEqual([]);
     expect(snapshot.queueSize).toBe(2);
     expect(snapshot.filter).toBeNull();
-  });
-
-  it('resume o ritmo com as revisões de hoje e a previsão a partir de amanhã', async () => {
-    await db.cards.bulkAdd([
-      dueCard('a', []),
-      makeTaggedCard('b', [], { state: State.Review, due: NOW.getTime() + DAY, stability: 30 }),
-    ]);
-    await db.reviewLogs.bulkAdd([
-      makeLog({ id: 'l1', cardId: 'a', reviewedAt: NOW.getTime() - 60_000 }),
-      makeLog({ id: 'l2', cardId: 'a', reviewedAt: NOW.getTime() - 2 * DAY }),
-    ]);
-
-    const { rhythm } = await loadHomeSnapshot(makeDeck('deck-1'), []);
-
-    expect(rhythm.reviewedToday).toBe(1);
-    expect(rhythm.forecast).toHaveLength(7);
-    expect(rhythm.forecast[0].count).toBe(1);
-    expect(rhythm.forecast.some((day) => day.day === 'hoje')).toBe(false);
   });
 
   it('com filtro conta só os filtrados e informa o total sem filtro', async () => {

@@ -75,7 +75,7 @@ Ao terminar, validar num celular real (Android e iPhone), com uma página de tes
 - `src/app/domain/{db-types,image-errors,image-resize,image-codec,image-compress}.ts` + `.test.ts` (novos)
 - `src/app/domain/db.ts`, `db.test.ts`, `card-limits.ts`, `card-limits.test.ts` (modificados)
 - `src/test/setup.ts`, `src/test/db-helpers.ts` (modificados); `src/test/image-fixtures.ts` (novo)
-- `supabase/migrations/20261101000000_images_reminders.sql` — só leitura (limites)
+- `supabase/migrations/20261017000000_images_reminders.sql` — só leitura (limites)
 - Lingo `~/Desktop/lingo/src/test/setup.ts` e `src/services/dbMigrations.test.ts` — referência
 
 > **Ajustes feitos na implementação:**

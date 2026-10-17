@@ -25,6 +25,7 @@ export class Home {
 
   private readonly snapshot = signal<HomeSnapshot | null>(null);
   private readonly queueSize = signal<number | null>(null);
+  private latestRefresh = 0;
 
   readonly view = computed(() => {
     const snapshot = this.snapshot();
@@ -79,7 +80,9 @@ export class Home {
   }
 
   private async refresh(deck: Deck, keys: string[]): Promise<void> {
+    const request = ++this.latestRefresh;
     const snapshot = await loadHomeSnapshot(deck, keys);
+    if (request !== this.latestRefresh) return;
     this.snapshot.set(snapshot);
     this.queueSize.set(snapshot.queueSize);
     this.tagFilter.reconcile(deck.id, snapshot.existingKeys);
