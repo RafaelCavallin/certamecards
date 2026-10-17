@@ -28,7 +28,7 @@ describe('AuthStore', () => {
   it('só anuncia sessão ativa após vincular a conta adotada', async () => {
     let finish!: () => void;
     const linking = new Promise<void>((resolve) => { finish = resolve; });
-    decideOnSignIn.mockResolvedValueOnce({ kind: 'auto-adopt', local: { decks: 1, cards: 0, reviewLogs: 0 }, remote: { decks: 0, cards: 0, reviewLogs: 0 } });
+    decideOnSignIn.mockResolvedValueOnce({ kind: 'auto-adopt', plan: 'merge' });
     completeSignIn.mockImplementationOnce(() => linking);
     const store = new AuthStore();
     const signIn = store.signIn('teste@example.test', 'senha-local');

@@ -23,7 +23,7 @@ describe('decideOnSignIn', () => {
   it('adota automaticamente quando os dois lados estão vazios', async () => {
     const result = await decideOnSignIn('user-2');
 
-    expect(result).toEqual({ kind: 'auto-adopt' });
+    expect(result).toEqual({ kind: 'auto-adopt', plan: 'merge' });
   });
 
   it('adota automaticamente quando só há dado local', async () => {
@@ -31,7 +31,7 @@ describe('decideOnSignIn', () => {
 
     const result = await decideOnSignIn('user-2');
 
-    expect(result).toEqual({ kind: 'auto-adopt' });
+    expect(result).toEqual({ kind: 'auto-adopt', plan: 'merge' });
   });
 
   it('pede decisão quando os dois lados têm dado e nenhuma conta está vinculada', async () => {

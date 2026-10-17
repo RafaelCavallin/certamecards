@@ -69,7 +69,7 @@ export class AuthStore {
 
   private async handleSession(session: Session): Promise<void> {
     const decision = await decideOnSignIn(session.user.id);
-    if (decision.kind === 'auto-adopt') await completeSignIn(session.user.id, 'merge');
+    if (decision.kind === 'auto-adopt') await completeSignIn(session.user.id, decision.plan);
     this.sessionSignal.set(session);
     if (decision.kind === 'prompt' || decision.kind === 'switch') this.pendingSignal.set(decision);
     this.phaseSignal.set('signed-in');

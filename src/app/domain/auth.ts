@@ -1,4 +1,5 @@
 import { db } from './db';
+import { DEFAULT_DECK_NAME } from './decks';
 import { clearCursors, markAllDirty, wipeLocalData } from './local-data';
 import { getSupabase } from './supabase';
 
@@ -10,9 +11,10 @@ export interface DataSummary {
   reviewLogs: number;
 }
 
-export type SignInPlan = 'merge' | 'discard' | 'cancel';
+export type SignInPlan = 'merge' | 'discard' | 'adopt' | 'cancel';
 export type SignInDecision =
-  | { kind: 'resume' | 'auto-adopt' }
+  | { kind: 'resume' }
+  | { kind: 'auto-adopt'; plan: SignInPlan }
   | { kind: 'prompt' | 'switch'; local: DataSummary; remote: DataSummary };
 
 export async function getBoundUserId(): Promise<string | null> {
@@ -24,7 +26,8 @@ export async function decideOnSignIn(userId: string): Promise<SignInDecision> {
   const boundUserId = await getBoundUserId();
   if (boundUserId === userId) return { kind: 'resume' };
   const [local, remote] = await Promise.all([localSummary(), remoteSummary()]);
-  if (isEmpty(local) || isEmpty(remote)) return { kind: 'auto-adopt' };
+  if (isEmpty(local) || isEmpty(remote)) return { kind: 'auto-adopt', plan: 'merge' };
+  if (await hasOnlySeedDeck()) return { kind: 'auto-adopt', plan: 'adopt' };
   return boundUserId ? { kind: 'switch', local, remote } : { kind: 'prompt', local, remote };
 }
 
@@ -33,6 +36,7 @@ export async function completeSignIn(userId: string, plan: SignInPlan): Promise<
   const previousUserId = await getBoundUserId();
   const isAccountSwitch = Boolean(previousUserId) && previousUserId !== userId;
   if (plan === 'discard' || isAccountSwitch) await wipeLocalData();
+  else if (plan === 'adopt') await dropLocalDecks();
   else await mergeLocalData();
   await db.syncState.put({ key: BOUND_USER_KEY, value: userId });
 }
@@ -45,6 +49,18 @@ async function cancelSignIn(): Promise<void> {
 async function mergeLocalData(): Promise<void> {
   await clearCursors();
   await markAllDirty();
+}
+
+async function dropLocalDecks(): Promise<void> {
+  await db.decks.clear();
+  await clearCursors();
+}
+
+async function hasOnlySeedDeck(): Promise<boolean> {
+  const [cards, reviewLogs] = await Promise.all([db.cards.count(), db.reviewLogs.count()]);
+  if (cards > 0 || reviewLogs > 0) return false;
+  const decks = await db.decks.filter((row) => row.deletedAt === 0).toArray();
+  return decks.every((deck) => deck.name === DEFAULT_DECK_NAME);
 }
 
 async function localSummary(): Promise<DataSummary> {
