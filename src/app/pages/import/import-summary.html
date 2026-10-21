@@ -3,6 +3,12 @@
   <p class="mt-2 text-meta text-muted">
     O baralho já está ativo. São cartões novos: entram aos poucos, no ritmo de “novos por dia”.
   </p>
+  @if (suggestBackup()) {
+    <p class="mt-2 text-meta text-muted">
+      Sem conta, estes cartões só existem neste navegador.
+      <a routerLink="/ajustes/backup" class="text-signal underline">Faça um backup</a>.
+    </p>
+  }
 
   <div class="mt-4 space-y-1 text-meta text-muted">
     @if (duplicates() > 0) {

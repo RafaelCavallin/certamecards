@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterLink } from '@angular/router';
 import { SettingsBackup } from './settings-backup';
 import { SettingsImages } from './settings-images';
+import { SettingsStorage } from './settings-storage';
 import { SettingsTheme } from './settings-theme';
 import { AuthStore } from '../../state/auth-store';
 import { SyncStore } from '../../state/sync-store';
@@ -14,7 +15,7 @@ const APP_VERSION = '0.1.0';
 
 @Component({
   selector: 'app-settings',
-  imports: [RouterLink, SettingsBackup, SettingsImages, SettingsTheme],
+  imports: [RouterLink, SettingsBackup, SettingsImages, SettingsStorage, SettingsTheme],
   templateUrl: './settings.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

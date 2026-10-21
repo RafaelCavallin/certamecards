@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AnkiImportRun } from '../../state/anki-import-run';
+import { AuthStore } from '../../state/auth-store';
+import { StoragePersistence } from '../../state/storage-persistence-store';
 import { cardsLabel, duplicatesSummary, formatCount, notesLabel, skippedEntries } from '../../domain/anki-import-text';
 
 @Component({
@@ -11,6 +13,10 @@ import { cardsLabel, duplicatesSummary, formatCount, notesLabel, skippedEntries 
 })
 export class ImportSummary {
   readonly run = inject(AnkiImportRun);
+  private readonly auth = inject(AuthStore);
+  private readonly persistence = inject(StoragePersistence);
+
+  readonly suggestBackup = computed(() => this.auth.session() === null && this.persistence.state() !== 'persisted');
 
   readonly headline = computed(() => {
     const outcome = this.run.outcome();

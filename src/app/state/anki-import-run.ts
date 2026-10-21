@@ -1,5 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { DeckStore } from './deck-store';
+import { StoragePersistence } from './storage-persistence-store';
 import { emptyConversion, type ConversionResult } from '../domain/anki-convert-batch';
 import { dropDuplicates } from '../domain/anki-dedupe';
 import { GENERIC_IMPORT_FAILURE, isAnkiError } from '../domain/anki-errors';
@@ -15,6 +16,7 @@ export interface ImportProgress {
 @Injectable()
 export class AnkiImportRun {
   private readonly deckStore = inject(DeckStore);
+  private readonly persistence = inject(StoragePersistence);
   private readonly stepSignal = signal<RunStep | null>(null);
   private controller: AbortController | null = null;
 
@@ -68,6 +70,7 @@ export class AnkiImportRun {
     this.deckStore.switchDeck(outcome.deckId);
     this.outcome.set(outcome);
     this.stepSignal.set('done');
+    void this.persistence.request();
   }
 
   private reportFailure(error: unknown): void {

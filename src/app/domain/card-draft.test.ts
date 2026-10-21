@@ -1,9 +1,9 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { resetDb } from '../../test/db-helpers';
 import { makeTaggedCard } from '../../test/card-fixtures';
 import { makeCardImage, makeImageBlob } from '../../test/image-fixtures';
 import { newGalleryItem, savedGalleryItem } from '../../test/gallery-fixtures';
-import { emptyDraft, hasDraftChanges, loadCardDraft, type CardDraft } from './card-draft';
+import { emptyDraft, hasDraftChanges, loadCardDraft, loadCardDraftState, type CardDraft } from './card-draft';
 import { db } from './db';
 import { moveItem, removeItem, setCaption } from './gallery-draft';
 
@@ -84,5 +84,25 @@ describe('loadCardDraft', () => {
       ['i1', 'saved', 'Primeira', true],
       ['i2', 'saved', 'Segunda', false],
     ]);
+  });
+});
+
+describe('loadCardDraftState', () => {
+  it('TI-P06: devolve ready com o rascunho de um cartão existente', async () => {
+    await db.cards.add(makeTaggedCard('c1', [], { front: 'Frente' }));
+    const state = await loadCardDraftState('c1');
+    expect(state.status).toBe('ready');
+    expect(state.status === 'ready' && state.draft.content.front).toBe('Frente');
+  });
+
+  it('TI-P06: devolve missing para um id que não existe', async () => {
+    expect(await loadCardDraftState('inexistente')).toEqual({ status: 'missing' });
+  });
+
+  it('TI-P06: devolve failed quando a leitura lança', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.spyOn(db.cards, 'get').mockRejectedValueOnce(new Error('Connection lost'));
+    expect(await loadCardDraftState('c1')).toEqual({ status: 'failed' });
+    vi.restoreAllMocks();
   });
 });

@@ -3,21 +3,24 @@
     ← Voltar
   </button>
 
-  @if (draft() === undefined) {
+  @let state = loadState();
+  @if (state === undefined) {
     <p class="mt-6 text-meta text-muted">Carregando…</p>
-  } @else if (draft(); as loaded) {
+  } @else if (state.status === 'ready') {
     <div class="mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start xl:gap-x-12 2xl:gap-x-16">
       <app-card-form
         title="Editar cartão"
         submitLabel="Salvar alterações"
-        [initial]="loaded"
+        [initial]="state.draft"
         [onSubmit]="save"
       />
       @if (card(); as current) {
         <app-card-info class="mt-10 block xl:sticky xl:top-8 xl:mt-0" [card]="current" />
       }
     </div>
-  } @else {
+  } @else if (state.status === 'missing') {
     <p class="mt-6 text-meta text-muted">Cartão não encontrado.</p>
+  } @else {
+    <p class="mt-6 text-meta text-miss" role="alert">Não foi possível abrir o cartão.</p>
   }
 </div>

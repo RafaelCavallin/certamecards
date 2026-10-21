@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CardForm } from '../../ui/card-form/card-form';
 import { CardInfo } from '../../ui/card-info/card-info';
 import { ImagePrefetch } from '../../state/image-prefetch';
-import { loadCardDraft, type CardDraft } from '../../domain/card-draft';
+import { loadCardDraftState, type CardDraft, type DraftLoadState } from '../../domain/card-draft';
 import { saveCardEdit } from '../../domain/card-save';
 import { getCard } from '../../domain/cards';
 import type { Card } from '../../domain/db';
@@ -22,7 +22,7 @@ export class CardEdit {
   private readonly form = viewChild(CardForm);
   private saved = false;
 
-  readonly draft = signal<CardDraft | null | undefined>(undefined);
+  readonly loadState = signal<DraftLoadState | undefined>(undefined);
   readonly card = signal<Card | undefined>(undefined);
 
   constructor() {
@@ -31,9 +31,9 @@ export class CardEdit {
 
   private async load(): Promise<void> {
     await this.prefetch.request([this.cardId]);
-    const [draft, card] = await Promise.all([loadCardDraft(this.cardId), getCard(this.cardId)]);
-    this.draft.set(draft);
-    this.card.set(draft ? card : undefined);
+    const state = await loadCardDraftState(this.cardId);
+    this.loadState.set(state);
+    if (state.status === 'ready') this.card.set(await getCard(this.cardId));
   }
 
   canLeave(): boolean | Promise<boolean> {

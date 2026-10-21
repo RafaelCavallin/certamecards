@@ -4,6 +4,8 @@ import { db, uid, type Card, type Deck, type ReviewLog } from './db';
 /** Único ponto de tradução entre a UI binária e o algoritmo. */
 export type BinaryRating = 'again' | 'good';
 
+export const CARD_NOT_FOUND_MESSAGE = 'Cartão não encontrado.';
+
 function toFsrsRating(rating: BinaryRating): Rating.Again | Rating.Good {
   return rating === 'again' ? Rating.Again : Rating.Good;
 }
@@ -66,19 +68,24 @@ export async function answer(input: AnswerInput): Promise<void> {
   const { card: next } = schedulerFor(deck.requestRetention).next(toFsrsCardInput(card), now, toFsrsRating(rating));
   const log = buildLog(input, next, now);
   await db.transaction('rw', db.cards, db.reviewLogs, async () => {
-    await db.cards.update(card.id, {
-      due: next.due.getTime(),
-      stability: next.stability,
-      difficulty: next.difficulty,
-      elapsedDays: next.elapsed_days,
-      scheduledDays: next.scheduled_days,
-      learningSteps: next.learning_steps,
-      reps: next.reps,
-      lapses: next.lapses,
-      state: next.state,
-      lastReview: now.getTime(),
-      updatedAt: now.getTime(),
-    });
+    const updated = await db.cards.update(card.id, scheduledFields(next, now));
+    if (updated === 0) throw new Error(CARD_NOT_FOUND_MESSAGE);
     await db.reviewLogs.add(log);
   });
+}
+
+function scheduledFields(next: RecordLogItem['card'], now: Date): Partial<Card> {
+  return {
+    due: next.due.getTime(),
+    stability: next.stability,
+    difficulty: next.difficulty,
+    elapsedDays: next.elapsed_days,
+    scheduledDays: next.scheduled_days,
+    learningSteps: next.learning_steps,
+    reps: next.reps,
+    lapses: next.lapses,
+    state: next.state,
+    lastReview: now.getTime(),
+    updatedAt: now.getTime(),
+  };
 }

@@ -1,5 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie';
 import { trackDirty } from './dirty-tracking';
+import { browserStorage } from './local-storage';
+import { recordStoreCreated } from './store-marker';
 import type { Card, CardImage, Deck, ImageBlobRecord, ReviewLog, SyncState, UserSettings } from './db-types';
 
 export type {
@@ -43,6 +45,8 @@ trackDirty(db.cards, true);
 trackDirty(db.reviewLogs, false);
 trackDirty(db.settings, false);
 trackDirty(db.cardImages, true, ['blobState']);
+
+db.on('populate', () => recordStoreCreated(browserStorage(), Date.now()));
 
 export function uid(): string {
   return crypto.randomUUID();
