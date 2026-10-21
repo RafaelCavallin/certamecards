@@ -12,6 +12,9 @@
     >
       Editar cartão
     </button>
+    @if (session.error(); as message) {
+      <p class="mt-4 text-meta text-miss" role="alert">{{ message }}</p>
+    }
     <app-answer-bar
       footer
       [revealed]="session.revealed()"

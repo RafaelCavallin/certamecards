@@ -21,7 +21,7 @@ A primeira tentativa de app própria ficou lenta demais para evoluir. Este produ
 ### Fases
 
 - **Fase 1 (MVP)** — F1 a F10: cadastro, marcas, baralhos, Home, revisão, lista, progresso, conta/sync, ajustes, PWA.
-- **Fase 2** — F11 a F17: etiquetas, cartões difíceis e reforço, meta diária e lembrete, importação do Anki, backup em arquivo, tema claro, imagens nas Notas.
+- **Fase 2** — F11 a F18: etiquetas, cartões difíceis e reforço, meta diária e lembrete, importação do Anki, backup em arquivo, tema claro, imagens nas Notas, proteção dos dados locais.
 
 O banco já nasce com as colunas das etiquetas e das configurações do usuário (Fase 2), para a sincronização não precisar ser refeita depois.
 
@@ -40,6 +40,7 @@ Este documento é a referência de produto; não é executado diretamente. Cada 
 | Fase 2 — Meta e lembrete | [prd-meta-lembrete](../prd-meta-lembrete/prd.md) | F13 | PRD pronto |
 | Fase 2 — Imagens nas Notas | [prd-imagens-notas](../prd-imagens-notas/prd.md) | F17 | Concluída — QA aprovado com ressalvas (aparelho real) |
 | Fase 2 — Backup e restauração | [prd-backup](../prd-backup/prd.md) | F15 | Concluída — QA aprovado com ressalvas (desempenho não medido) |
+| Fase 2 — Proteção dos dados locais | [prd-protecao-dados](../prd-protecao-dados/prd.md) | F18 | Concluída — QA aprovado |
 
 A ordem da Fase 2 é a da seção “Sequenciamento do desenvolvimento” da [TechSpec](techspec.md). Uma mudança de produto que afete mais de uma entrega é feita primeiro aqui e depois refletida nos recortes.
 
@@ -63,6 +64,7 @@ A ordem da Fase 2 é a da seção “Sequenciamento do desenvolvimento” da [Te
 - **US16** (Fase 2): Como usuário sem conta, quero exportar um backup para não perder meus cartões se trocar de celular.
 - **US17** (Fase 2): Como concurseiro que estuda à noite, quero poder escolher entre tema escuro e claro.
 - **US18** (Fase 2): Como concurseiro, quero anexar esquemas e mapas mentais às Notas e ampliá-los na revisão.
+- **US19** (Fase 2): Como concurseiro que usa o app só no navegador, quero que meus cartões não sumam sem aviso e, se o navegador apagá-los, quero saber o que houve e como recuperar.
 
 ## Principais funcionalidades
 
@@ -211,6 +213,16 @@ Esquemas, tabelas fotografadas e mapas mentais anexados ao cartão.
 - **RF77**: Offline-first: a imagem fica disponível no aparelho imediatamente; com conta, é enviada para a nuvem quando houver rede e baixada nos outros aparelhos quando o cartão for exibido (com pré-carregamento dos próximos cartões da fila).
 - **RF78**: Excluir um cartão exclui suas imagens em todos os aparelhos.
 
+### F18. Proteção dos dados locais — Fase 2
+
+Sem conta, os dados vivem só no IndexedDB, que o navegador pode apagar sozinho (por exemplo, quando o disco está quase cheio e o armazenamento do site não é persistente). Nasce de uma perda real em produção (2026-10-18).
+
+- **RF79**: Se o navegador fechar o acesso aos dados com o app aberto, o app mostra um aviso bloqueante com “Recarregar”; nenhuma tela fica presa carregando e nada continua sendo gravado num banco vazio.
+- **RF80**: No carregamento seguinte a uma perda dos dados locais, o app explica o que houve, como recuperar (conta, backup ou reimportação) e como evitar; o aviso é dispensável, não volta depois de dispensado e não aparece no primeiro uso nem depois de o usuário limpar tudo do site.
+- **RF81**: Editar um cartão que não existe mais, ou cuja leitura falhou, mostra a mensagem correspondente e pode ser fechado; responder um cartão que não existe mais falha com mensagem e não grava revisão.
+- **RF82**: O app pede armazenamento persistente ao abrir, ao concluir uma importação e por um botão em Ajustes → Armazenamento, que mostra se os dados estão protegidos e orienta como protegê-los.
+- **RF83**: Sem conta e sem armazenamento protegido, o resumo da importação recomenda fazer um backup.
+
 ## Critérios de aceitação
 
 - **CA-01** (RF1–RF3, US1): Dado o formulário de novo cartão, quando o usuário digita uma Frente, um Verso e três parágrafos nas Notas e salva, então ao abrir o cartão na revisão os três parágrafos aparecem separados, e o campo Notas nunca exibiu barra de rolagem interna.
@@ -259,6 +271,9 @@ Esquemas, tabelas fotografadas e mapas mentais anexados ao cartão.
 - **CA-41** (RF75, US18): Na revisão, tocar numa miniatura abre a imagem em tela cheia; pinça/roda amplia; Escape ou “fechar” volta ao cartão.
 - **CA-42** (RF77): Uma imagem adicionada offline no aparelho A aparece no aparelho B (mesma conta) depois que A reconecta e B exibe o cartão.
 - **CA-43** (RF78): Excluir um cartão com imagens faz as imagens sumirem também no outro aparelho após a sincronização.
+- **CA-44** (RF79, US19): Com a revisão aberta, quando o navegador apaga os dados do site, então aparece um aviso que só oferece “Recarregar” e nenhuma revisão é gravada depois disso.
+- **CA-45** (RF80, US19): Depois de uma perda, ao recarregar, o app explica que os dados deste aparelho foram apagados pelo navegador; ao dispensar e recarregar de novo, o aviso não volta; num navegador que nunca abriu o app, o aviso não aparece.
+- **CA-46** (RF82): Ajustes → Armazenamento mostra “Protegido” ou explica que o navegador pode apagar os dados se faltar espaço, com o botão para pedir proteção.
 
 ## Experiência do usuário
 

@@ -1,7 +1,7 @@
 import { createEmptyCard, State } from 'ts-fsrs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetDb } from '../../test/db-helpers';
-import { answer } from './scheduler';
+import { CARD_NOT_FOUND_MESSAGE, answer } from './scheduler';
 import { db, type Card, type Deck } from './db';
 import { EMPTY_CARD_MARKS } from './text-marks';
 
@@ -61,7 +61,13 @@ afterEach(async () => {
 });
 
 describe('answer', () => {
-  it('grava o novo agendamento no cartão e marca dirty', async () => {
+  it('TI-P04: recusa um cartão que não existe mais, sem gravar revisão', async () => {
+    const answering = answer({ card: makeCard(), deck: makeDeck(), rating: 'good', durationMs: 1000 });
+    await expect(answering).rejects.toThrow(CARD_NOT_FOUND_MESSAGE);
+    expect(await db.reviewLogs.count()).toBe(0);
+  });
+
+  it('TI-P05: grava o novo agendamento no cartão e marca dirty', async () => {
     const card = makeCard();
     await db.cards.add(card);
 

@@ -1,0 +1,64 @@
+<dialog
+  #blocking
+  aria-labelledby="storage-blocking-title"
+  (cancel)="keepOpen($event)"
+  (close)="syncDialogs()"
+  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-scrim"
+>
+  <div class="p-5">
+    <h2 id="storage-blocking-title" class="font-display text-body">Os dados ficaram inacessíveis</h2>
+    <p class="mt-2 text-meta text-muted">
+      O CertameCards perdeu o acesso aos dados deste navegador. Recarregue a página para continuar.
+    </p>
+    <div class="mt-5 flex justify-end">
+      <button
+        type="button"
+        autofocus
+        (click)="reload()"
+        class="min-h-11 rounded-full bg-signal px-6 py-2 text-meta font-medium text-on-signal transition hover:brightness-110"
+      >
+        Recarregar
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<dialog
+  #explanation
+  aria-labelledby="storage-lost-title"
+  (cancel)="keepOpen($event)"
+  (close)="syncDialogs()"
+  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-scrim"
+>
+  <div class="p-5">
+    <h2 id="storage-lost-title" class="font-display text-body">Os dados deste aparelho foram apagados</h2>
+    <p class="mt-2 text-meta text-muted">
+      O navegador apagou o que o CertameCards guardava aqui. Isso costuma acontecer quando falta espaço no aparelho e o
+      armazenamento do site não está protegido.
+    </p>
+    @if (signedIn()) {
+      <p class="mt-2 text-meta text-muted">Você está conectado: o que estava sincronizado volta pela sua conta.</p>
+    } @else {
+      <p class="mt-2 text-meta text-muted">Para recuperar, restaure um backup ou importe seus baralhos de novo.</p>
+    }
+    <div class="mt-4 flex flex-wrap gap-2 text-meta">
+      @if (signedIn()) {
+        <a routerLink="/conta" (click)="dismiss()" class="inline-flex min-h-11 items-center rounded-full border border-edge px-4 py-2 hover:border-signal">Conta</a>
+      } @else {
+        <a routerLink="/ajustes/backup" (click)="dismiss()" class="inline-flex min-h-11 items-center rounded-full border border-edge px-4 py-2 hover:border-signal">Backup</a>
+        <a routerLink="/importar" (click)="dismiss()" class="inline-flex min-h-11 items-center rounded-full border border-edge px-4 py-2 hover:border-signal">Importar do Anki</a>
+      }
+      <a routerLink="/ajustes" fragment="armazenamento" (click)="dismiss()" class="inline-flex min-h-11 items-center rounded-full border border-edge px-4 py-2 hover:border-signal">Armazenamento</a>
+    </div>
+    <div class="mt-5 flex justify-end">
+      <button
+        type="button"
+        autofocus
+        (click)="dismiss()"
+        class="min-h-11 rounded-full bg-signal px-6 py-2 text-meta font-medium text-on-signal transition hover:brightness-110"
+      >
+        Entendi
+      </button>
+    </div>
+  </div>
+</dialog>

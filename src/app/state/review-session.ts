@@ -7,6 +7,7 @@ import { answer as answerCard, type BinaryRating } from '../domain/scheduler';
 import type { Card } from '../domain/db';
 
 const PREFETCH_AHEAD = 3;
+const ANSWER_FAILED_MESSAGE = 'Não foi possível registrar a resposta.';
 
 @Injectable()
 export class ReviewSession {
@@ -17,6 +18,7 @@ export class ReviewSession {
   private readonly indexSignal = signal(0);
   private readonly answeringSignal = signal(false);
   private readonly doneSignal = signal(0);
+  private readonly errorSignal = signal<string | null>(null);
   private shownAt = Date.now();
 
   readonly queue = this.queueSignal.asReadonly();
@@ -26,6 +28,7 @@ export class ReviewSession {
   readonly revealed = signal(false);
   readonly answering = this.answeringSignal.asReadonly();
   readonly done = this.doneSignal.asReadonly();
+  readonly error = this.errorSignal.asReadonly();
 
   constructor() {
     let loaded = false;
@@ -38,6 +41,7 @@ export class ReviewSession {
     effect(() => {
       this.currentId();
       this.revealed.set(false);
+      this.errorSignal.set(null);
       this.shownAt = Date.now();
     });
     effect(() => {
@@ -57,8 +61,12 @@ export class ReviewSession {
     this.answeringSignal.set(true);
     try {
       await answerCard({ card, deck, rating, durationMs: Date.now() - this.shownAt });
+      this.errorSignal.set(null);
       this.doneSignal.update((n) => n + 1);
       this.indexSignal.update((i) => i + 1);
+    } catch (error: unknown) {
+      console.error('Falha ao registrar a resposta.', error);
+      this.errorSignal.set(ANSWER_FAILED_MESSAGE);
     } finally {
       this.answeringSignal.set(false);
     }

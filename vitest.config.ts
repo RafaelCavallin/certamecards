@@ -13,6 +13,7 @@ const DOM_TESTS = [
   'src/app/domain/file-delivery.test.ts',
   'src/app/domain/image-codec.test.ts',
   'src/app/domain/review-keys.test.ts',
+  'src/app/domain/storage-loss.test.ts',
   'src/app/domain/theme.test.ts',
   'src/app/state/image-prefetch.test.ts',
   'src/app/state/review-session-lifecycle.test.ts',

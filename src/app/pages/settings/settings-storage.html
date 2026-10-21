@@ -1,0 +1,32 @@
+<p class="font-mono text-label uppercase tracking-wider text-muted">Armazenamento</p>
+@switch (persistence.state()) {
+  @case ('persisted') {
+    <p class="mt-2 text-meta text-hit">Protegido: o navegador não apaga estes dados sozinho.</p>
+  }
+  @case ('unsupported') {
+    <p class="mt-2 text-meta text-muted">Este navegador não permite proteger os dados.</p>
+  }
+  @case ('best-effort') {
+    <p class="mt-2 text-meta text-muted">
+      Não protegido: o navegador pode apagar estes dados se faltar espaço no aparelho.
+    </p>
+    <button
+      type="button"
+      (click)="protect()"
+      [disabled]="asking()"
+      class="mt-4 inline-flex min-h-11 items-center rounded-xl border border-edge px-5 py-3 text-body disabled:opacity-60"
+    >
+      Proteger meus dados
+    </button>
+  }
+  @default {
+    <p class="mt-2 text-meta text-muted" aria-live="polite">Verificando…</p>
+  }
+}
+@if (persistence.state() !== 'persisted') {
+  <ul class="mt-4 list-disc space-y-1 pl-5 text-meta text-muted">
+    <li>Instalar o app (ou adicioná-lo aos favoritos) ajuda o navegador a protegê-lo.</li>
+    <li>Com uma conta, seus dados também ficam salvos na nuvem.</li>
+    <li>Sem conta, faça backups de tempos em tempos.</li>
+  </ul>
+}
