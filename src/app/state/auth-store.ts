@@ -1,6 +1,7 @@
-import { Service, signal } from '@angular/core';
+import { Service, computed, signal } from '@angular/core';
 import type { Session } from '@supabase/supabase-js';
 import { completeSignIn, decideOnSignIn, type SignInDecision, type SignInPlan } from '../domain/auth';
+import { DISPLAY_NAME_KEY, displayNameOf, normalizeDisplayName } from '../domain/display-name';
 import { getSupabase, isSyncConfigured } from '../domain/supabase';
 
 export type AuthPhase = 'disabled' | 'restoring' | 'signed-out' | 'signed-in';
@@ -17,6 +18,7 @@ export class AuthStore {
   readonly session = this.sessionSignal.asReadonly();
   readonly phase = this.phaseSignal.asReadonly();
   readonly pendingDecision = this.pendingSignal.asReadonly();
+  readonly displayName = computed(() => displayNameOf(this.sessionSignal()?.user.user_metadata));
 
   constructor() {
     void this.restore();
@@ -31,13 +33,24 @@ export class AuthStore {
     return { error: null };
   }
 
-  async signUp(email: string, password: string): Promise<AuthResult> {
+  async signUp(email: string, password: string, name: string): Promise<AuthResult> {
     const client = await getSupabase();
     if (!client) return { error: 'A sincronização não está disponível.' };
-    const { data, error } = await client.auth.signUp({ email, password });
+    const options = { data: { [DISPLAY_NAME_KEY]: normalizeDisplayName(name) } };
+    const { data, error } = await client.auth.signUp({ email, password, options });
     if (error) return { error: error.message };
     if (data.session) await this.handleSession(data.session);
     return { error: null, needsConfirmation: !data.session };
+  }
+
+  async updateDisplayName(name: string): Promise<AuthResult> {
+    const client = await getSupabase();
+    const session = this.sessionSignal();
+    if (!client || !session) return { error: 'A sincronização não está disponível.' };
+    const { data, error } = await client.auth.updateUser({ data: { [DISPLAY_NAME_KEY]: normalizeDisplayName(name) } });
+    if (error) return { error: error.message };
+    this.sessionSignal.set({ ...session, user: data.user });
+    return { error: null };
   }
 
   async signOut(): Promise<void> {

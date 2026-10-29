@@ -1,0 +1,39 @@
+<h1 class="font-display text-front">Conta</h1>
+<p class="mt-4 break-words text-body text-muted">
+  @if (auth.displayName(); as name) {
+    Conectado como <strong class="font-medium text-text">{{ name }}</strong> ({{ email() }}).
+  } @else {
+    Conectado como {{ email() }}.
+  }
+</p>
+
+@if (editing()) {
+  <form class="mt-6 grid gap-3" (submit)="$event.preventDefault(); save()">
+    <label for="profile-name" class="font-mono text-label uppercase tracking-wider text-muted">Nome</label>
+    <input
+      id="profile-name"
+      #nameInput
+      type="text"
+      autocomplete="name"
+      [value]="draft()"
+      [attr.maxlength]="nameMaxLength"
+      (input)="updateDraft(nameInput.value)"
+      class="rounded-xl border border-edge bg-surface px-4 py-3 text-body"
+    />
+    @if (error()) {
+      <p role="alert" class="text-meta text-miss">{{ error() }}</p>
+    }
+    <div class="flex flex-wrap gap-2">
+      <button type="submit" [disabled]="!canSave()" class="min-h-11 rounded-xl bg-signal px-5 py-2 text-meta font-medium text-on-signal disabled:cursor-not-allowed disabled:bg-surface disabled:text-muted">
+        {{ saving() ? 'Salvando…' : 'Salvar' }}
+      </button>
+      <button type="button" (click)="cancel()" class="min-h-11 rounded-xl border border-edge px-5 py-2 text-meta">Cancelar</button>
+    </div>
+  </form>
+} @else {
+  <button #editButton type="button" (click)="startEditing()" class="mt-6 min-h-11 rounded-xl border border-edge px-5 py-2 text-meta">
+    {{ auth.displayName() ? 'Editar nome' : 'Adicionar nome' }}
+  </button>
+}
+
+<button type="button" (click)="auth.signOut()" class="mt-6 block rounded-xl border border-edge px-5 py-3 text-body">Sair da conta</button>
