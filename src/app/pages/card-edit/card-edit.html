@@ -12,8 +12,11 @@
         title="Editar cartão"
         submitLabel="Salvar alterações"
         [initial]="state.draft"
+        [externalChanges]="deckChanged()"
         [onSubmit]="save"
-      />
+      >
+        <app-deck-select [(deckId)]="deckId" />
+      </app-card-form>
       @if (card(); as current) {
         <app-card-info class="mt-10 block xl:sticky xl:top-8 xl:mt-0" [card]="current" />
       }

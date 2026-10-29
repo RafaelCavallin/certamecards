@@ -5,5 +5,7 @@
     </p>
   }
 
-  <app-card-form title="Novo cartão" submitLabel="Salvar e adicionar outro" [onSubmit]="save" />
+  <app-card-form title="Novo cartão" submitLabel="Salvar e adicionar outro" [onSubmit]="save">
+    <app-deck-select [(deckId)]="targetDeckId" />
+  </app-card-form>
 </div>

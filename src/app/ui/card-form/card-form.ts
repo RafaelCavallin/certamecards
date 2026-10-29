@@ -19,6 +19,7 @@ export class CardForm {
   readonly title = input.required<string>();
   readonly submitLabel = input.required<string>();
   readonly initial = input<CardDraft | null>(null);
+  readonly externalChanges = input(false);
   readonly onSubmit = input.required<(draft: CardDraft) => Promise<void>>();
   readonly frontMax = FRONT_MAX;
   readonly backMax = BACK_MAX;
@@ -46,7 +47,7 @@ export class CardForm {
   }
 
   hasChanges(): boolean {
-    return hasDraftChanges(this.baseline(), this.fields.build());
+    return this.externalChanges() || hasDraftChanges(this.baseline(), this.fields.build());
   }
 
   async confirmDiscard(): Promise<boolean> {
