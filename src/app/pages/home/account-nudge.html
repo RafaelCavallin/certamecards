@@ -1,0 +1,29 @@
+@if (visible()) {
+  <section aria-labelledby="account-nudge-title" class="mt-8 max-w-xl rounded-2xl border border-line bg-surface p-5">
+    <h2 id="account-nudge-title" class="font-display text-body text-text">Guarde seus cartões numa conta</h2>
+    <p class="mt-2 text-meta text-muted">
+      @if (cards() > 0) {
+        Você já tem {{ cards() }} {{ cards() === 1 ? 'cartão' : 'cartões' }} só neste navegador.
+      } @else {
+        Seus baralhos estão só neste navegador.
+      }
+      Com uma conta grátis, tudo fica salvo na nuvem e você estuda em outros aparelhos.
+    </p>
+    <div class="mt-4 flex flex-wrap gap-2">
+      <a
+        routerLink="/conta"
+        [queryParams]="{ modo: 'criar' }"
+        class="inline-flex min-h-11 items-center rounded-full bg-signal px-5 py-2 text-meta font-medium text-on-signal transition hover:brightness-110"
+      >
+        Criar conta
+      </a>
+      <button
+        type="button"
+        (click)="dismiss()"
+        class="min-h-11 rounded-full border border-edge px-5 py-2 text-meta text-muted transition hover:border-text hover:text-text"
+      >
+        Agora não
+      </button>
+    </div>
+  </section>
+}

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Heatmap } from '../../ui/heatmap/heatmap';
+import { AccountNudge } from './account-nudge';
 import { DifficultShortcut } from './difficult-shortcut';
 import { RhythmPanel } from './rhythm-panel';
 import { StudyFilter } from './study-filter';
@@ -13,7 +14,7 @@ import type { Deck } from '../../domain/db';
 
 @Component({
   selector: 'app-home',
-  imports: [Heatmap, RhythmPanel, StudyFilter, DifficultShortcut],
+  imports: [Heatmap, RhythmPanel, StudyFilter, DifficultShortcut, AccountNudge],
   templateUrl: './home.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
