@@ -1,0 +1,21 @@
+<section aria-label="Prévia do cartão" class="w-full rounded-2xl border border-line bg-surface p-5">
+  <div class="flex items-center justify-between gap-3">
+    <h2 class="font-mono text-label uppercase tracking-[0.2em] text-signal">Prévia</h2>
+    <button
+      type="button"
+      (click)="toggle()"
+      [attr.aria-pressed]="revealed()"
+      class="min-h-11 rounded-xl border border-edge px-3 py-1 text-meta transition hover:border-signal"
+    >
+      {{ revealed() ? 'Ocultar resposta' : 'Mostrar resposta' }}
+    </button>
+  </div>
+
+  <div class="mt-4">
+    @if (empty()) {
+      <p class="text-meta text-muted">A prévia aparece aqui enquanto você digita a Frente.</p>
+    } @else {
+      <app-card-face [card]="card()" [revealed]="revealed()" />
+    }
+  </div>
+</section>

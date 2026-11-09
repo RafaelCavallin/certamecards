@@ -18,6 +18,7 @@ export class CardFormFields {
   readonly gallery = signal<GalleryItem[]>([]);
   readonly pending = signal(0);
 
+  readonly content = computed(() => this.build().content);
   readonly ready = computed(() => this.front().trim().length > 0 && this.back().trim().length > 0 && this.pending() === 0);
   readonly frontCounter = computed(() => charCounterLabel(this.front().length, FRONT_MAX));
   readonly backCounter = computed(() => charCounterLabel(this.back().length, BACK_MAX));

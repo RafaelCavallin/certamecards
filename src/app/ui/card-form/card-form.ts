@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, HostListener, computed, effect, input, signal, viewChild } from '@angular/core';
+import { CardPreview } from '../card-preview/card-preview';
 import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
 import { ImageGalleryEditor } from '../image-gallery-editor/image-gallery-editor';
 import { MarkableField } from '../markable-field/markable-field';
@@ -11,7 +12,7 @@ import { pastedImages } from '../../domain/image-input';
 
 @Component({
   selector: 'app-card-form',
-  imports: [MarkableField, TagInput, ImageGalleryEditor, ConfirmDialog],
+  imports: [MarkableField, TagInput, ImageGalleryEditor, ConfirmDialog, CardPreview],
   templateUrl: './card-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

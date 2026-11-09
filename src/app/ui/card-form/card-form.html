@@ -1,76 +1,84 @@
-<h2 class="font-display text-body">{{ title() }}</h2>
+<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_24rem] xl:items-start xl:gap-x-12 2xl:gap-x-16">
+  <div class="min-w-0">
+    <h2 class="font-display text-body">{{ title() }}</h2>
 
-<ng-content />
+    <ng-content />
 
-<label class="mt-6 block font-mono text-label uppercase tracking-wider text-muted">
-  Frente
-  <div class="mt-2 normal-case tracking-normal">
-    <app-markable-field
-      #frontField
-      [(value)]="fields.front"
-      [(marks)]="fields.frontMarks"
-      [maxLength]="frontMax"
-      placeholder="Ex.: o mandato do prefeito é de quatro anos."
-      textClass="text-front"
-    />
+    <label class="mt-6 block font-mono text-label uppercase tracking-wider text-muted">
+      Frente
+      <div class="mt-2 normal-case tracking-normal">
+        <app-markable-field
+          #frontField
+          [(value)]="fields.front"
+          [(marks)]="fields.frontMarks"
+          [maxLength]="frontMax"
+          placeholder="Ex.: o mandato do prefeito é de quatro anos."
+          textClass="text-front"
+        />
+      </div>
+    </label>
+    @if (fields.frontCounter(); as counter) {
+      <p class="mt-1 text-label text-muted">{{ counter }}</p>
+    }
+
+    <label class="mt-6 block font-mono text-label uppercase tracking-wider text-muted">
+      Verso
+      <div class="mt-2 normal-case tracking-normal">
+        <app-markable-field
+          [(value)]="fields.back"
+          [(marks)]="fields.backMarks"
+          [allowCloze]="false"
+          [maxLength]="backMax"
+          placeholder="Resposta"
+          textClass="text-body"
+        />
+      </div>
+    </label>
+    @if (fields.backCounter(); as counter) {
+      <p class="mt-1 text-label text-muted">{{ counter }}</p>
+    }
+
+    <label class="mt-6 block font-mono text-label uppercase tracking-wider text-muted">
+      Notas
+      <div class="mt-2 normal-case tracking-normal">
+        <app-markable-field
+          [(value)]="fields.notes"
+          [(marks)]="fields.notesMarks"
+          [allowCloze]="false"
+          [minRows]="6"
+          [maxLength]="notesMax"
+          placeholder="Opcional"
+          textClass="text-body"
+        />
+      </div>
+    </label>
+    @if (fields.notesCounter(); as counter) {
+      <p class="mt-1 text-label text-muted">{{ counter }}</p>
+    }
+
+    <app-image-gallery-editor [(items)]="fields.gallery" [(pending)]="fields.pending" />
+
+    <app-tag-input [(tags)]="fields.tags" />
+
+    @if (error(); as message) {
+      <p class="mt-4 text-meta text-miss">{{ message }}</p>
+    }
+
+    <button
+      type="button"
+      (click)="submit()"
+      [disabled]="!fields.ready() || saving()"
+      [attr.aria-busy]="saving()"
+      class="mt-6 w-full rounded-2xl bg-signal py-4 text-body font-medium text-on-signal transition hover:brightness-110 disabled:bg-surface disabled:text-muted"
+    >
+      {{ submitText() }}
+    </button>
   </div>
-</label>
-@if (fields.frontCounter(); as counter) {
-  <p class="mt-1 text-label text-muted">{{ counter }}</p>
-}
-
-<label class="mt-6 block font-mono text-label uppercase tracking-wider text-muted">
-  Verso
-  <div class="mt-2 normal-case tracking-normal">
-    <app-markable-field
-      [(value)]="fields.back"
-      [(marks)]="fields.backMarks"
-      [allowCloze]="false"
-      [maxLength]="backMax"
-      placeholder="Resposta"
-      textClass="text-body"
-    />
-  </div>
-</label>
-@if (fields.backCounter(); as counter) {
-  <p class="mt-1 text-label text-muted">{{ counter }}</p>
-}
-
-<label class="mt-6 block font-mono text-label uppercase tracking-wider text-muted">
-  Notas
-  <div class="mt-2 normal-case tracking-normal">
-    <app-markable-field
-      [(value)]="fields.notes"
-      [(marks)]="fields.notesMarks"
-      [allowCloze]="false"
-      [minRows]="6"
-      [maxLength]="notesMax"
-      placeholder="Opcional"
-      textClass="text-body"
-    />
-  </div>
-</label>
-@if (fields.notesCounter(); as counter) {
-  <p class="mt-1 text-label text-muted">{{ counter }}</p>
-}
-
-<app-image-gallery-editor [(items)]="fields.gallery" [(pending)]="fields.pending" />
-
-<app-tag-input [(tags)]="fields.tags" />
-
-@if (error(); as message) {
-  <p class="mt-4 text-meta text-miss">{{ message }}</p>
-}
-
-<button
-  type="button"
-  (click)="submit()"
-  [disabled]="!fields.ready() || saving()"
-  [attr.aria-busy]="saving()"
-  class="mt-6 w-full rounded-2xl bg-signal py-4 text-body font-medium text-on-signal transition hover:brightness-110 disabled:bg-surface disabled:text-muted"
->
-  {{ submitText() }}
-</button>
+  <aside class="xl:sticky xl:top-8">
+    <app-card-preview class="hidden xl:block" [content]="fields.content()" />
+    <ng-content select="[aside]" />
+  </aside>
+</div>
 
 <app-confirm-dialog
   title="Descartar alterações?"

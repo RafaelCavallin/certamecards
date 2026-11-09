@@ -7,7 +7,7 @@
   @if (state === undefined) {
     <p class="mt-6 text-meta text-muted">Carregando…</p>
   } @else if (state.status === 'ready') {
-    <div class="mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start xl:gap-x-12 2xl:gap-x-16">
+    <div class="mt-4">
       <app-card-form
         title="Editar cartão"
         submitLabel="Salvar alterações"
@@ -16,10 +16,10 @@
         [onSubmit]="save"
       >
         <app-deck-select [(deckId)]="deckId" />
+        @if (card(); as current) {
+          <app-card-info aside class="mt-10 block xl:mt-6" [card]="current" />
+        }
       </app-card-form>
-      @if (card(); as current) {
-        <app-card-info class="mt-10 block xl:sticky xl:top-8 xl:mt-0" [card]="current" />
-      }
     </div>
   } @else if (state.status === 'missing') {
     <p class="mt-6 text-meta text-muted">Cartão não encontrado.</p>
