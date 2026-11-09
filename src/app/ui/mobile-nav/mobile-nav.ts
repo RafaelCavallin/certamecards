@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, ElementRef, viewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CloseButton } from '../close-button/close-button';
 import { NAV_ITEMS } from './nav-items';
 
 /** Gatilho ☰ e painel: cada tela ganha isso de graça pelo cabeçalho da casca. Some a partir de `md`. */
 @Component({
   selector: 'app-mobile-nav',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, CloseButton],
   templateUrl: './mobile-nav.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

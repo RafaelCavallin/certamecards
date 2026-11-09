@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { DeckStore } from '../../state/deck-store';
+import { CloseButton } from '../close-button/close-button';
 import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
 import { DeckRow } from './deck-row';
 
 @Component({
   selector: 'app-deck-switcher',
-  imports: [DeckRow, ConfirmDialog],
+  imports: [DeckRow, ConfirmDialog, CloseButton],
   templateUrl: './deck-switcher.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

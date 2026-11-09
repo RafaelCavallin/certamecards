@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject, output, signal, viewChild } from '@angular/core';
 import { CardForm } from '../card-form/card-form';
+import { CloseButton } from '../close-button/close-button';
 import { ImagePrefetch } from '../../state/image-prefetch';
 import { loadCardDraftState, type CardDraft, type DraftLoadState } from '../../domain/card-draft';
 import { saveCardEdit } from '../../domain/card-save';
@@ -9,7 +10,7 @@ type DialogLoad = DraftLoadState | { status: 'loading' };
 
 @Component({
   selector: 'app-card-edit-dialog',
-  imports: [CardForm],
+  imports: [CardForm, CloseButton],
   templateUrl: './card-edit-dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -44,8 +45,12 @@ export class CardEditDialog {
     if (this.cardId === cardId) this.loadState.set(state);
   }
 
-  async onCancel(event: Event): Promise<void> {
+  onCancel(event: Event): void {
     event.preventDefault();
+    void this.requestClose();
+  }
+
+  async requestClose(): Promise<void> {
     const form = this.form();
     if (!form || (await form.confirmDiscard())) this.close();
   }

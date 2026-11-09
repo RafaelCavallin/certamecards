@@ -7,7 +7,7 @@
   <div class="flex h-full flex-col">
     <div class="flex items-center justify-between gap-2 p-3">
       <p aria-live="polite" class="font-mono text-label">{{ position() }}</p>
-      <button type="button" (click)="close()" class="min-h-11 min-w-11 rounded-xl border border-on-viewer/30 px-4 text-meta">Fechar</button>
+      <app-close-button tone="viewer" label="Fechar imagem" (pressed)="close()" />
     </div>
     <div
       #stage
