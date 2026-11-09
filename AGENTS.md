@@ -105,12 +105,9 @@ Não declare `color-scheme` e não use `dark:` do Tailwind: o tema muda só pela
 | Serviço | Porta | Como sobe |
 | --- | --- | --- |
 | Frontend (`ng serve`) | `4200` | `npm start` |
-| Supabase local — API/PostgREST | `55321` | `npx supabase start` |
-| Supabase local — Postgres | `55322` | `npx supabase start` |
-| Supabase local — Studio | `55323` | `npx supabase start` |
-| Supabase local — Inbucket (e-mails) | `55324` | `npx supabase start` |
+| Supabase de desenvolvimento | remoto (`https://<ref-dev>.supabase.co`) | nada a subir — projeto hospedado `certamecards-dev` |
 
-As portas do Supabase são as do Lingo **+1000**, de propósito: os dois projetos rodam lado a lado. Não há funções serverless (`api/`) neste projeto.
+O Supabase **não roda mais em Docker** neste projeto: desenvolvimento usa o projeto hospedado `certamecards-dev`. O `supabase/config.toml` (portas `55321…`) só vale para quem voltar a subir a stack local, e o que ele configura de auth **não** é aplicado ao projeto remoto. Não há funções serverless (`api/`) neste projeto.
 
 ## Como rodar
 
@@ -121,14 +118,25 @@ npm start            # http://localhost:4200 — app completo, offline, sem cont
 
 Sem nenhuma variável de ambiente o app funciona por completo; a área de conta mostra que a sincronização não está disponível.
 
-### Com conta e sincronização (Supabase local)
+### Com conta e sincronização (Supabase de desenvolvimento)
 
-```bash
-npx supabase start   # aplica supabase/migrations/ sozinho
-npx supabase status  # imprime URL e publishable key locais
+O `.env.local` (fora do git) aponta para o projeto `certamecards-dev`:
+
+```
+NG_APP_SUPABASE_URL=https://<ref-dev>.supabase.co
+NG_APP_SUPABASE_PUBLISHABLE_KEY=<publishable key do certamecards-dev>
+SUPABASE_DEV_DB_URL=postgresql://postgres:<senha>@db.<ref-dev>.supabase.co:5432/postgres
 ```
 
-Preencha `.env.local` com `NG_APP_SUPABASE_URL=http://127.0.0.1:55321` e `NG_APP_SUPABASE_PUBLISHABLE_KEY=<chave local>`. O `prestart`/`prebuild` roda `scripts/write-env.mjs`, que gera `src/environments/env.ts` a partir do ambiente (prioridade: variáveis do processo > `.env.local` > `.env`).
+O `prestart`/`prebuild` roda `scripts/write-env.mjs`, que gera `src/environments/env.ts` a partir do ambiente (prioridade: variáveis do processo > `.env.local` > `.env`). Ele só exporta as chaves `NG_APP_SUPABASE_*`; `SUPABASE_DEV_DB_URL` fica fora do bundle e serve apenas à CLI. A conexão direta `db.<ref>` é só IPv6 — sem IPv6, use a URL do **Session pooler** (botão *Connect* do painel). Nunca imprima nem copie essa URL para fora do `.env.local`.
+
+Configuração do `certamecards-dev` feita à mão no painel (espelha o `config.toml`): **Confirm email desligado** (o cadastro entra direto) e **Site URL** `http://localhost:4200`.
+
+Para rodar um comando da CLI contra o dev sem expor a senha:
+
+```bash
+DEV_DB_URL="$(grep '^SUPABASE_DEV_DB_URL=' .env.local | cut -d= -f2-)"
+```
 
 ## Isolamento entre desenvolvimento e produção
 
@@ -136,31 +144,34 @@ Desenvolvimento **nunca** fala com o banco de produção.
 
 | Ambiente | Banco | Quem usa |
 | --- | --- | --- |
-| Local | Supabase em Docker (`127.0.0.1:55321`) | `npm start` via `.env.local` |
+| Local | projeto hospedado `certamecards-dev` | `npm start` via `.env.local` |
 | Preview | nenhum banco; sincronização indisponível | deploys da branch `des` (escopo Preview da Vercel) |
 | Produção | projeto hospedado `certamecards` | só a branch **`prod`** (escopo Production) |
 
-- `prod` é produção, `des` é desenvolvimento; `main` não dispara deploy de produção. Os fluxos offline são validados no preview da `des`; conta e sincronização são validadas contra o Supabase local antes da promoção.
+- `prod` é produção, `des` é desenvolvimento; `main` não dispara deploy de produção. Os fluxos offline são validados no preview da `des`; conta e sincronização são validadas contra o `certamecards-dev` antes da promoção.
+- Comandos de banco da CLI usam sempre `--remote=<url>` com a URL explícita. `--remote` **sem valor** e `--linked` miram o projeto "linkado" — nunca use. (`--db-url` está obsoleto desde a CLI v3 e sai na v4.)
+- Antes de qualquer comando da CLI com `--remote=<url>` ou `--project-ref`, confira que o `<ref>` é o do `certamecards-dev` (o mesmo de `NG_APP_SUPABASE_URL` no `.env.local`). Se for o de produção, pare.
+- O `certamecards-dev` é compartilhado entre sessões e guarda dados de teste; trate-o como um banco de verdade, não como algo descartável.
 - O banco remoto `certamecards` é exclusivo da produção. Não configure `NG_APP_SUPABASE_URL` nem `NG_APP_SUPABASE_PUBLISHABLE_KEY` nos escopos Preview/Development da Vercel. Evite integração Marketplace que injete credenciais em todos os escopos.
 - Nunca `npx vercel env pull` sem argumento (sobrescreve `.env.local`). Use `npx vercel env pull .env.vercel-prod.bak`.
 - No escopo Production, só `NG_APP_SUPABASE_URL`, `NG_APP_SUPABASE_PUBLISHABLE_KEY` e (Fase 2) `NG_APP_VAPID_PUBLIC_KEY` vão para o bundle. **Nunca** `SUPABASE_SECRET_KEY`/`SERVICE_ROLE_KEY` com prefixo `NG_APP_`.
 
 ### Fluxo de uma migration nova
 
-1. Local: `npx supabase db reset` e validação do banco e dos fluxos de conta/sync.
+1. Desenvolvimento: revise com `npx supabase db push --remote="$DEV_DB_URL" --dry-run`, aplique com o mesmo comando sem `--dry-run` e valide o banco e os fluxos de conta/sync contra o `certamecards-dev`. Antes do push a migration pode ser editada à vontade; **depois de aplicada no dev, correção é migration nova**. Recriar o dev do zero (`npx supabase db reset --remote="$DEV_DB_URL"`, que apaga todos os dados dele) só com pedido do Rafael.
 2. Preview: validar os fluxos offline sem variáveis do Supabase.
-3. Produção: só com pedido explícito do Rafael, aplicar por `npx supabase db push --db-url "postgresql://postgres:<senha>@db.<ref-prod>.supabase.co:5432/postgres"`, antes do deploy que depende dela. Nunca usar `--linked`.
+3. Produção: só com pedido explícito do Rafael, aplicar por `npx supabase db push --remote="postgresql://postgres:<senha>@db.<ref-prod>.supabase.co:5432/postgres"`, antes do deploy que depende dela. Nunca usar `--linked` nem `--remote` sem valor.
 
 Toda coluna nova em `cards`/`decks`/`user_settings` exige **reemitir `sync_push` inteira** na mesma migration (lista do insert, select e `on conflict`) e atualizar `domain/sync-rows.ts` — sem isso o campo é descartado em silêncio a cada push. Novas marcas de texto **não** precisam disso: moram no `marks jsonb`. `cards.tags` e `user_settings` (Fase 2) já estão na migration inicial; imagens e push têm migration e RPC próprias.
 
 ### Edge Functions e agendamento (Fase 2)
 
 ```bash
-npx supabase functions serve send-reminders            # local
+npx supabase functions deploy send-reminders --project-ref <ref-dev>   # desenvolvimento
 npx supabase functions deploy send-reminders --project-ref <ref-prod>  # só com pedido explícito do Rafael
 ```
 
-Segredos da função (`VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `REMINDERS_TOKEN`) vão com `npx supabase secrets set` no projeto certo — nunca no repositório. O `cron.schedule` do lembrete é aplicado à mão em cada ambiente (usa segredos do Vault); o SQL está na techspec. Não há deploy hospedado de desenvolvimento.
+`functions serve` depende da stack em Docker e não é mais o fluxo do projeto: a função é testada no `certamecards-dev`. Segredos da função (`VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `REMINDERS_TOKEN`) vão com `npx supabase secrets set --project-ref <ref>` no projeto certo — nunca no repositório. O `cron.schedule` do lembrete é aplicado à mão em cada ambiente (usa segredos do Vault); o SQL está na techspec.
 
 ## Comandos de validação
 
@@ -196,9 +207,11 @@ Não edite skills de terceiros. Cada skill em `.agents/skills/` precisa de symli
 | Precisa de | Suba | Porta |
 | --- | --- | --- |
 | Só UI e estudo | `npm start -- --port <porta>` | livre em `4200–4299` |
-| Conta e sync | `npx supabase start` | fixas `55321–55327` |
+| Conta e sync | o mesmo `npm start`, com o `.env.local` apontando para o `certamecards-dev` | — (remoto) |
 
-Confira a porta (`ss -ltn "sport = :<porta>"`), registre no relatório o que subiu e, ao terminar — inclusive se interrompido —, encerre só os processos que você iniciou. Se `supabase start` acusar porta ocupada, é outro projeto: `npx supabase stop --project-id <id>` (nunca `--no-backup`) e avise.
+Confira a porta (`ss -ltn "sport = :<porta>"`), registre no relatório o que subiu e, ao terminar — inclusive se interrompido —, encerre só os processos que você iniciou. Não rode `npx supabase start`. Se o `.env.local` não tiver as variáveis do dev, pare e avise — não as invente nem use as de produção.
+
+Usuários de teste: crie pelo próprio cadastro do app, com e-mail próprio da execução (`qa-<AAAAMMDD-HHMM>@example.com`) — não há Inbucket nem confirmação por e-mail no dev. Registre no relatório os usuários criados. Nunca use a conta pessoal do Rafael.
 
 ## Commits
 
@@ -209,7 +222,8 @@ Confira a porta (`ss -ltn "sport = :<porta>"`), registre no relatório o que sub
 Sem pedido explícito do Rafael na conversa:
 
 - Promover para produção (merge na `prod`, deploy de produção).
-- Rodar migration em produção ou `npx supabase db push --linked`. Use sempre `--db-url`.
+- Rodar migration em produção, ou qualquer comando de banco com `--linked` ou `--remote` sem valor. Use sempre `--remote=<url>`.
+- `npx supabase db reset` em qualquer banco remoto, inclusive o `certamecards-dev`.
 - `npx vercel env pull` sem argumento.
 - Escrever variáveis no escopo Production da Vercel (prepare o comando e entregue).
 - Editar migration já aplicada — mudança de schema é sempre migration nova.
