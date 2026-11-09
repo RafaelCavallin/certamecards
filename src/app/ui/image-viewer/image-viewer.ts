@@ -1,5 +1,6 @@
 import type { PanzoomObject } from '@panzoom/panzoom';
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, HostListener, computed, inject, input, signal, viewChild } from '@angular/core';
+import { CloseButton } from '../close-button/close-button';
 import { ImageThumb } from '../image-thumb/image-thumb';
 import type { GalleryImage } from '../../domain/card-images';
 import { imageAlt } from '../../domain/image-labels';
@@ -12,7 +13,7 @@ const ZOOM_STEP = 0.5;
 
 @Component({
   selector: 'app-image-viewer',
-  imports: [ImageThumb],
+  imports: [CloseButton, ImageThumb],
   templateUrl: './image-viewer.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

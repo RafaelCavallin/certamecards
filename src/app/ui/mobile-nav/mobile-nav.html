@@ -16,11 +16,9 @@
   (cancel)="closeMenu()"
 >
   <div class="flex h-full flex-col overflow-y-auto px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[calc(1.5rem+env(safe-area-inset-top))]">
-    <div class="flex items-baseline justify-between">
+    <div class="flex items-center justify-between">
       <p class="font-mono text-label uppercase tracking-wider text-muted">Menu</p>
-      <button type="button" (click)="closeMenu()" aria-label="Fechar menu" class="-mr-2 p-2 font-mono text-label text-muted hover:text-signal">
-        fechar
-      </button>
+      <app-close-button label="Fechar menu" (pressed)="closeMenu()" class="-mr-2" />
     </div>
 
     <nav class="mt-4 flex flex-col">

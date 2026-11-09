@@ -1,0 +1,7 @@
+@if (canChoose()) {
+  <label class="mt-6 block font-mono text-label uppercase tracking-wider text-muted" for="card-deck">Baralho</label>
+  <select #deckSelect id="card-deck" (change)="deckId.set(deckSelect.value)"
+    class="mt-2 min-h-11 w-full rounded-xl border border-edge bg-surface px-4 py-3 text-meta text-text outline-none focus:border-signal">
+    @for (deck of decks(); track deck.id) { <option [value]="deck.id" [selected]="deck.id === deckId()">{{ deck.name }}</option> }
+  </select>
+}

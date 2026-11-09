@@ -10,15 +10,15 @@ O QA só estará **APROVADO** quando todos os critérios de aceitação do PRD t
 
 Para os fluxos de interface, use a skill **`agent-browser`** — é a ferramenta de navegador deste projeto. **Não há Playwright instalado nem pasta `e2e/`**: os casos `E2E-*` da TechSpec são executados à mão pelo navegador, com captura de tela como evidência. Não rode `npx playwright` nem crie `e2e/*.spec.ts` sem alinhar antes com o usuário.
 
-O app é offline-first: boa parte dos critérios se valida com `npm start` puro, sem variável de ambiente nenhuma. Só suba `npx supabase start` quando o critério envolver conta e sincronização. Sem as variáveis, a área de conta mostra que a sincronização não está disponível — isso é comportamento esperado, não bug.
+O app é offline-first: boa parte dos critérios se valida com `npm start` puro, sem variável de ambiente nenhuma. Só use o Supabase de desenvolvimento (`certamecards-dev`, hospedado, via `.env.local`) quando o critério envolver conta e sincronização. Sem as variáveis, a área de conta mostra que a sincronização não está disponível — isso é comportamento esperado, não bug.
 
 ## Fluxo
 
 1. **Analisar** — leia o `AGENTS.md`, todas as rules em `.agents/rules/`, o PRD, a TechSpec e cada arquivo de tarefa; monte um checklist com um item de verificação por critério de aceitação (`CA-*`) e associe os casos de teste correspondentes (`TU-*`, `TI-*` e `E2E-*`).
    **Conclua quando:** houver um item de verificação e pelo menos um caso de teste associado a cada critério de aceitação do PRD.
 
-2. **Preparar o ambiente** — suba **só** os serviços que os critérios exigem, seguindo “Como um agente sobe o app” no `AGENTS.md`: `npm start -- --port <4200–4299>` e `npx supabase start` (portas fixas `55321–55327`, não realocáveis) quando precisar de conta e sync. Verifique a porta antes de subir, registre porta e processo e abra a aplicação com a skill `agent-browser`.
-   Com Supabase local, crie um usuário de teste próprio — a conta real não existe nesse banco — e pegue o e-mail de confirmação no Inbucket (`http://localhost:55324`), não numa caixa de entrada real. O IndexedDB é isolado por origem, então cada porta tem seu próprio banco local.
+2. **Preparar o ambiente** — suba **só** os serviços que os critérios exigem, seguindo “Como um agente sobe o app” no `AGENTS.md`: `npm start -- --port <4200–4299>`; para conta e sync, o mesmo app com o `.env.local` apontando para o `certamecards-dev` (não rode `npx supabase start`; se as variáveis do dev faltarem, pare e avise). Verifique a porta antes de subir, registre porta e processo e abra a aplicação com a skill `agent-browser`.
+   Para conta e sync, crie um usuário de teste próprio pelo cadastro do app (`qa-<AAAAMMDD-HHMM>@example.com`) — o dev não pede confirmação por e-mail. Nunca use a conta pessoal do Rafael e registre no `qa.md` os usuários criados. O IndexedDB é isolado por origem, então cada porta tem seu próprio banco local.
    **Conclua quando:** os serviços necessários responderem, a página inicial estiver carregada e as URLs e portas usadas estiverem registradas.
 
 3. **Testar cada fluxo (E2E)** — para cada critério de aceitação com fluxo de interface, execute o caso E2E correspondente com a skill `agent-browser` e verifique o resultado esperado no estado da aplicação. Quando houver comportamento inesperado, investigue o estado da interface, o console do navegador (`agent-browser console`), as requisições e respostas (`agent-browser network`) e a saída do `ng serve` antes de registrar ou corrigir o bug. Capture uma evidência visual (`agent-browser screenshot`), salve-a em `tasks/prd-[slug]/evidences/`, marque o resultado como PASSOU ou FALHOU e registre cada falha no `qa.md`.
@@ -57,4 +57,4 @@ O app é offline-first: boa parte dos critérios se valida com `npm start` puro,
 9. **Reportar** — gere o `qa.md` seguindo `./references/TEMPLATE.md` desta skill, incluindo os bugs corrigidos, os testes de regressão e as evidências finais.
    **Conclua quando:** o `qa.md` estiver gerado conforme o template e atualizado com os resultados finais.
 
-10. **Encerrar o ambiente** — desligue todos os serviços iniciados por esta execução (`npx supabase stop` só se foi você quem o subiu, e nunca com `--no-backup`), feche o navegador (`agent-browser close`), encerre os processos de forma graciosa e confirme que as portas e containers foram liberados. Não encerre processos do usuário ou de outra sessão. Faça essa limpeza também se o QA for interrompido, bloqueado ou reprovado.
+10. **Encerrar o ambiente** — desligue todos os serviços iniciados por esta execução, feche o navegador (`agent-browser close`), encerre os processos de forma graciosa e confirme que as portas foram liberadas. O `certamecards-dev` é hospedado e compartilhado: não há nada dele para desligar. Não encerre processos do usuário ou de outra sessão. Faça essa limpeza também se o QA for interrompido, bloqueado ou reprovado.

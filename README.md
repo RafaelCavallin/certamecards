@@ -33,14 +33,15 @@ npm start            # http://localhost:4200
 
 Roda **sem nenhuma variável de ambiente**: tudo funciona no aparelho e a área de conta avisa que a sincronização não está disponível.
 
-Para conta e sincronização com um Supabase local (requer Docker):
+Para conta e sincronização, o desenvolvimento usa um projeto Supabase hospedado só para isso (`certamecards-dev`), separado do de produção. Preencha `.env.local` com:
 
-```bash
-npx supabase start   # aplica supabase/migrations/
-npx supabase status  # mostra URL e publishable key
+```
+NG_APP_SUPABASE_URL=https://<ref-dev>.supabase.co
+NG_APP_SUPABASE_PUBLISHABLE_KEY=<publishable key do certamecards-dev>
+SUPABASE_DEV_DB_URL=postgresql://postgres:<senha>@db.<ref-dev>.supabase.co:5432/postgres
 ```
 
-Preencha `.env.local` com `NG_APP_SUPABASE_URL=http://127.0.0.1:55321` e `NG_APP_SUPABASE_PUBLISHABLE_KEY=<chave local>`. O `scripts/write-env.mjs` gera `src/environments/env.ts` antes do `start` e do `build`.
+O `scripts/write-env.mjs` gera `src/environments/env.ts` antes do `start` e do `build`, levando só as duas chaves `NG_APP_*`. A `SUPABASE_DEV_DB_URL` serve para aplicar migrations no dev (`npx supabase db push --remote="<url>"`). Detalhes em [AGENTS.md](AGENTS.md).
 
 ### Scripts
 

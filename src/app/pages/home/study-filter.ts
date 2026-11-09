@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, ElementRef, computed, input, output, viewChild } from '@angular/core';
+import { CloseButton } from '../../ui/close-button/close-button';
 import { TagFilter } from '../../ui/tag-filter/tag-filter';
 import { quickTags, toggleKey } from '../../domain/quick-tags';
 import type { TagSummary } from '../../domain/tags';
 
 @Component({
   selector: 'app-study-filter',
-  imports: [TagFilter],
+  imports: [CloseButton, TagFilter],
   templateUrl: './study-filter.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

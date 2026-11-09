@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetDb } from '../../test/db-helpers';
-import { makeTaggedCard } from '../../test/card-fixtures';
+import { makeDeck, makeTaggedCard } from '../../test/card-fixtures';
 import { makeCardImage, makeImageBlob } from '../../test/image-fixtures';
 import { newGalleryItem } from '../../test/gallery-fixtures';
 import { emptyDraft, loadCardDraft, type CardDraft } from './card-draft';
@@ -34,6 +34,10 @@ async function seedCardWithImages(): Promise<void> {
 }
 
 describe('saveNewCard', () => {
+  beforeEach(async () => {
+    await db.decks.add(makeDeck('d1'));
+  });
+
   it('grava cartão, metadados e arquivos de uma vez, com o estado FSRS inicial', async () => {
     const draft = draftWith([newGalleryItem('n1', 'Mapa'), newGalleryItem('n2')]);
 
@@ -69,6 +73,15 @@ describe('saveNewCard', () => {
 
     await expect(attempt).rejects.toThrow('outra falha');
     expect(await db.cards.count()).toBe(0);
+  });
+
+  it('recusa um baralho apagado sem gravar nada', async () => {
+    await db.decks.add(makeDeck('apagado', 500));
+
+    const attempt = saveNewCard({ deckId: 'apagado', draft: draftWith([newGalleryItem('n1')]) });
+
+    await expect(attempt).rejects.toThrow('Baralho não encontrado.');
+    expect([await db.cards.count(), await db.cardImages.count()]).toEqual([0, 0]);
   });
 });
 

@@ -21,6 +21,7 @@
       >
         Criar primeiro cartão
       </button>
+      <app-account-nudge />
     } @else {
       <div class="xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start xl:gap-x-16">
         <section class="flex min-w-0 flex-col" aria-label="Hoje">
@@ -58,6 +59,7 @@
           }
           <app-study-filter [options]="options()" [selected]="studyKeys()" (selectedChange)="setStudyKeys($event)" />
           <app-difficult-shortcut />
+          <app-account-nudge />
 
           @if (hasHistory()) {
             <button
