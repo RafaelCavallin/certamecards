@@ -4,7 +4,7 @@ import { DAY, iso, startOfToday } from './dates';
 import { db, type Card, type Deck, type ReviewLog } from './db';
 import { currentStreak } from './stats-streak';
 
-const RETENTION_WINDOW_DAYS = 30;
+export const RETENTION_WINDOW_DAYS = 30;
 const FORECAST_DAYS = 14;
 const MATURE_STABILITY_DAYS = 21;
 
@@ -53,7 +53,7 @@ function buildForecast(cards: Card[]): ForecastDay[] {
   });
 }
 
-function buildMaturity(cards: Card[]): Maturity {
+export function buildMaturity(cards: Card[]): Maturity {
   const learningStates = cards.filter((c) => c.state === State.Learning || c.state === State.Relearning);
   const review = cards.filter((c) => c.state === State.Review);
   return {

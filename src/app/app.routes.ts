@@ -18,6 +18,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/cards/cards').then((m) => m.Cards),
   },
   {
+    path: 'baralhos',
+    title: 'Baralhos',
+    canActivate: [requireDeck],
+    loadComponent: () => import('./pages/decks/decks').then((m) => m.Decks),
+  },
+  {
     path: 'cartoes/novo',
     canActivate: [requireDeck],
     canDeactivate: [confirmLeave],

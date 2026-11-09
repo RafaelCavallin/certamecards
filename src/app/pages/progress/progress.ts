@@ -10,6 +10,7 @@ import { BarChart } from '../../ui/bar-chart/bar-chart';
 import { DeckRhythm } from '../../ui/deck-rhythm/deck-rhythm';
 import { Heatmap } from '../../ui/heatmap/heatmap';
 import { DeckStore } from '../../state/deck-store';
+import { maturitySegments } from '../../domain/maturity-segments';
 import { computeStats, type Stats } from '../../domain/stats';
 
 @Component({
@@ -39,32 +40,7 @@ export class Progress {
     ];
   });
 
-  readonly maturitySegments = computed(() => {
-    const maturity = this.stats()?.maturity;
-    if (!maturity) return [];
-    const total = maturity.new + maturity.learning + maturity.mature;
-    if (total === 0) return [];
-    return [
-      {
-        label: 'firmes',
-        count: maturity.mature,
-        pct: (maturity.mature / total) * 100,
-        colorClass: 'bg-hit',
-      },
-      {
-        label: 'em consolidação',
-        count: maturity.learning,
-        pct: (maturity.learning / total) * 100,
-        colorClass: 'bg-signal',
-      },
-      {
-        label: 'novos',
-        count: maturity.new,
-        pct: (maturity.new / total) * 100,
-        colorClass: 'bg-line',
-      },
-    ];
-  });
+  readonly maturitySegments = computed(() => maturitySegments(this.stats()?.maturity));
 
   constructor() {
     effect(() => {

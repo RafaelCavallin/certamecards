@@ -1,0 +1,83 @@
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+  @if (editing()) {
+    <input
+      #nameInput
+      [value]="editName()"
+      (input)="editName.set(nameInput.value)"
+      (keydown.enter)="confirmRename()"
+      (blur)="confirmRename()"
+      aria-label="Nome do baralho"
+      class="min-w-0 flex-1 rounded-lg border border-signal bg-transparent px-2 py-1 text-body outline-none"
+    />
+  } @else {
+    <h2 class="min-w-0 truncate font-display text-front-long">{{ deck().name }}</h2>
+    @if (active()) {
+      <span class="rounded-full border border-signal px-2 font-mono text-label uppercase text-signal">ativo</span>
+    }
+  }
+</div>
+
+<div class="mt-4">
+  @if (overview(); as data) {
+    <app-deck-stats [overview]="data" />
+  } @else {
+    <p class="text-meta text-muted">Carregando…</p>
+  }
+</div>
+
+<div class="mt-5 flex flex-wrap gap-2">
+  <a
+    routerLink="/cartoes"
+    (click)="openCards.emit()"
+    class="inline-flex min-h-11 items-center rounded-xl bg-signal px-4 py-2 text-meta font-medium text-on-signal transition hover:brightness-110"
+  >
+    Gerenciar cartões
+  </a>
+  <button
+    type="button"
+    (click)="study.emit()"
+    [disabled]="(overview()?.dueToday ?? 0) === 0"
+    class="min-h-11 rounded-xl border border-edge px-4 py-2 text-meta transition hover:border-signal enabled:hover:text-signal disabled:cursor-not-allowed disabled:text-muted"
+  >
+    {{ (overview()?.dueToday ?? 0) === 0 ? 'Nada vencido' : 'Estudar' }}
+  </button>
+  <button
+    type="button"
+    (click)="openRhythm()"
+    aria-haspopup="dialog"
+    class="min-h-11 rounded-xl border border-edge px-4 py-2 text-meta transition hover:border-signal"
+  >
+    Ritmo
+  </button>
+  <button
+    type="button"
+    (click)="startRename()"
+    class="min-h-11 px-2 font-mono text-label uppercase text-muted hover:text-text"
+  >
+    renomear
+  </button>
+  <button
+    type="button"
+    (click)="removed.emit()"
+    class="min-h-11 px-2 font-mono text-label uppercase text-muted hover:text-miss"
+  >
+    excluir
+  </button>
+</div>
+
+<dialog
+  #rhythmDialog
+  [attr.aria-label]="'Ritmo de ' + deck().name"
+  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-scrim"
+  (close)="rhythmOpen.set(false)"
+>
+  @if (rhythmOpen()) {
+    <div class="p-5">
+      <div class="flex items-center justify-between gap-2">
+        <p class="min-w-0 truncate text-meta text-muted">{{ deck().name }}</p>
+        <app-close-button label="Fechar ritmo" (pressed)="closeRhythm()" class="-mr-2 shrink-0" />
+      </div>
+      <div class="mt-2"><app-deck-rhythm [deck]="deck()" /></div>
+    </div>
+  }
+</dialog>

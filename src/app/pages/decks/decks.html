@@ -1,0 +1,67 @@
+<div class="mx-auto max-w-2xl px-5 py-8 lg:max-w-5xl lg:px-10">
+  <div class="flex items-end justify-between gap-3">
+    <div>
+      <h1 class="font-display text-front">Baralhos</h1>
+      <p class="mt-1 text-meta text-muted" role="status" aria-live="polite">
+        {{ decks()?.length ?? 0 }} {{ decks()?.length === 1 ? 'baralho' : 'baralhos' }}
+      </p>
+    </div>
+    @if (!creating()) {
+      <button
+        type="button"
+        (click)="startCreate()"
+        class="min-h-11 shrink-0 rounded-xl border border-dashed border-edge px-4 py-2 text-meta text-muted transition hover:border-signal hover:text-signal"
+      >
+        + Novo baralho
+      </button>
+    }
+  </div>
+
+  @if (creating()) {
+    <div class="mt-4 flex gap-2">
+      <input
+        #newNameInput
+        [value]="newName()"
+        (input)="newName.set(newNameInput.value)"
+        (keydown.enter)="confirmCreate()"
+        placeholder="Nome do baralho"
+        aria-label="Nome do novo baralho"
+        class="min-w-0 flex-1 rounded-xl border border-edge bg-surface px-4 py-3 text-body outline-none placeholder:text-placeholder focus:border-signal"
+      />
+      <button
+        type="button"
+        (click)="confirmCreate()"
+        class="shrink-0 rounded-xl bg-signal px-4 py-2 text-meta font-medium text-on-signal"
+      >
+        Criar
+      </button>
+    </div>
+  }
+
+  @if (error(); as message) {
+    <p class="mt-4 text-meta text-miss" role="alert">{{ message }}</p>
+  }
+
+  @if (decks(); as list) {
+    <div class="mt-6 grid gap-4 lg:grid-cols-2">
+      @for (deck of list; track deck.id) {
+        <app-deck-panel
+          [deck]="deck"
+          [active]="deck.id === activeId()"
+          (openCards)="openCards(deck.id)"
+          (study)="study(deck.id)"
+          (renamed)="rename(deck.id, $event)"
+          (removed)="askRemove(deck.id)"
+        />
+      }
+    </div>
+  } @else {
+    <p class="mt-8 text-meta text-muted">Carregando…</p>
+  }
+</div>
+
+<app-confirm-dialog
+  title="Excluir baralho"
+  message="Excluir este baralho e todos os seus cartões? Não tem como desfazer."
+  (confirmed)="confirmRemove()"
+/>

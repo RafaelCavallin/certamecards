@@ -23,7 +23,7 @@ src/
 │   ├── app.ts, app.config.ts, app.routes.ts
 │   ├── domain/    TS puro: Dexie, FSRS, fila, marcas, sync, auth, stats — sem @angular/*
 │   ├── state/     Serviços Angular com signals (deck-store, auth-store, sync-store, live-query…)
-│   ├── pages/     Uma pasta por rota: home, review, cards, card-new, card-edit, progress, settings, account, no-deck
+│   ├── pages/     Uma pasta por rota: home, review, cards, decks, card-new, card-edit, progress, settings, account, no-deck
 │   └── ui/        Componentes reutilizados: markable-field, marked-text, card-form, heatmap, deck-switcher…
 └── test/          setup.ts (fake-indexeddb, Web Locks), fake-supabase.ts, db-helpers.ts
 supabase/migrations/   Fonte da verdade do banco (tabelas, RLS, RPCs sync_push e sync_push_images)
