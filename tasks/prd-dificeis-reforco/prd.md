@@ -42,10 +42,10 @@ Requisitos próprios desta entrega, derivados de RF51–RF54:
 **Pontuação de dificuldade (RF51)**
 
 - **RF51a**: A pontuação de um cartão é `2 × lapsos + erros recentes`. **Lapsos** são as vezes em que o usuário errou um cartão que já estava firmado (contados pelo agendador desde a criação do cartão). **Erros recentes** são as respostas “Errei” na revisão normal nos últimos 30 dias, contados por instante (agora menos 30 × 24 h), incluindo erros de cartões ainda em aprendizado.
-- **RF51b**: Entra na lista todo cartão do baralho ativo, não excluído, com pontuação ≥ 3. Respostas no reforço nunca entram na conta (RF53), porque não são gravadas.
+- **RF51b**: Entra na lista todo cartão do baralho ativo, não excluído, com pontuação ≥ 3 e que ainda não tenha saído pela regra de RF51k. Respostas no reforço nunca entram na conta (RF53), porque não são gravadas.
 - **RF51c**: A ordem é pela pontuação, da maior para a menor; no empate, o erro mais recente primeiro; persistindo o empate, a ordem de criação do cartão.
-- **RF51d**: Cada item mostra o começo da Frente (com as lacunas como `_____`, como na revisão antes de revelar), “errou N vezes · último erro há X dias” e as etiquetas do cartão, como chips. **N** é o total de respostas “Errei” no histórico do cartão (não só nos 30 dias). “Último erro” usa a mesma linguagem relativa do app (“hoje”, “ontem”, “há 5 dias”). Se o cartão não tiver nenhum erro no histórico local (lapsos vindos de outro aparelho antes da sincronização do histórico), mostra “errou N vezes” sem a data.
-- **RF51e**: O topo da tela mostra quantos cartões difíceis há (com o filtro aplicado) e uma explicação curta e permanente do critério: “Cartões com lapsos ou erros recentes. Lapso vale 2, erro nos últimos 30 dias vale 1; entram a partir de 3.”
+- **RF51d**: Cada item mostra o começo da Frente (com as lacunas como `_____`, como na revisão antes de revelar), “errou N vezes · último erro há X dias” e as etiquetas do cartão, como chips. **N** é o total de respostas “Errei” no histórico do cartão (não só nos 30 dias). “Último erro” usa a mesma linguagem relativa do app (“hoje”, “ontem”, “há 5 dias”). Se o cartão não tiver nenhum erro no histórico local (lapsos vindos de outro aparelho antes da sincronização do histórico), mostra “errou N vezes” sem a data. Com pelo menos 1 acerto seguido (RF51k), acrescenta “· N de 3 acertos para sair”.
+- **RF51e**: O topo da tela mostra quantos cartões difíceis há (com o filtro aplicado) e uma explicação curta e permanente do critério: “Cartões com lapsos ou erros recentes. Lapso vale 2, erro nos últimos 30 dias vale 1; entram a partir de 3 e saem depois de 3 acertos seguidos na revisão.”
 - **RF51f**: Tocar num item abre a edição do cartão; salvar ou voltar retorna à lista Difíceis, na mesma posição de rolagem. Editar não reagenda (RF5) nem muda a pontuação.
 - **RF51g**: A lista se atualiza sozinha quando o histórico muda (uma revisão feita, uma sincronização que trouxe erros de outro aparelho, um cartão excluído), sem recarregar a página.
 - **RF51h**: Sem nenhum cartão difícil no baralho ativo, a tela mostra um estado vazio que explica o critério e que a lista se forma conforme o usuário revisa, sem o botão “Reforçar”.
@@ -79,6 +79,7 @@ Requisitos próprios desta entrega, derivados de RF51–RF54:
 **Entradas de navegação**
 
 - **RF51i**: O menu (barra lateral no desktop e ☰ no celular) ganha “Difíceis”, entre “Cartões” e “Progresso”, sempre visível quando há baralho ativo.
+- **RF51k**: Um cartão sai da lista depois de **3 acertos seguidos na revisão normal** desde o último erro. Contam só os “Acertei” dados com o cartão já em revisão (firmado); “Acertei” nos passos de aprendizado ou reaprendizado não soma nem zera, e qualquer “Errei” zera a sequência. Um novo erro faz o cartão voltar à lista se a pontuação ainda for ≥ 3. Sem histórico local, a sequência é 0. O reforço não grava respostas e por isso não conta.
 - **RF51j**: A Home mostra o atalho “N cartões difíceis · Reforçar” quando o baralho ativo tem ao menos um cartão difícil. Ele leva à tela Difíceis, sem abrir a sessão direto, e não aparece no onboarding de baralho vazio. O atalho é secundário: não compete com “Estudar”.
 
 ## Critérios de aceitação
@@ -110,6 +111,7 @@ Critérios próprios desta entrega:
 - **CA-D16** (RF52f): Durante o reforço, quando o usuário edita o cartão atual e salva, então volta ao mesmo cartão com o texto corrigido, e a data da próxima revisão do cartão não muda.
 - **CA-D17** (offline, US13e): Com a rede desligada e sem conta, o usuário abre Difíceis, filtra por etiqueta, faz um reforço e vê o resumo sem nenhuma mensagem de erro.
 - **CA-D18** (US13e): Com a mesma conta em dois aparelhos, quando o aparelho A erra um cartão três vezes e sincroniza, então depois da próxima sincronização o aparelho B mostra esse cartão em Difíceis.
+- **CA-D12** (RF51k): Dado um cartão com 2 lapsos, quando o usuário o acerta 3 vezes seguidas na revisão normal, então ele sai da lista Difíceis, do atalho da Home e da contagem do baralho; com 2 acertos ele continua, com “2 de 3 acertos para sair”; um novo “Errei” o traz de volta.
 - **CA-D19** (RF51i, RF51j): Com baralho ativo, o menu mostra “Difíceis” entre “Cartões” e “Progresso”, no desktop e no celular; com 4 difíceis, a Home mostra “4 cartões difíceis · Reforçar”, que leva à tela Difíceis.
 - **CA-D20** (legibilidade): Em 360 px, a tela Difíceis, a sessão de reforço e o resumo não têm rolagem horizontal, e nenhum texto fica abaixo da escala do produto.
 

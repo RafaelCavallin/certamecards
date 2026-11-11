@@ -15,7 +15,8 @@ O reforço é **somente leitura** por construção. A sessão é uma máquina de
 | Camada | Módulo | Novo/mod. | Papel |
 | --- | --- | --- | --- |
 | domain | `difficulty.ts` | novo | Constantes da regra; `difficultyScore`; `countRecentErrors`, `summarizeErrorHistory` (puros sobre `ReviewLog[]`); `rankDifficult` (corte + ordem); `filterDifficultByTags` (OU); `difficultTagOptions`. |
-| domain | `difficulty-data.ts` | novo | Leitura no Dexie: `listDifficult(deckId, now?)` (duas fases) e `countDifficult(deckId, now?)` (só a fase 1, para a Home); `liveCardIds(deckId)` para o reforço detectar exclusões. |
+| domain | `difficulty-streak.ts`, `difficulty-tags.ts` | novo | `EXIT_STREAK`, `countReviewStreaks`, `hasLeftDifficult` (RF51k); filtro e opções de etiqueta, extraídos de `difficulty.ts` para respeitar o limite de 100 linhas. |
+| domain | `difficulty-data.ts` | novo | Leitura no Dexie: `listDifficult(deckId, now?)` (duas fases) e `countDifficult(deckId, now?)` (igual ao tamanho da lista, para a Home); `liveCardIds(deckId)` para o reforço detectar exclusões. |
 | domain | `days-ago.ts` | novo | `formatDaysAgo(at, now)` (“hoje”, “ontem”, “há N dias”, por dia de calendário local) e `difficultyCaption(item, now)` (“errou N vezes · último erro há X dias”). |
 | domain | `tag-param.ts` | novo | `parseTagParam` / `serializeTagParam`: chaves de etiqueta ↔ `?etiquetas=a,b`. |
 | domain | `reinforce.ts` | novo | `REINFORCE_LIMIT = 30`; `pickReinforceCards` (top 30 + Fisher–Yates com `random` injetável); máquina de estados `startReinforce` / `answerReinforce` / `dropMissing` / `reinforceProgress` / `summarizeReinforce`. Sem I/O. |
@@ -64,7 +65,8 @@ review ─ session-shell + card-face + answer-bar + card-edit-dialog + reviewKey
 difficultyScore(input: { lapses: number; recentErrors: number }): number
 countRecentErrors(logs: readonly ReviewLog[], since: number): Map<string, number>   // só 'again', reviewedAt ≥ since
 summarizeErrorHistory(logs: readonly ReviewLog[]): Map<string, ErrorHistory>       // total de 'again' e último
-rankDifficult(input: RankInput): DifficultCard[]                                    // score ≥ 3, ordenado
+rankDifficult(input: RankInput): DifficultCard[]                                    // score ≥ 3 e sequência < EXIT_STREAK, ordenado
+isDifficult(card: Card, recent: ReadonlyMap<string, number>, streaks: ReadonlyMap<string, number>): boolean
 filterDifficultByTags(list: readonly DifficultCard[], keys: readonly string[]): DifficultCard[]  // OU; [] = todos
 difficultTagOptions(list: readonly DifficultCard[]): TagSummary[]                   // summarizeTags dos difíceis
 
@@ -244,6 +246,7 @@ Regras de navegação:
 | `LAPSE_WEIGHT` | `2` | `difficulty.ts` |
 | `RECENT_ERROR_WINDOW_MS` | `30 * DAY` (de `dates.ts`) | `difficulty.ts` |
 | `DIFFICULT_THRESHOLD` | `3` | `difficulty.ts` |
+| `EXIT_STREAK` | `3` | `difficulty-streak.ts` |
 | `REINFORCE_LIMIT` | `30` | `reinforce.ts` |
 | `TAG_PARAM` | `'etiquetas'` | `tag-param.ts` |
 
@@ -296,6 +299,8 @@ Prioridade (regra 3 de `tests.md`): primeiro a garantia de que o reforço não g
 | TI-D1 | `listDifficult` no Dexie real | CA-28, CA-D1, CA-D2 | Ignora cartões excluídos e de outro baralho (com logs de mesmo `cardId` semeados); `totalErrors` conta o histórico inteiro; `recentErrors` só os 30 dias; a ordem é a de TU-D2. |
 | TI-D2 | Terceiro erro pela revisão normal faz o cartão aparecer | CA-D3 | Um cartão com 2 erros recentes não está na lista; depois de `scheduler.answer` com `again`, `listDifficult` o inclui com `recentErrors: 3`. |
 | TI-D3 | `countDifficult` igual a `listDifficult(...).length` | CA-D4, CA-D19 | Baralho sem difíceis → 0; com 4 → 4, nos mesmos dados. |
+| TU-D11 | `countReviewStreaks`, `hasLeftDifficult` e saída em `rankDifficult` | RF51k, CA-D12 | 3 `good` em revisão depois de `again` → 3; `again` zera; `good` em aprendizado não soma nem zera; 4 lapsos com sequência 3 ficam fora, com 2 entram com `streak: 2`. |
+| TI-D5 | Saída por acertos seguidos no Dexie | RF51k, CA-D12 | 2 lapsos + 3 `good` em revisão saem de `listDifficult` e `countDifficult`; novo `again` traz de volta; 3 `answer(... 'good')` reais o tiram. |
 | TI-D4 | Logs vindos do pull entram na pontuação | CA-D18 | Com `fake-supabase`, o pull de três `review_logs` `again` de outro aparelho para um cartão local faz `listDifficult` incluí-lo. |
 | TI-D5 | `liveCardIds` reflete a exclusão | RF53e | Após `deleteCards([id])`, o id não aparece; `dropMissing` com esse conjunto tira o cartão da sessão. |
 
@@ -345,7 +350,7 @@ Sem backend novo, nada a expor.
 
 ### Principais decisões
 
-- **Duas fases de leitura.** A pontuação só precisa dos logs dos últimos 30 dias (faixa do índice `reviewedAt`), e o “errou N vezes” precisa do histórico inteiro só dos candidatos (`cardId` `anyOf`). Ler todos os logs do baralho (até 50.000) a cada mudança custaria mais que a meta de 500 ms. A `countDifficult` da Home para na fase 1.
+- **Duas fases de leitura.** A pontuação só precisa dos logs dos últimos 30 dias (faixa do índice `reviewedAt`), e o “errou N vezes” precisa do histórico inteiro só dos candidatos (`cardId` `anyOf`). Ler todos os logs do baralho (até 50.000) a cada mudança custaria mais que a meta de 500 ms. Como a saída por acertos seguidos (RF51k) precisa do histórico do cartão, a `countDifficult` da Home também passa pela fase 2 e devolve `listDifficult(...).length`.
 - **Histórico dos candidatos por consultas `equals` em uma transação, não `anyOf`.** Medido no E2E-D6 (build de produção, 5.000 cartões e 50.000 revisões): o `anyOf` com 734 ids levou ~6,5 s; as consultas `equals` em paralelo, ~0,7 s. Com ~100 difíceis a tela abre em ~0,3 s; com 734 (15% do baralho, caso extremo) fica em ~0,7 s, acima da meta de 500 ms.
 - **Erros por `cardId`, não por `log.deckId`.** Um log é atribuído ao baralho do cartão atual. Isso protege a regra se algum dia houver mover cartão entre baralhos, e não custa nada a mais.
 - **Sessão como máquina de estados pura.** Toda a regra do reforço (sorteio, volta do erro, placar, poda) é testável sem Angular e conta na cobertura. O serviço de `state/` só guarda o estado e os `Card`.

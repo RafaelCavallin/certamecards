@@ -1,7 +1,8 @@
 import { DAY } from './dates';
 import { liveCards } from './cards';
 import { db, type Card, type Deck, type ReviewLog } from './db';
-import { countRecentErrors, isDifficultCandidate } from './difficulty';
+import { countRecentErrors, isDifficult } from './difficulty';
+import { countReviewStreaks } from './difficulty-streak';
 import { queueCount } from './queue';
 import { RETENTION_WINDOW_DAYS, buildMaturity, type Maturity } from './stats';
 
@@ -31,12 +32,13 @@ function lastReviewOf(logs: readonly ReviewLog[]): number | null {
 export function summarizeDeck(cards: Card[], logs: ReviewLog[], now: number): DeckSummary {
   const since = now - RETENTION_WINDOW_DAYS * DAY;
   const recentErrors = countRecentErrors(logs, since);
+  const streaks = countReviewStreaks(logs);
   return {
     total: cards.length,
     maturity: buildMaturity(cards),
     retention30: retentionOf(logs, since),
     reviewsTotal: logs.length,
-    difficult: cards.filter((card) => isDifficultCandidate(card, recentErrors)).length,
+    difficult: cards.filter((card) => isDifficult(card, recentErrors, streaks)).length,
     lastReviewAt: lastReviewOf(logs),
   };
 }

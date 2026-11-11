@@ -2,7 +2,7 @@ import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { DeckStore } from './deck-store';
 import { ImagePrefetch } from './image-prefetch';
 import { liveQueryFor } from './live-query';
-import { filterDifficultByTags } from '../domain/difficulty';
+import { filterDifficultByTags } from '../domain/difficulty-tags';
 import { listDifficult, liveCardIds } from '../domain/difficulty-data';
 import {
   answerReinforce,

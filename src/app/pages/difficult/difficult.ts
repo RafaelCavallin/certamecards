@@ -8,7 +8,7 @@ import { liveQueryFor } from '../../state/live-query';
 import { REINFORCE_LIMIT } from '../../domain/reinforce';
 import type { Card } from '../../domain/db';
 import { listDifficult } from '../../domain/difficulty-data';
-import { difficultTagOptions, filterDifficultByTags } from '../../domain/difficulty';
+import { difficultTagOptions, filterDifficultByTags } from '../../domain/difficulty-tags';
 import { TAG_PARAM, parseTagParam, serializeTagParam } from '../../domain/tag-param';
 
 @Component({

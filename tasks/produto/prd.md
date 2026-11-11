@@ -163,7 +163,7 @@ Etiquetas livres no cartão (“CESPE”, “FGV”, “pegadinha”, “Art. 37
 
 ### F12. Cartões difíceis e reforço — Fase 2
 
-- **RF51**: A tela “Difíceis” lista os cartões do baralho ativo com pontuação de dificuldade = 2 × lapsos + erros nos últimos 30 dias, a partir de 3 pontos, do mais difícil para o menos; cada item mostra “errou N vezes · último erro há X dias”.
+- **RF51**: A tela “Difíceis” lista os cartões do baralho ativo com pontuação de dificuldade = 2 × lapsos + erros nos últimos 30 dias, a partir de 3 pontos, do mais difícil para o menos; cada item mostra “errou N vezes · último erro há X dias”. O cartão sai da lista depois de 3 acertos seguidos na revisão normal desde o último erro.
 - **RF52**: “Reforçar” abre uma sessão **fora da agenda** com até 30 cartões difíceis, opcionalmente filtrados por etiqueta, na mesma interface da revisão.
 - **RF53**: Respostas no reforço **não** alteram o agendamento, o histórico nem as estatísticas; a tela avisa isso (“Reforço — não mexe na sua agenda”). Motivo: revisar antes da hora distorceria o FSRS e a retenção medida.
 - **RF54**: O fim do reforço mostra quantos acertou e quais errou, com atalho para editar cada um.
