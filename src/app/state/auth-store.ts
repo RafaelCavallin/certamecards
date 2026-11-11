@@ -1,6 +1,7 @@
 import { Service, computed, signal } from '@angular/core';
 import type { Session } from '@supabase/supabase-js';
 import { completeSignIn, decideOnSignIn, type SignInDecision, type SignInPlan } from '../domain/auth';
+import { authErrorMessage } from '../domain/auth-errors';
 import { DISPLAY_NAME_KEY, displayNameOf, normalizeDisplayName } from '../domain/display-name';
 import { getSupabase, isSyncConfigured } from '../domain/supabase';
 
@@ -28,7 +29,7 @@ export class AuthStore {
     const client = await getSupabase();
     if (!client) return { error: 'A sincronização não está disponível.' };
     const { data, error } = await client.auth.signInWithPassword({ email, password });
-    if (error) return { error: error.message };
+    if (error) return { error: authErrorMessage(error) };
     if (data.session) await this.handleSession(data.session);
     return { error: null };
   }
@@ -38,7 +39,7 @@ export class AuthStore {
     if (!client) return { error: 'A sincronização não está disponível.' };
     const options = { data: { [DISPLAY_NAME_KEY]: normalizeDisplayName(name) } };
     const { data, error } = await client.auth.signUp({ email, password, options });
-    if (error) return { error: error.message };
+    if (error) return { error: authErrorMessage(error) };
     if (data.session) await this.handleSession(data.session);
     return { error: null, needsConfirmation: !data.session };
   }
@@ -48,7 +49,7 @@ export class AuthStore {
     const session = this.sessionSignal();
     if (!client || !session) return { error: 'A sincronização não está disponível.' };
     const { data, error } = await client.auth.updateUser({ data: { [DISPLAY_NAME_KEY]: normalizeDisplayName(name) } });
-    if (error) return { error: error.message };
+    if (error) return { error: authErrorMessage(error) };
     this.sessionSignal.set({ ...session, user: data.user });
     return { error: null };
   }
