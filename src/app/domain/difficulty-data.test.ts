@@ -70,6 +70,52 @@ describe('listDifficult depois de uma resposta real', () => {
   });
 });
 
+describe('saída por acertos seguidos', () => {
+  const REVIEW = 2;
+
+  function goods(cardId: string, count: number): ReviewLog[] {
+    return Array.from({ length: count }, (_, n) => ({ ...makeLog(cardId, NOW - 1000 + n, 'good'), stateBefore: REVIEW as ReviewLog['stateBefore'] }));
+  }
+
+  function errors(cardId: string, count: number): ReviewLog[] {
+    return Array.from({ length: count }, (_, n) => makeLog(cardId, NOW - 10_000 - n * 100));
+  }
+
+  it('tira da lista e da contagem o cartão com 3 acertos depois do último erro', async () => {
+    await seed([makeTaggedCard('a', [], { lapses: 2 })], [...errors('a', 1), ...goods('a', 3)]);
+
+    expect([(await listDifficult('deck-1', NOW)).length, await countDifficult('deck-1', NOW)]).toEqual([0, 0]);
+  });
+
+  it('mantém o cartão com 2 acertos e mostra o progresso', async () => {
+    await seed([makeTaggedCard('a', [], { lapses: 2 })], [...errors('a', 1), ...goods('a', 2)]);
+
+    const [entry] = await listDifficult('deck-1', NOW);
+
+    expect(entry.streak).toBe(2);
+  });
+
+  it('traz o cartão de volta com um novo erro', async () => {
+    await seed([makeTaggedCard('a', [], { lapses: 2 })], [...errors('a', 1), ...goods('a', 3), makeLog('a', NOW - 500)]);
+
+    expect((await listDifficult('deck-1', NOW)).map((entry) => entry.card.id)).toEqual(['a']);
+  });
+
+  it('tira o cartão depois de 3 respostas reais "Acertei" em revisão', async () => {
+    const deck = makeDeck('deck-1');
+    await db.decks.add(deck);
+    await seed([makeTaggedCard('a', [], { lapses: 2, state: State.Review, due: 1, stability: 10, reps: 5, lastReview: NOW - DAY })], []);
+
+    for (let n = 0; n < 3; n += 1) {
+      const card = (await db.cards.get('a')) as Card;
+      await db.cards.update('a', { state: State.Review });
+      await answer({ card: { ...card, state: State.Review }, deck, rating: 'good', durationMs: 1000 });
+    }
+
+    expect(await countDifficult('deck-1')).toBe(0);
+  });
+});
+
 describe('countDifficult', () => {
   it('é zero sem difíceis', async () => {
     await seed([makeTaggedCard('a', [])], []);

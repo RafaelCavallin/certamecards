@@ -4,24 +4,17 @@ import { DAY } from './dates';
 import type { ReviewLog } from './db';
 import {
   countRecentErrors,
-  difficultTagOptions,
   difficultyScore,
-  filterDifficultByTags,
+  isDifficult,
   rankDifficult,
   summarizeErrorHistory,
-  type DifficultCard,
   type ErrorHistory,
 } from './difficulty';
-import { UNTAGGED_KEY } from './tag-filter';
 
 const NOW = Date.parse('2026-03-09T12:00:00Z');
 
 function makeLog(cardId: string, rating: ReviewLog['rating'], reviewedAt: number): ReviewLog {
   return { id: `${cardId}-${reviewedAt}-${rating}`, cardId, deckId: 'deck-1', rating, reviewedAt, stateBefore: 2, scheduledDays: 1, durationMs: 1000, dirty: 0 };
-}
-
-function item(id: string, tags: string[]): DifficultCard {
-  return { card: makeTaggedCard(id, tags), score: 3, recentErrors: 3, totalErrors: 3, lastErrorAt: NOW };
 }
 
 describe('difficultyScore e corte', () => {
@@ -32,7 +25,7 @@ describe('difficultyScore e corte', () => {
   it('inclui pontuação 5 e deixa de fora pontuação 2', () => {
     const cards = [makeTaggedCard('a', [], { lapses: 2 }), makeTaggedCard('b', [], { lapses: 1 })];
 
-    const ranked = rankDifficult({ cards, recent: new Map([['a', 1]]), history: new Map() });
+    const ranked = rankDifficult({ cards, recent: new Map([['a', 1]]), history: new Map(), streaks: new Map() });
 
     expect(ranked.map((entry) => [entry.card.id, entry.score])).toEqual([['a', 5]]);
   });
@@ -40,9 +33,31 @@ describe('difficultyScore e corte', () => {
   it('inclui pontuação 3 vinda só de erros recentes', () => {
     const cards = [makeTaggedCard('a', [])];
 
-    const ranked = rankDifficult({ cards, recent: new Map([['a', 3]]), history: new Map() });
+    const ranked = rankDifficult({ cards, recent: new Map([['a', 3]]), history: new Map(), streaks: new Map() });
 
     expect(ranked).toHaveLength(1);
+  });
+});
+
+describe('rankDifficult e a saída por acertos seguidos', () => {
+  const cards = [makeTaggedCard('a', [], { lapses: 4 })];
+
+  it('tira o cartão com 3 acertos seguidos mesmo com lapsos', () => {
+    const ranked = rankDifficult({ cards, recent: new Map(), history: new Map(), streaks: new Map([['a', 3]]) });
+
+    expect(ranked).toEqual([]);
+  });
+
+  it('mantém o cartão com 2 acertos seguidos e informa a sequência', () => {
+    const ranked = rankDifficult({ cards, recent: new Map(), history: new Map(), streaks: new Map([['a', 2]]) });
+
+    expect(ranked.map((entry) => [entry.card.id, entry.streak])).toEqual([['a', 2]]);
+  });
+
+  it('isDifficult aplica pontuação e sequência juntas', () => {
+    const card = makeTaggedCard('a', [], { lapses: 1 });
+
+    expect([isDifficult(card, new Map([['a', 1]]), new Map()), isDifficult(card, new Map([['a', 1]]), new Map([['a', 3]])), isDifficult(card, new Map(), new Map())]).toEqual([true, false, false]);
   });
 });
 
@@ -83,7 +98,7 @@ describe('rankDifficult ordem', () => {
       ['s5-new', { total: 3, lastAt: NOW - DAY }],
     ]);
 
-    const ranked = rankDifficult({ cards, recent, history });
+    const ranked = rankDifficult({ cards, recent, history, streaks: new Map() });
 
     expect(ranked.map((entry) => entry.card.id)).toEqual(['s7', 's5-new', 's5-old', 's5-none']);
   });
@@ -91,7 +106,7 @@ describe('rankDifficult ordem', () => {
   it('desempata pela criação mais antiga quando tudo é igual', () => {
     const cards = [makeTaggedCard('b', [], { lapses: 2, createdAt: 9 }), makeTaggedCard('a', [], { lapses: 2, createdAt: 3 })];
 
-    const ranked = rankDifficult({ cards, recent: new Map([['a', 1], ['b', 1]]), history: new Map() });
+    const ranked = rankDifficult({ cards, recent: new Map([['a', 1], ['b', 1]]), history: new Map(), streaks: new Map() });
 
     expect(ranked.map((entry) => entry.card.id)).toEqual(['a', 'b']);
   });
@@ -99,7 +114,7 @@ describe('rankDifficult ordem', () => {
   it('exclui cartão apagado mesmo que venha na entrada', () => {
     const cards = [makeTaggedCard('gone', [], { lapses: 5, deletedAt: 10 })];
 
-    expect(rankDifficult({ cards, recent: new Map(), history: new Map() })).toEqual([]);
+    expect(rankDifficult({ cards, recent: new Map(), history: new Map(), streaks: new Map() })).toEqual([]);
   });
 });
 
@@ -112,50 +127,5 @@ describe('summarizeErrorHistory', () => {
 
   it('omite o cartão sem nenhum erro', () => {
     expect(summarizeErrorHistory([makeLog('a', 'good', 100)]).has('a')).toBe(false);
-  });
-});
-
-describe('filtro por etiqueta nos difíceis', () => {
-  const list = [
-    ...['c1', 'c2'].map((id) => item(id, ['CESPE'])),
-    item('f1', ['FGV']),
-    item('both', ['CESPE', 'FGV']),
-    item('none', []),
-  ];
-
-  it('une as etiquetas escolhidas (OU)', () => {
-    expect(filterDifficultByTags(list, ['cespe', 'fgv'])).toHaveLength(4);
-  });
-
-  it('sem chaves devolve todos', () => {
-    expect(filterDifficultByTags(list, [])).toHaveLength(5);
-  });
-
-  it('chave inexistente não devolve nada', () => {
-    expect(filterDifficultByTags(list, ['outra'])).toEqual([]);
-  });
-
-  it('conta as etiquetas só entre os difíceis, com "Sem etiqueta" primeiro', () => {
-    const options = difficultTagOptions(list);
-
-    expect(options.map((option) => [option.name, option.count])).toEqual([
-      ['Sem etiqueta', 1],
-      ['CESPE', 3],
-      ['FGV', 2],
-    ]);
-  });
-
-  it('"Sem etiqueta" sozinha traz só os sem etiqueta', () => {
-    const result = filterDifficultByTags(list, [UNTAGGED_KEY]);
-
-    expect(result.map((entry) => entry.card.id)).toEqual(['none']);
-  });
-
-  it('"Sem etiqueta" se soma às etiquetas escolhidas (OU)', () => {
-    expect(filterDifficultByTags(list, ['fgv', UNTAGGED_KEY])).toHaveLength(3);
-  });
-
-  it('não oferece "Sem etiqueta" quando nenhum difícil tem etiqueta', () => {
-    expect(difficultTagOptions([item('a', []), item('b', [])])).toEqual([]);
   });
 });

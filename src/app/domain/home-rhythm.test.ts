@@ -26,7 +26,7 @@ function makeStats(overrides: Partial<Stats> = {}): Stats {
 
 describe('homeRhythm', () => {
   it('resume sequência, retenção, revisões de hoje e a previsão a partir de amanhã', () => {
-    const rhythm = homeRhythm(makeStats(), TODAY);
+    const rhythm = homeRhythm(makeStats(), [], TODAY);
 
     expect(rhythm.streak).toBe(12);
     expect(rhythm.retention30).toBe(0.87);
@@ -37,7 +37,7 @@ describe('homeRhythm', () => {
   });
 
   it('conta zero revisões hoje quando o dia ainda está em branco', () => {
-    const rhythm = homeRhythm(makeStats({ byDay: new Map([['2026-03-08', 30]]) }), TODAY);
+    const rhythm = homeRhythm(makeStats({ byDay: new Map([['2026-03-08', 30]]) }), [], TODAY);
 
     expect(rhythm.reviewedToday).toBe(0);
   });

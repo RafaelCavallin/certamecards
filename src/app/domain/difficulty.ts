@@ -1,8 +1,6 @@
 import { DAY } from './dates';
 import type { Card, ReviewLog } from './db';
-import { summarizeTags } from './tag-catalog';
-import { countUntagged, hasAnyTag, withUntaggedOption } from './tag-filter';
-import type { TagSummary } from './tags';
+import { hasLeftDifficult } from './difficulty-streak';
 
 export const LAPSE_WEIGHT = 2;
 export const RECENT_ERROR_WINDOW_MS = 30 * DAY;
@@ -19,12 +17,14 @@ export interface DifficultCard {
   recentErrors: number;
   totalErrors: number;
   lastErrorAt: number | null;
+  streak: number;
 }
 
 export interface RankInput {
   cards: readonly Card[];
   recent: ReadonlyMap<string, number>;
   history: ReadonlyMap<string, ErrorHistory>;
+  streaks: ReadonlyMap<string, number>;
 }
 
 export function difficultyScore(input: { lapses: number; recentErrors: number }): number {
@@ -59,6 +59,14 @@ export function isDifficultCandidate(card: Card, recent: ReadonlyMap<string, num
   return card.deletedAt === 0 && scoreOf(card, recent) >= DIFFICULT_THRESHOLD;
 }
 
+export function isDifficult(
+  card: Card,
+  recent: ReadonlyMap<string, number>,
+  streaks: ReadonlyMap<string, number>,
+): boolean {
+  return isDifficultCandidate(card, recent) && !hasLeftDifficult(card.id, streaks);
+}
+
 function compareDifficult(a: DifficultCard, b: DifficultCard): number {
   if (a.score !== b.score) return b.score - a.score;
   const lastA = a.lastErrorAt ?? -Infinity;
@@ -69,24 +77,14 @@ function compareDifficult(a: DifficultCard, b: DifficultCard): number {
 
 export function rankDifficult(input: RankInput): DifficultCard[] {
   return input.cards
-    .filter((card) => isDifficultCandidate(card, input.recent))
+    .filter((card) => isDifficult(card, input.recent, input.streaks))
     .map((card) => ({
       card,
       score: scoreOf(card, input.recent),
       recentErrors: input.recent.get(card.id) ?? 0,
       totalErrors: input.history.get(card.id)?.total ?? 0,
       lastErrorAt: input.history.get(card.id)?.lastAt ?? null,
+      streak: input.streaks.get(card.id) ?? 0,
     }))
     .sort(compareDifficult);
-}
-
-export function filterDifficultByTags(list: readonly DifficultCard[], keys: readonly string[]): DifficultCard[] {
-  if (keys.length === 0) return [...list];
-  const wanted = new Set(keys);
-  return list.filter((item) => hasAnyTag(item.card, wanted));
-}
-
-export function difficultTagOptions(list: readonly DifficultCard[]): TagSummary[] {
-  const cards = list.map((item) => item.card);
-  return withUntaggedOption(summarizeTags(cards), countUntagged(cards));
 }

@@ -6,7 +6,7 @@ import type { DifficultCard } from './difficulty';
 const NOW = new Date(2026, 2, 9, 0, 1).getTime();
 
 function entry(overrides: Partial<DifficultCard>, lapses = 0): DifficultCard {
-  return { card: makeTaggedCard('a', [], { lapses }), score: 3, recentErrors: 0, totalErrors: 0, lastErrorAt: null, ...overrides };
+  return { card: makeTaggedCard('a', [], { lapses }), score: 3, recentErrors: 0, totalErrors: 0, lastErrorAt: null, streak: 0, ...overrides };
 }
 
 beforeEach(() => vi.useFakeTimers());
@@ -39,5 +39,15 @@ describe('difficultyCaption', () => {
 
   it('cai nos lapsos e omite a data quando não há log local', () => {
     expect(difficultyCaption(entry({}, 2), NOW)).toBe('errou 2 vezes');
+  });
+
+  it('mostra o progresso até a saída quando há acertos seguidos', () => {
+    const caption = difficultyCaption(entry({ totalErrors: 4, lastErrorAt: yesterday, streak: 2 }), NOW);
+
+    expect(caption).toBe('errou 4 vezes · último erro ontem · 2 de 3 acertos para sair');
+  });
+
+  it('mostra o progresso mesmo sem data de erro', () => {
+    expect(difficultyCaption(entry({ streak: 1 }, 2), NOW)).toBe('errou 2 vezes · 1 de 3 acertos para sair');
   });
 });

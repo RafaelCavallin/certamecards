@@ -8,6 +8,7 @@ import {
   summarizeErrorHistory,
   type DifficultCard,
 } from './difficulty';
+import { countReviewStreaks } from './difficulty-streak';
 
 interface Candidates {
   candidates: Card[];
@@ -35,11 +36,16 @@ export async function listDifficult(deckId: string, now: number = Date.now()): P
   const { candidates, recent } = await loadCandidates(deckId, now);
   const ids = candidates.map((card) => card.id);
   const logs = await loadLogsOf(ids);
-  return rankDifficult({ cards: candidates, recent, history: summarizeErrorHistory(logs) });
+  return rankDifficult({
+    cards: candidates,
+    recent,
+    history: summarizeErrorHistory(logs),
+    streaks: countReviewStreaks(logs),
+  });
 }
 
 export async function countDifficult(deckId: string, now: number = Date.now()): Promise<number> {
-  return (await loadCandidates(deckId, now)).candidates.length;
+  return (await listDifficult(deckId, now)).length;
 }
 
 export async function liveCardIds(deckId: string): Promise<string[]> {

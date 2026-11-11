@@ -1,26 +1,23 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { CardEditDialog } from '../../ui/card-edit-dialog/card-edit-dialog';
 import { TagFilter } from '../../ui/tag-filter/tag-filter';
 import { DifficultRow } from './difficult-row';
 import { DeckStore } from '../../state/deck-store';
 import { liveQueryFor } from '../../state/live-query';
 import { REINFORCE_LIMIT } from '../../domain/reinforce';
-import type { Card } from '../../domain/db';
 import { listDifficult } from '../../domain/difficulty-data';
-import { difficultTagOptions, filterDifficultByTags } from '../../domain/difficulty';
+import { difficultTagOptions, filterDifficultByTags } from '../../domain/difficulty-tags';
 import { TAG_PARAM, parseTagParam, serializeTagParam } from '../../domain/tag-param';
 
 @Component({
   selector: 'app-difficult',
-  imports: [RouterLink, TagFilter, DifficultRow, CardEditDialog],
+  imports: [RouterLink, TagFilter, DifficultRow],
   templateUrl: './difficult.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Difficult {
   private readonly router = inject(Router);
   private readonly deckStore = inject(DeckStore);
-  private readonly editDialog = viewChild.required(CardEditDialog);
 
   readonly etiquetas = input<string>();
   readonly deckId = computed(() => this.deckStore.deck()?.id);
@@ -50,9 +47,5 @@ export class Difficult {
       queryParams: { [TAG_PARAM]: serializeTagParam(keys) },
       replaceUrl: true,
     });
-  }
-
-  edit(card: Card): void {
-    this.editDialog().open(card);
   }
 }

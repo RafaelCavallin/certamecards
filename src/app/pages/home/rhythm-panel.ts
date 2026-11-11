@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { BarChart } from '../../ui/bar-chart/bar-chart';
 import {
+  forecastEmptyMessage,
+  laterTodayLabel,
   retentionLabel,
   reviewsLabel,
   streakLabel,
@@ -25,5 +27,7 @@ export class RhythmPanel {
       { label: 'Hoje', value: reviewsLabel(rhythm.reviewedToday) },
     ];
   });
-  readonly tomorrow = computed(() => tomorrowLabel(this.rhythm().forecast));
+  readonly laterToday = computed(() => laterTodayLabel(this.rhythm().laterToday));
+  readonly emptyMessage = computed(() => forecastEmptyMessage(this.rhythm()));
+  readonly tomorrow = computed(() => (this.emptyMessage() ? null : tomorrowLabel(this.rhythm().forecast)));
 }

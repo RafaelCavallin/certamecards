@@ -59,6 +59,14 @@ describe('summarizeDeck', () => {
     expect(summarizeDeck(cards, logs, NOW).difficult).toBe(1);
   });
 
+  it('não conta o cartão que saiu da lista por acertos seguidos', () => {
+    const cards = [makeTaggedCard('hard', []), makeTaggedCard('mastered', [])];
+    const mastered = [...manyLogs('mastered', 3, 'again'), ...manyLogs('mastered', 3, 'good').map((log) => ({ ...log, id: `ok-${log.id}`, reviewedAt: log.reviewedAt + 10_000 }))];
+    const logs = [...manyLogs('hard', 3, 'again'), ...mastered];
+
+    expect(summarizeDeck(cards, logs, NOW).difficult).toBe(1);
+  });
+
   it('separa os cartões por maturidade', () => {
     const cards: Card[] = [
       makeTaggedCard('n', []),
