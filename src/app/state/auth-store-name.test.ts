@@ -9,7 +9,7 @@ const client = {
     signUp: vi.fn(async () => ({ data: { session: null }, error: null })),
     updateUser: vi.fn(async (attrs: { data: Record<string, unknown> }) => ({
       data: { user: { ...session.user, user_metadata: attrs.data } },
-      error: null as { message: string } | null,
+      error: null as { message: string; code?: string } | null,
     })),
   },
 };
@@ -53,14 +53,14 @@ describe('AuthStore — nome do usuário', () => {
     expect(store.displayName()).toBe('Ana');
   });
 
-  it('devolve o erro do Supabase e mantém o nome ao falhar a edição', async () => {
-    client.auth.updateUser.mockResolvedValueOnce({ data: { user: session.user }, error: { message: 'falhou' } });
+  it('devolve o erro do Supabase em português e mantém o nome ao falhar a edição', async () => {
+    client.auth.updateUser.mockResolvedValueOnce({ data: { user: session.user }, error: { message: 'Request rate limit reached', code: 'over_request_rate_limit' } });
     const store = new AuthStore();
     await store.signIn('teste@example.test', 'senha-local');
 
     const result = await store.updateDisplayName('Ana');
 
-    expect(result).toEqual({ error: 'falhou' });
+    expect(result.error).toMatch(/^Muitas tentativas seguidas/);
     expect(store.displayName()).toBeNull();
   });
 
