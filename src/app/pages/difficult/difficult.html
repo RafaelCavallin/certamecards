@@ -38,11 +38,9 @@
       </a>
       <ul class="mt-6">
         @for (item of filtered(); track item.card.id) {
-          <li><app-difficult-row [item]="item" [now]="now()" (edit)="edit($event)" /></li>
+          <li><app-difficult-row [item]="item" [now]="now()" /></li>
         }
       </ul>
     }
   }
 </div>
-
-<app-card-edit-dialog />
