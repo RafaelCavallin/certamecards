@@ -33,7 +33,7 @@ export async function loadHomeSnapshot(deck: Deck, studyKeys: readonly string[])
   const options = tags.map((tag) => ({ ...tag, count: counts.get(tag.key) ?? 0 }));
   const filter = await describeFilter(deck, tags, activeKeys);
   const minutes = await estimateMinutes(queue.length);
-  const rhythm = homeRhythm(stats, new Date());
+  const rhythm = homeRhythm(stats, cards, new Date());
   return { total: cards.length, queueSize: queue.length, minutes, byDay: stats.byDay, options, existingKeys, filter, rhythm };
 }
 
