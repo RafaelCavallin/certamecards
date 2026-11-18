@@ -4,16 +4,19 @@ import { confirmLeave, requireDeck, requireNoDeck } from './state/guards';
 export const routes: Routes = [
   {
     path: '',
+    title: 'Início',
     canActivate: [requireDeck],
     loadComponent: () => import('./pages/home/home').then((m) => m.Home),
   },
   {
     path: 'revisar',
+    title: 'Revisão',
     canActivate: [requireDeck],
     loadComponent: () => import('./pages/review/review').then((m) => m.Review),
   },
   {
     path: 'cartoes',
+    title: 'Cartões',
     canActivate: [requireDeck],
     loadComponent: () => import('./pages/cards/cards').then((m) => m.Cards),
   },
@@ -25,12 +28,14 @@ export const routes: Routes = [
   },
   {
     path: 'cartoes/novo',
+    title: 'Novo cartão',
     canActivate: [requireDeck],
     canDeactivate: [confirmLeave],
     loadComponent: () => import('./pages/card-new/card-new').then((m) => m.CardNew),
   },
   {
     path: 'cartoes/:id',
+    title: 'Editar cartão',
     canActivate: [requireDeck],
     canDeactivate: [confirmLeave],
     loadComponent: () => import('./pages/card-edit/card-edit').then((m) => m.CardEdit),
@@ -49,16 +54,19 @@ export const routes: Routes = [
   },
   {
     path: 'progresso',
+    title: 'Progresso',
     canActivate: [requireDeck],
     loadComponent: () => import('./pages/progress/progress').then((m) => m.Progress),
   },
   {
     path: 'ajustes',
+    title: 'Ajustes',
     canActivate: [requireDeck],
     loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
   },
   {
     path: 'ajustes/etiquetas',
+    title: 'Etiquetas',
     canActivate: [requireDeck],
     loadComponent: () => import('./pages/tags/tags').then((m) => m.Tags),
   },
@@ -75,10 +83,12 @@ export const routes: Routes = [
   },
   {
     path: 'conta',
+    title: 'Conta',
     loadComponent: () => import('./pages/account/account').then((m) => m.Account),
   },
   {
     path: 'sem-baralho',
+    title: 'Nenhum baralho',
     canActivate: [requireNoDeck],
     loadComponent: () => import('./pages/no-deck/no-deck').then((m) => m.NoDeck),
   },

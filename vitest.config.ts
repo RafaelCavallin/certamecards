@@ -2,7 +2,12 @@ import { configDefaults, defineConfig } from 'vitest/config';
 
 const DOMAIN_COVERAGE_THRESHOLD = 80;
 
-const TESTS = ['src/app/domain/**/*.test.ts', 'src/app/state/**/*.test.ts', 'scripts/**/*.test.ts'];
+const TESTS = [
+  'src/app/app.routes.test.ts',
+  'src/app/domain/**/*.test.ts',
+  'src/app/state/**/*.test.ts',
+  'scripts/**/*.test.ts',
+];
 
 const DOM_TESTS = [
   'src/app/domain/anki-cloze.test.ts',
