@@ -23,6 +23,7 @@ export class Progress {
   private readonly deckStore = inject(DeckStore);
 
   readonly deck = this.deckStore.deck;
+  readonly deckName = computed(() => this.deck()?.name ?? '');
   readonly stats = signal<Stats | undefined>(undefined);
 
   readonly retentionLabel = computed(() => {

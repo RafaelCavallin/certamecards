@@ -18,6 +18,7 @@ import {
 })
 export class RhythmPanel {
   readonly rhythm = input.required<HomeRhythm>();
+  readonly deckName = input.required<string>();
 
   readonly metrics = computed(() => {
     const rhythm = this.rhythm();
