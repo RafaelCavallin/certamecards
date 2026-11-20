@@ -42,8 +42,8 @@
         @if (deck(); as activeDeck) {
           <button type="button" (click)="openSwitcher()" class="flex min-w-0 items-center gap-2">
             <span class="max-w-20 truncate text-meta text-text sm:max-w-32">{{ activeDeck.name }}</span>
-            <app-due-badge [count]="totalDue()" label="para revisar em todos os baralhos" />
           </button>
+          <app-due-badge [count]="totalDue()" label="para revisar em todos os baralhos" />
         }
         <app-mobile-nav />
       </div>
