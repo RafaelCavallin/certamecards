@@ -1,9 +1,9 @@
-import { Service, computed, effect, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 import { createDeck, deleteDeck, ensureDefaultDeck, renameDeck } from '../domain/decks';
 import { db, type Deck } from '../domain/db';
 import { totalQueueCount } from '../domain/queue';
 import { DueTick } from './due-tick';
-import { liveQuerySignal } from './live-query';
+import { liveQuerySignal, liveQueryTicking } from './live-query';
 
 const ACTIVE_DECK_KEY = 'certamecards.activeDeck';
 
@@ -28,28 +28,22 @@ function resolveActiveDeck(decks: Deck[] | undefined, activeId: string | null): 
   return decks.find((deck) => deck.id === activeId) ?? decks[0] ?? null;
 }
 
+function liveDecks(): Promise<Deck[]> {
+  return db.decks.filter((deck) => deck.deletedAt === 0).sortBy('createdAt');
+}
+
 /** Lista de baralhos e o baralho ativo, com escrita delegada a `domain/decks.ts`. */
 @Service()
 export class DeckStore {
   private readonly dueTick = inject(DueTick);
   private readonly seeded: Promise<Deck | null> = ensureDefaultDeck();
 
-  readonly decks = liveQuerySignal(() => db.decks.filter((deck) => deck.deletedAt === 0).sortBy('createdAt'));
+  readonly decks = liveQuerySignal(liveDecks);
 
   private readonly activeDeckIdSignal = signal<string | null>(readStoredActiveDeckId());
   readonly deck = computed(() => resolveActiveDeck(this.decks(), this.activeDeckIdSignal()));
 
-  private readonly totalDueSignal = signal<number | undefined>(undefined);
-  readonly totalDue = this.totalDueSignal.asReadonly();
-
-  constructor() {
-    effect(() => {
-      const decks = this.decks();
-      this.dueTick.tick();
-      if (!decks) return;
-      void totalQueueCount(decks).then((count) => this.totalDueSignal.set(count));
-    });
-  }
+  readonly totalDue = liveQueryTicking(this.dueTick.tick, async () => totalQueueCount(await liveDecks()));
 
   switchDeck(id: string): void {
     this.activeDeckIdSignal.set(id);
@@ -80,6 +74,6 @@ export class DeckStore {
   /** Baralhos vivos, garantidos após o baralho padrão ter sido semeado — para os guards de rota. */
   async ready(): Promise<Deck[]> {
     await this.seeded;
-    return db.decks.filter((deck) => deck.deletedAt === 0).sortBy('createdAt');
+    return liveDecks();
   }
 }

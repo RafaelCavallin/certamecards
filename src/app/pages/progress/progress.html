@@ -8,25 +8,25 @@
         a retenção e a carga das próximas semanas.
       </p>
     } @else {
-      <section class="mt-8 grid grid-cols-3 gap-3">
-        @for (metric of metrics(); track metric.label) {
-          <div class="rounded-xl border border-line bg-surface px-4 py-4">
-            <p class="font-mono text-label uppercase tracking-wider text-muted">
-              {{ metric.label }}
-            </p>
-            <p class="mt-2 font-display text-front tabular-nums">{{ metric.value }}</p>
-          </div>
-        }
+      <section class="mt-8">
+        <h2 class="font-mono text-label uppercase tracking-[0.2em] text-signal">Seu ritmo global</h2>
+        <div class="mt-4 grid grid-cols-3 gap-3">
+          @for (metric of metrics(); track metric.label) {
+            <div class="rounded-xl border border-line bg-surface px-4 py-4">
+              <p class="font-mono text-label uppercase tracking-wider text-muted">
+                {{ metric.label }}
+              </p>
+              <p class="mt-2 font-display text-front tabular-nums">{{ metric.value }}</p>
+            </div>
+          }
+        </div>
       </section>
 
-      <section class="mt-10">
-        <h2 class="font-mono text-label uppercase tracking-[0.2em] text-signal">Constância</h2>
-        <div class="mt-4"><app-heatmap [counts]="s.byDay" /></div>
-      </section>
+      <div class="mt-6"><app-heatmap [counts]="s.byDay" /></div>
 
       <section class="mt-10">
         <h2 class="font-mono text-label uppercase tracking-[0.2em] text-signal">
-          Próximos 14 dias
+          Próximos 14 dias {{ deckName() }}
         </h2>
         <p class="mt-2 text-meta text-muted">
           Quantos cartões vencem por dia, com o agendamento de agora.
@@ -35,7 +35,9 @@
       </section>
 
       <section class="mt-10">
-        <h2 class="font-mono text-label uppercase tracking-[0.2em] text-signal">Maturidade</h2>
+        <h2 class="font-mono text-label uppercase tracking-[0.2em] text-signal">
+          Maturidade {{ deckName() }}
+        </h2>
         @if (maturitySegments().length) {
           <div class="mt-4 flex h-3 overflow-hidden rounded-full bg-line">
             @for (segment of maturitySegments(); track segment.label) {
@@ -56,7 +58,7 @@
 
   @if (deck(); as activeDeck) {
     <section class="mt-12 border-t border-line pt-8">
-      <app-deck-rhythm [deck]="activeDeck" />
+      <app-deck-rhythm [deck]="activeDeck" [heading]="'Ritmo ' + activeDeck.name" />
     </section>
   }
 </div>

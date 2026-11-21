@@ -39,6 +39,7 @@ export class Home {
   });
   readonly studyLabel = computed(() => studyButtonLabel(this.queueSize()));
   readonly studyKeys = computed(() => this.tagFilter.keysFor(this.deckStore.deck()?.id ?? ''));
+  readonly deckName = computed(() => this.deckStore.deck()?.name ?? '');
   readonly options = computed(() => this.snapshot()?.options ?? []);
   readonly byDay = computed(() => this.snapshot()?.byDay ?? new Map<string, number>());
   readonly hasHistory = computed(() => this.byDay().size > 0);

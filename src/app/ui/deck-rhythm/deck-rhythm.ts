@@ -17,6 +17,7 @@ const YOUNG_LIMIT_STEP = 10;
 })
 export class DeckRhythm {
   readonly deck = input.required<Deck>();
+  readonly heading = input('Ritmo');
 
   readonly newPerDayMin = NEW_PER_DAY_MIN;
   readonly newPerDayMax = NEW_PER_DAY_MAX;

@@ -1,7 +1,7 @@
 import { type Signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { liveQuery } from 'dexie';
-import { concat, of, switchMap } from 'rxjs';
+import { type Observable, concat, of, switchMap } from 'rxjs';
 
 /**
  * Único ponto onde o Dexie vira signal. `initialValue: undefined` reflete o
@@ -25,4 +25,21 @@ export function liveQueryFor<K, T>(
     ),
   );
   return toSignal(stream, { initialValue: undefined });
+}
+
+/**
+ * Refaz o `liveQuery` a cada valor de `trigger$`, além de a cada escrita no
+ * banco. Observable puro, para ser testável sem Angular.
+ */
+export function liveQueryOn<T>(trigger$: Observable<unknown>, querier: () => Promise<T> | T): Observable<T> {
+  return trigger$.pipe(switchMap(() => liveQuery(querier)));
+}
+
+/**
+ * Para consultas que dependem de `Date.now()`: o Dexie só avisa escrita, então
+ * `trigger` (o `DueTick`) força o recálculo com a passagem do tempo. Mantém o
+ * último valor enquanto recalcula, sem voltar ao placeholder a cada passo.
+ */
+export function liveQueryTicking<T>(trigger: Signal<unknown>, querier: () => Promise<T> | T): Signal<T | undefined> {
+  return toSignal(liveQueryOn(toObservable(trigger), querier), { initialValue: undefined });
 }

@@ -68,6 +68,7 @@
               aria-label="Ver progresso"
               class="mt-14 min-w-0 max-w-full self-start rounded-xl border border-transparent p-2 text-left transition hover:border-line"
             >
+              <span class="mb-2 block text-meta text-muted">Revisões · global</span>
               <app-heatmap [counts]="byDay()" />
               <span class="mt-2 block font-mono text-label uppercase tracking-wider text-muted"
                 >Ver progresso →</span
@@ -77,7 +78,7 @@
         </section>
 
         @if (rhythm(); as r) {
-          <app-rhythm-panel class="mt-12 block xl:mt-0" [rhythm]="r" />
+          <app-rhythm-panel class="mt-12 block xl:mt-0" [rhythm]="r" [deckName]="deckName()" />
         }
       </div>
     }

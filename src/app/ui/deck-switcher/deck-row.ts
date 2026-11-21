@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { queueCount } from '../../domain/queue';
 import type { Deck } from '../../domain/db';
-import { liveQuerySignal } from '../../state/live-query';
+import { DueTick } from '../../state/due-tick';
+import { liveQueryTicking } from '../../state/live-query';
 import { DueBadge } from '../due-badge/due-badge';
 
 @Component({
@@ -11,8 +12,10 @@ import { DueBadge } from '../due-badge/due-badge';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckRow {
+  private readonly dueTick = inject(DueTick);
+
   readonly deck = input.required<Deck>();
 
-  readonly count = liveQuerySignal(() => queueCount(this.deck()));
+  readonly count = liveQueryTicking(this.dueTick.tick, () => queueCount(this.deck()));
   readonly label = computed(() => `${this.count() ?? 0} para revisar`);
 }
