@@ -2,9 +2,9 @@
   #dialog
   aria-label="Editar cartão"
   (cancel)="onCancel($event)"
-  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-scrim"
+  class="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto xl:max-w-5xl rounded-2xl border border-line bg-surface p-0 text-text backdrop:bg-scrim"
 >
-  <div class="p-5">
+  <div class="p-5 xl:[&_aside]:top-14 xl:[&_aside]:mt-12">
     <div class="sticky top-0 z-10 -mb-11 -mr-2 -mt-2 flex justify-end">
       <app-close-button label="Fechar edição" (pressed)="requestClose()" />
     </div>

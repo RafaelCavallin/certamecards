@@ -18,7 +18,7 @@ import { marksOf, type MarkKind, type Marks } from '../../domain/text-marks';
 import { watchAutoGrow } from './textarea-autogrow';
 
 export const MARKABLE_FIELD_BOX =
-  'whitespace-pre-wrap break-words rounded-xl border border-line bg-surface px-4 py-3 leading-relaxed';
+  'whitespace-pre-wrap break-words rounded-xl font-body border border-line bg-surface px-4 py-3 leading-relaxed';
 
 /**
  * Campo onde o texto é escrito e marcado ao mesmo tempo: o `<textarea>` continua sendo o campo de
