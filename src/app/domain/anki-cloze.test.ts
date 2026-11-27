@@ -23,7 +23,7 @@ describe('markClozes + expandCloze — um cartão por número', () => {
   it('revela tudo no Verso e destaca a resposta daquele número', () => {
     const [c1] = sides('A {{c1::União}} legisla {{c2::privativamente}}');
 
-    expect(c1.back.marks).toEqual({ cloze: [], emphasis: [{ start: 2, end: 7 }] });
+    expect(c1.back.marks).toEqual({ cloze: [], emphasis: [{ start: 2, end: 7 }], highlight: [] });
   });
 
   it('agrupa num só cartão as ocorrências do mesmo número', () => {
@@ -71,17 +71,17 @@ describe('lacunas malformadas e aninhadas', () => {
   it('lacuna sem fechamento vira texto sem chaves', () => {
     const parsed = htmlToMarkedText(markClozes('antes {{c1::sem fim'));
 
-    expect(parsed).toEqual({ text: 'antes sem fim', emphasis: [], clozes: [] });
+    expect(parsed).toEqual({ text: 'antes sem fim', emphasis: [], highlight: [], clozes: [] });
   });
 
   it('lacuna sem número vira texto', () => {
-    expect(htmlToMarkedText(markClozes('{{c::x}} y'))).toEqual({ text: 'x y', emphasis: [], clozes: [] });
+    expect(htmlToMarkedText(markClozes('{{c::x}} y'))).toEqual({ text: 'x y', emphasis: [], highlight: [], clozes: [] });
   });
 
   it('lacunas aninhadas viram texto, as duas', () => {
     const parsed = htmlToMarkedText(markClozes('{{c1::a {{c2::b}}}} c'));
 
-    expect(parsed).toEqual({ text: 'a b c', emphasis: [], clozes: [] });
+    expect(parsed).toEqual({ text: 'a b c', emphasis: [], highlight: [], clozes: [] });
   });
 
   it('não gera cartão quando não sobra lacuna válida', () => {
@@ -90,5 +90,24 @@ describe('lacunas malformadas e aninhadas', () => {
 
   it('mantém chaves soltas fora de lacuna', () => {
     expect(htmlToMarkedText(markClozes('fim }} aqui')).text).toBe('fim }} aqui');
+  });
+});
+
+describe('lacuna com fundo colorido', () => {
+  const html = '{{c1::<span style="background:yellow">prazo</span> de <span style="background:lime">dez</span>}} dias, <span style="background:lime">salvo</span> lei';
+
+  it('na Frente, a lacuna prevalece e o marca-texto fica só fora dela', () => {
+    const [c1] = sides(html);
+
+    expect(slices(c1.front.text, c1.front.marks.cloze)).toEqual(['prazo de dez']);
+    expect(c1.front.marks.highlight?.map((range) => [c1.front.text.slice(range.start, range.end), range.color])).toEqual([['salvo', 'green']]);
+  });
+
+  it('no Verso, a resposta vira destaque e o marca-texto fica só fora dela', () => {
+    const [c1] = sides(html);
+
+    expect(slices(c1.back.text, c1.back.marks.emphasis)).toEqual(['prazo de dez']);
+    expect(c1.back.marks.highlight?.map((range) => range.color)).toEqual(['green']);
+    expect(c1.back.marks.cloze).toEqual([]);
   });
 });

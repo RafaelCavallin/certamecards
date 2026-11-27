@@ -1,11 +1,18 @@
+import { displayHighlightColor, type HighlightColor } from './highlight-colors';
+
 export interface Range {
   start: number;
   end: number;
 }
 
+export interface HighlightRange extends Range {
+  color: string;
+}
+
 export interface Marks {
   cloze: Range[];
   emphasis: Range[];
+  highlight?: HighlightRange[];
 }
 
 export type CardField = 'front' | 'back' | 'notes';
@@ -13,46 +20,54 @@ export type CardField = 'front' | 'back' | 'notes';
 export type CardMarks = Record<CardField, Marks>;
 
 export const EMPTY_CARD_MARKS: CardMarks = {
-  front: { cloze: [], emphasis: [] },
-  back: { cloze: [], emphasis: [] },
-  notes: { cloze: [], emphasis: [] },
+  front: { cloze: [], emphasis: [], highlight: [] },
+  back: { cloze: [], emphasis: [], highlight: [] },
+  notes: { cloze: [], emphasis: [], highlight: [] },
 };
 
-export type MarkKind = 'cloze' | 'emphasis';
+export type MarkKind = 'cloze' | 'emphasis' | 'highlight';
 
-export type Mark = Range & { kind: MarkKind };
+export type Mark = (Range & { kind: 'cloze' | 'emphasis' }) | (HighlightRange & { kind: 'highlight' });
 
 export interface Segment {
   text: string;
   start: number;
   kind: MarkKind | null;
+  color: HighlightColor | null;
 }
 
-/** Junta lacunas e destaques numa lista única, ordenada pelo início. */
-export function marksOf(cloze: Range[] = [], emphasis: Range[] = []): Mark[] {
+export function marksOf(marks: Partial<Marks>): Mark[] {
   return [
-    ...cloze.map((range) => ({ ...range, kind: 'cloze' as const })),
-    ...emphasis.map((range) => ({ ...range, kind: 'emphasis' as const })),
+    ...(marks.cloze ?? []).map((range) => ({ ...range, kind: 'cloze' as const })),
+    ...(marks.emphasis ?? []).map((range) => ({ ...range, kind: 'emphasis' as const })),
+    ...(marks.highlight ?? []).map((range) => ({ ...range, kind: 'highlight' as const })),
   ].sort((a, b) => a.start - b.start);
+}
+
+function plainSegment(text: string, start: number, end: number): Segment {
+  return { text: text.slice(start, end), start, kind: null, color: null };
+}
+
+function markSegment(text: string, mark: Mark): Segment {
+  const color = mark.kind === 'highlight' ? displayHighlightColor(mark.color) : null;
+  return { text: text.slice(mark.start, mark.end), start: mark.start, kind: mark.kind, color };
 }
 
 /**
  * Fatia o texto pelas marcas. Os offsets são sempre os do texto original —
  * mascarar a lacuna antes de aplicar o destaque deslocaria tudo que vem
- * depois, então as duas marcas são resolvidas na mesma passada.
+ * depois, então todas as marcas são resolvidas na mesma passada.
  */
 export function splitByMarks(text: string, marks: Mark[]): Segment[] {
   const segments: Segment[] = [];
   let cursor = 0;
   for (const mark of [...marks].sort((a, b) => a.start - b.start)) {
     if (mark.start < cursor) continue;
-    if (mark.start > cursor) {
-      segments.push({ text: text.slice(cursor, mark.start), start: cursor, kind: null });
-    }
-    segments.push({ text: text.slice(mark.start, mark.end), start: mark.start, kind: mark.kind });
+    if (mark.start > cursor) segments.push(plainSegment(text, cursor, mark.start));
+    segments.push(markSegment(text, mark));
     cursor = mark.end;
   }
-  if (cursor < text.length) segments.push({ text: text.slice(cursor), start: cursor, kind: null });
+  if (cursor < text.length) segments.push(plainSegment(text, cursor, text.length));
   return segments;
 }
 
@@ -61,27 +76,4 @@ const MIN_BLANK_LENGTH = 3;
 /** O texto que a lacuna mostra no lugar do trecho escondido. */
 export function blank(text: string): string {
   return '_'.repeat(Math.max(MIN_BLANK_LENGTH, text.length));
-}
-
-/** Encolhe a seleção até os espaços das pontas ficarem de fora. */
-export function trimRange(text: string, range: Range): Range {
-  const selected = text.slice(range.start, range.end);
-  const start = range.start + (selected.length - selected.trimStart().length);
-  const end = start + selected.trim().length;
-  return end > start ? { start, end } : { start: range.start, end: range.start };
-}
-
-/**
- * A marca que a seleção pegou, ou `null`. Com o cursor parado (seleção vazia)
- * só conta estar dentro da marca: encostar na borda é o que o usuário faz
- * para continuar digitando ao lado dela.
- */
-export function markAt(marks: Mark[], range: Range): Mark | null {
-  const isCursor = range.start === range.end;
-  const hit = marks.find((mark) =>
-    isCursor
-      ? mark.start < range.start && range.start < mark.end
-      : range.start < mark.end && mark.start < range.end,
-  );
-  return hit ?? null;
 }

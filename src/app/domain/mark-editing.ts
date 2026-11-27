@@ -1,12 +1,31 @@
-import type { Mark, MarkKind, Marks, Range } from './text-marks';
+import type { HighlightColor } from './highlight-colors';
+import type { Mark, Marks, Range } from './text-marks';
 
-/** Acrescenta uma marca nova ao tipo indicado, mantendo a lista ordenada pelo início. */
-export function addMarkRange(marks: Marks, kind: MarkKind, range: Range): Marks {
-  return { ...marks, [kind]: [...marks[kind], range].sort((a, b) => a.start - b.start) };
+export type MarkRequest =
+  | { kind: 'cloze' }
+  | { kind: 'emphasis' }
+  | { kind: 'highlight'; color: HighlightColor };
+
+function sortedByStart<T extends Range>(ranges: T[]): T[] {
+  return [...ranges].sort((a, b) => a.start - b.start);
 }
 
-/** Remove só a marca indicada, sem afetar as demais do mesmo tipo. */
-export function removeMarkRange(marks: Marks, mark: Mark): Marks {
-  const kept = marks[mark.kind].filter((range) => range.start !== mark.start);
-  return { ...marks, [mark.kind]: kept };
+export function addMark(marks: Marks, request: MarkRequest, range: Range): Marks {
+  if (request.kind === 'highlight') {
+    const highlight = sortedByStart([...(marks.highlight ?? []), { ...range, color: request.color }]);
+    return { ...marks, highlight };
+  }
+  return { ...marks, [request.kind]: sortedByStart([...marks[request.kind], range]) };
+}
+
+export function removeMark(marks: Marks, mark: Mark): Marks {
+  const current: Range[] = marks[mark.kind] ?? [];
+  return { ...marks, [mark.kind]: current.filter((range) => range.start !== mark.start) };
+}
+
+export function recolorHighlight(marks: Marks, mark: Mark, color: HighlightColor): Marks {
+  const highlight = (marks.highlight ?? []).map((range) =>
+    range.start === mark.start ? { ...range, color } : range,
+  );
+  return { ...marks, highlight };
 }

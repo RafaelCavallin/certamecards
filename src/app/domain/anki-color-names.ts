@@ -1,0 +1,25 @@
+export type NamedColor = readonly [number, number, number, number];
+
+export const NAMED_COLORS: Record<string, NamedColor> = {
+  transparent: [0, 0, 0, 0],
+  white: [255, 255, 255, 1],
+  black: [0, 0, 0, 1],
+  gray: [128, 128, 128, 1],
+  grey: [128, 128, 128, 1],
+  silver: [192, 192, 192, 1],
+  yellow: [255, 255, 0, 1],
+  gold: [255, 215, 0, 1],
+  orange: [255, 165, 0, 1],
+  lime: [0, 255, 0, 1],
+  green: [0, 128, 0, 1],
+  lightgreen: [144, 238, 144, 1],
+  pink: [255, 192, 203, 1],
+  hotpink: [255, 105, 180, 1],
+  magenta: [255, 0, 255, 1],
+  fuchsia: [255, 0, 255, 1],
+  red: [255, 0, 0, 1],
+  blue: [0, 0, 255, 1],
+  aqua: [0, 255, 255, 1],
+  cyan: [0, 255, 255, 1],
+  purple: [128, 0, 128, 1],
+};

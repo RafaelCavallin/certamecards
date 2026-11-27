@@ -11,7 +11,6 @@
     (select)="readSelection()"
     (keyup)="readSelection()"
     (pointerup)="readSelection()"
-    (blur)="onBlur()"
     [rows]="minRows()"
     [placeholder]="placeholder()"
     [attr.maxlength]="maxLength() ?? null"
@@ -28,7 +27,8 @@
   [marks]="marks()"
   [allowCloze]="allowCloze()"
   [hasSelection]="pendingSelection() !== null"
-  [markedKind]="markedMark()?.kind ?? null"
+  [markedMark]="markedMark()"
   (add)="addMark($event)"
+  (recolor)="recolorMark($event)"
   (remove)="removeMark()"
 />

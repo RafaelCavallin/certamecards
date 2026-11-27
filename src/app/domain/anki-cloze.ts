@@ -1,6 +1,6 @@
 import type { ParsedField } from './anki-char-stream';
 import { CLOZE_NUMBER_ATTRIBUTE, CLOZE_TAG } from './anki-html';
-import { subtractRanges, trimmedRanges, unionRanges } from './anki-ranges';
+import { clozeBackMarks, clozeFrontMarks } from './anki-marks';
 import type { Marks } from './text-marks';
 
 // Abertura de lacuna do Anki: {{c1:: — o número pode faltar num cartão malformado ({{c::x}})
@@ -73,8 +73,8 @@ export function expandCloze(parsed: ParsedField): ClozeSide[] {
     const hidden = parsed.clozes.filter((cloze) => cloze.n === n).map((cloze) => cloze.range);
     return {
       n,
-      front: { text: parsed.text, marks: { cloze: hidden, emphasis: trimmedRanges(parsed.text, subtractRanges(parsed.emphasis, hidden)) } },
-      back: { text: parsed.text, marks: { cloze: [], emphasis: unionRanges([...parsed.emphasis, ...hidden]) } },
+      front: { text: parsed.text, marks: clozeFrontMarks(parsed, hidden) },
+      back: { text: parsed.text, marks: clozeBackMarks(parsed, hidden) },
     };
   });
 }

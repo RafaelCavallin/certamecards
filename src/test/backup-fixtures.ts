@@ -29,7 +29,7 @@ export function makeCard(over: Partial<Card> = {}): Card {
     front: 'O mandato é de quatro anos',
     back: 'Art. 82, CF',
     notes: '',
-    marks: { ...EMPTY_CARD_MARKS, front: { cloze: [{ start: 15, end: 21 }], emphasis: [] } },
+    marks: { ...EMPTY_CARD_MARKS, front: { cloze: [{ start: 15, end: 21 }], emphasis: [], highlight: [] } },
     tags: ['CESPE'],
     due: BACKUP_NOW + BACKUP_DAY,
     stability: 12.4,

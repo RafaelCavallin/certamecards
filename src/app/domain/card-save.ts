@@ -4,6 +4,7 @@ import { newCardRecord, type CardContent } from './cards';
 import type { CardDraft } from './card-draft';
 import { db, type Card } from './db';
 import { planGallerySave, type GallerySavePlan } from './gallery-draft';
+import { normalizeCardMarks } from './text-marks-normalize';
 import { ImageError } from './image-errors';
 
 export interface NewCardSave {
@@ -61,7 +62,7 @@ export async function saveCardEdit({ cardId, draft, deckId }: CardEditSave): Pro
   return inTransaction(async () => {
     const existing = await db.cards.get(cardId);
     if (!existing) throw new Error('Cartão não encontrado.');
-    const changes = cardChanges(existing, normalizeCardContent(draft.content), deckId);
+    const changes = cardChanges(existing, keepUnknownMarks(existing, normalizeCardContent(draft.content)), deckId);
     if (changes.deckId) await requireLiveDeck(changes.deckId);
     const changed = Object.keys(changes).length > 0;
     if (changed) await db.cards.update(cardId, { ...changes, updatedAt: now });
@@ -71,6 +72,10 @@ export async function saveCardEdit({ cardId, draft, deckId }: CardEditSave): Pro
   });
 }
 
+function keepUnknownMarks(existing: Card, content: CardContent): CardContent {
+  return { ...content, marks: normalizeCardMarks({ ...existing.marks, ...content.marks }) };
+}
+
 function cardChanges(existing: Card, content: CardContent, deckId: string | undefined): CardChanges {
   const textChanged = !sameCardContent(content, pickContent(existing));
   const deckChanged = deckId !== undefined && deckId !== existing.deckId;
@@ -78,5 +83,5 @@ function cardChanges(existing: Card, content: CardContent, deckId: string | unde
 }
 
 function pickContent(card: Card): CardContent {
-  return { front: card.front, back: card.back, notes: card.notes, marks: card.marks, tags: card.tags };
+  return { front: card.front, back: card.back, notes: card.notes, marks: normalizeCardMarks(card.marks), tags: card.tags };
 }

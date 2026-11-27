@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   ElementRef,
   computed,
   inject,
@@ -12,10 +11,13 @@ import {
 import { MarkActions } from '../mark-actions/mark-actions';
 import { MarkBackdrop } from '../mark-backdrop/mark-backdrop';
 import { FieldSelection } from './field-selection';
-import { addMarkRange, removeMarkRange } from '../../domain/mark-editing';
+import { MarkEditor } from './mark-editor';
+import type { HighlightColor } from '../../domain/highlight-colors';
+import type { MarkRequest } from '../../domain/mark-editing';
 import { remapMarks } from '../../domain/text-marks-remap';
-import { marksOf, type MarkKind, type Marks } from '../../domain/text-marks';
+import { marksOf, type Marks } from '../../domain/text-marks';
 import { watchAutoGrow } from './textarea-autogrow';
+import { watchSelectionChange } from './watch-selection';
 
 export const MARKABLE_FIELD_BOX =
   'whitespace-pre-wrap break-words rounded-xl font-body border border-line bg-surface px-4 py-3 leading-relaxed';
@@ -29,6 +31,7 @@ export const MARKABLE_FIELD_BOX =
   imports: [MarkActions, MarkBackdrop],
   templateUrl: './markable-field.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(focusout)': 'onFocusOut($event)' },
 })
 export class MarkableField {
   readonly value = model.required<string>();
@@ -41,29 +44,26 @@ export class MarkableField {
   readonly boxClass = MARKABLE_FIELD_BOX;
 
   private readonly field = viewChild.required<ElementRef<HTMLTextAreaElement>>('field');
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly element = (): HTMLTextAreaElement => this.field().nativeElement;
 
-  readonly allMarks = computed(() => marksOf(this.marks().cloze, this.marks().emphasis));
+  readonly allMarks = computed(() => marksOf(this.marks()));
   private readonly selection = new FieldSelection(() => this.allMarks());
   readonly markedMark = this.selection.markedMark;
   readonly pendingSelection = this.selection.pendingSelection;
+  private readonly editor = new MarkEditor({ marks: this.marks, selection: this.selection, field: this.element });
 
   constructor() {
-    const destroyRef = inject(DestroyRef);
-    const onSelectionChange = (): void => this.handleDocumentSelectionChange();
-    document.addEventListener('selectionchange', onSelectionChange);
-    destroyRef.onDestroy(() => document.removeEventListener('selectionchange', onSelectionChange));
-    watchAutoGrow(
-      () => this.field().nativeElement,
-      () => this.value(),
-    );
+    watchSelectionChange(this.element, () => this.readSelection());
+    watchAutoGrow(this.element, () => this.value());
   }
 
   focus(): void {
-    this.field().nativeElement.focus();
+    this.element().focus();
   }
 
   readSelection(): void {
-    const el = this.field().nativeElement;
+    const el = this.element();
     this.selection.read(this.value(), el.selectionStart, el.selectionEnd);
   }
 
@@ -73,27 +73,21 @@ export class MarkableField {
     this.marks.set(remapMarks(before, text, this.marks()));
   }
 
-  onBlur(): void {
+  onFocusOut(event: FocusEvent): void {
+    const next = event.relatedTarget;
+    if (next instanceof Node && this.host.nativeElement.contains(next)) return;
     this.selection.clear();
   }
 
-  addMark(kind: MarkKind): void {
-    const pending = this.pendingSelection();
-    if (!pending) return;
-    this.marks.set(addMarkRange(this.marks(), kind, pending));
-    this.field().nativeElement.setSelectionRange(pending.end, pending.end);
-    this.selection.clear();
+  addMark(request: MarkRequest): void {
+    this.editor.add(request);
+  }
+
+  recolorMark(color: HighlightColor): void {
+    this.editor.recolor(color);
   }
 
   removeMark(): void {
-    const marked = this.markedMark();
-    if (!marked) return;
-    this.marks.set(removeMarkRange(this.marks(), marked));
-    this.selection.clear();
-  }
-
-  private handleDocumentSelectionChange(): void {
-    if (document.activeElement !== this.field().nativeElement) return;
-    this.readSelection();
+    this.editor.remove();
   }
 }

@@ -7,10 +7,18 @@
 />
 <div class="min-w-0 flex-1">
   <p class="truncate text-body">
-    <app-marked-text [text]="card().front" [emphasis]="card().marks.front.emphasis" />
+    <app-marked-text
+      [text]="card().front"
+      [emphasis]="card().marks.front.emphasis"
+      [highlight]="card().marks.front.highlight"
+    />
   </p>
   <p class="mt-1 truncate text-meta text-muted">
-    <app-marked-text [text]="card().back" [emphasis]="card().marks.back.emphasis" />
+    <app-marked-text
+      [text]="card().back"
+      [emphasis]="card().marks.back.emphasis"
+      [highlight]="card().marks.back.highlight"
+    />
   </p>
   @if (card().tags.length > 0) {
     <app-tag-chips class="mt-1.5" [tags]="card().tags" />

@@ -21,7 +21,7 @@ A primeira tentativa de app própria ficou lenta demais para evoluir. Este produ
 ### Fases
 
 - **Fase 1 (MVP)** — F1 a F10: cadastro, marcas, baralhos, Home, revisão, lista, progresso, conta/sync, ajustes, PWA.
-- **Fase 2** — F11 a F18: etiquetas, cartões difíceis e reforço, meta diária e lembrete, importação do Anki, backup em arquivo, tema claro, imagens nas Notas, proteção dos dados locais.
+- **Fase 2** — F11 a F19: etiquetas, cartões difíceis e reforço, meta diária e lembrete, importação do Anki, backup em arquivo, tema claro, imagens nas Notas, proteção dos dados locais, marca-texto.
 
 O banco já nasce com as colunas das etiquetas e das configurações do usuário (Fase 2), para a sincronização não precisar ser refeita depois.
 
@@ -41,6 +41,7 @@ Este documento é a referência de produto; não é executado diretamente. Cada 
 | Fase 2 — Imagens nas Notas | [prd-imagens-notas](../prd-imagens-notas/prd.md) | F17 | Concluída — QA aprovado com ressalvas (aparelho real) |
 | Fase 2 — Backup e restauração | [prd-backup](../prd-backup/prd.md) | F15 | Concluída — QA aprovado com ressalvas (desempenho não medido) |
 | Fase 2 — Proteção dos dados locais | [prd-protecao-dados](../prd-protecao-dados/prd.md) | F18 | Concluída — QA aprovado |
+| Fase 2 — Marca-texto | [prd-marca-texto](../prd-marca-texto/prd.md) | F19 | Implementada — QA pendente |
 
 A ordem da Fase 2 é a da seção “Sequenciamento do desenvolvimento” da [TechSpec](techspec.md). Uma mudança de produto que afete mais de uma entrega é feita primeiro aqui e depois refletida nos recortes.
 
@@ -65,6 +66,11 @@ A ordem da Fase 2 é a da seção “Sequenciamento do desenvolvimento” da [Te
 - **US17** (Fase 2): Como concurseiro que estuda à noite, quero poder escolher entre tema escuro e claro.
 - **US18** (Fase 2): Como concurseiro, quero anexar esquemas e mapas mentais às Notas e ampliá-los na revisão.
 - **US19** (Fase 2): Como concurseiro que usa o app só no navegador, quero que meus cartões não sumam sem aviso e, se o navegador apagá-los, quero saber o que houve e como recuperar.
+- **US20** (Fase 2): Como concurseiro, quero pintar trechos do cartão de amarelo, verde ou rosa para separar visualmente tipos de informação (regra, exceção, prazo), como faço no papel.
+- **US21** (Fase 2): Como concurseiro, quero trocar a cor de um marca-texto ou tirá-lo sem refazer a seleção, para corrigir uma marcação rapidamente.
+- **US22** (Fase 2): Como concurseiro que já usa marca-texto colorido no Anki, quero que esses trechos venham como marca-texto na importação, para não remarcar tudo.
+- **US23** (Fase 2): Como concurseiro que estuda no celular sem rede e sem conta, quero marcar e ver o marca-texto exatamente como com rede. Com conta, quero ver a mesma marcação no outro aparelho.
+- **US24** (Fase 2): Como concurseiro com daltonismo ou que usa leitor de tela, quero saber qual cor estou aplicando e perceber na revisão que um trecho está marcado.
 
 ## Principais funcionalidades
 
@@ -88,7 +94,7 @@ Mesma mecânica do Lingo: o usuário seleciona um trecho e escolhe a ação numa
 - **RF9**: Ao editar o texto, as marcas antes e depois do trecho alterado se reposicionam; marcas atravessadas pela edição são descartadas.
 - **RF10**: Sem seleção, a barra mostra uma linha de dica/resumo (ex.: “2 lacunas e 1 destaque · toque na marca para desfazer”), sem mudar a altura do formulário.
 - **RF11**: Na revisão, o destaque aparece sempre (negrito na cor de sinal), inclusive antes de revelar a resposta.
-- **RF12**: Na **Frente**, trecho oculto aparece como lacuna (`_____`) até “Mostrar resposta”; depois aparece revelado com um fundo sutil, para o usuário ver o que era a lacuna.
+- **RF12**: Na **Frente**, trecho oculto aparece como lacuna (`_____`) até “Mostrar resposta”; depois aparece revelado com uma moldura âmbar sem preenchimento, para o usuário ver o que era a lacuna. No formulário, a lacuna também é só a moldura. (Até a F19, a lacuna revelada era um fundo âmbar sutil; mudou para não se confundir com o marca-texto amarelo.)
 - **RF13**: Verso e Notas **não têm lacunas**: são exibidos por inteiro ao revelar a resposta, com os destaques aplicados.
 
 ### F3. Baralhos (sem cadastro de matérias)
@@ -181,7 +187,7 @@ Etiquetas livres no cartão (“CESPE”, “FGV”, “pegadinha”, “Art. 37
 Portada do Lingo, com os campos do CertameCards.
 
 - **RF60**: Importar um arquivo `.apkg`: escolher o baralho de destino (existente ou novo), filtrar pelos baralhos de origem, mapear campos do Anki para Frente, Verso e Notas (Notas opcional) e ver a prévia das 3 primeiras notas.
-- **RF61**: O HTML do Anki vira texto preservando quebras de linha e parágrafos (`<br>`, `<div>`, `<p>`, `<li>`); trechos em negrito ou sublinhado (`<b>`, `<strong>`, `<u>`) viram **destaque**.
+- **RF61**: O HTML do Anki vira texto preservando quebras de linha e parágrafos (`<br>`, `<div>`, `<p>`, `<li>`); trechos em negrito ou sublinhado (`<b>`, `<strong>`, `<u>`) viram **destaque**; trechos com cor de fundo viram **marca-texto** (F19, RF96–RF97).
 - **RF62**: Notas de lacuna do Anki (`{{c1::texto::dica}}`) viram **um cartão por número de lacuna** (c1, c2…), com a lacuna daquele número oculta na Frente e as demais em texto normal; a dica é descartada.
 - **RF63**: As etiquetas das notas do Anki viram etiquetas do cartão.
 - **RF64**: Só o conteúdo é importado: o histórico do Anki não vem (o agendamento recomeça no FSRS) e a mídia do Anki (imagens e áudio) não é importada.
@@ -223,12 +229,33 @@ Sem conta, os dados vivem só no IndexedDB, que o navegador pode apagar sozinho 
 - **RF82**: O app pede armazenamento persistente ao abrir, ao concluir uma importação e por um botão em Ajustes → Armazenamento, que mostra se os dados estão protegidos e orienta como protegê-los.
 - **RF83**: Sem conta e sem armazenamento protegido, o resumo da importação recomenda fazer um backup.
 
+### F19. Marca-texto — Fase 2
+
+Fundo colorido em três cores (amarelo, verde e rosa), sem significado fixo, para o concurseiro separar tipos de informação como faz no papel. Convive com o destaque e a lacuna, sempre com uma marca por trecho.
+
+- **RF84**: Na Frente, no Verso e nas Notas, selecionar um trecho mostra na barra três botões de cor (amarelo, verde e rosa), além de “Destacar seleção” (e de “Ocultar seleção”, só na Frente). Um toque numa cor aplica o marca-texto.
+- **RF85**: O marca-texto segue o RF8 (seleção aparada, uma marca só por trecho) e o RF9 (reposiciona ao editar, é descartado se a edição o atravessar).
+- **RF86**: Com o cursor dentro de um marca-texto, a barra mostra as outras duas cores (trocam a cor do mesmo trecho) e “Tirar marca-texto”.
+- **RF87**: A linha de resumo do RF10 conta também os marca-textos, e a dica sem marcas cita a nova ação.
+- **RF88**: No formulário, o marca-texto aparece como fundo na cor escolhida, sem deslocar o texto, o cursor nem a seleção.
+- **RF89**: O marca-texto aparece sempre como fundo colorido, com o texto em peso normal e na cor principal do texto (também nas Notas): na revisão (inclusive na Frente antes de revelar), no reforço e no seu resumo, na lista de cartões, na lista de difíceis e na prévia da importação.
+- **RF90**: O destaque não muda (sublinhado no formulário, negrito âmbar nas demais telas).
+- **RF91**: No tema claro, as três cores têm versões próprias com a mesma leitura (amarelo, verde e rosa).
+- **RF92**: A lacuna, no formulário e revelada na revisão, é uma moldura âmbar sem preenchimento (RF12).
+- **RF93**: O marca-texto é salvo no aparelho, funciona sem rede e sem conta e sincroniza como as demais marcas. Marcar, trocar a cor ou tirar não reagenda o cartão nem gera revisão (RF5).
+- **RF94**: O backup inclui o marca-texto e a restauração o preserva; backups anteriores continuam restauráveis.
+- **RF95**: Um aparelho que receba, por sincronização ou backup, um tipo de marca que não conhece preserva essa marca ao salvar o cartão.
+- **RF96**: Na importação do Anki, cor de fundo vira marca-texto da cor mais próxima. Fundos sem cor (branco, preto, cinza, transparente) são ignorados; um fundo colorido que não lembra nenhuma das três vira amarelo.
+- **RF97**: Na importação, trecho com mais de uma marca no Anki fica com uma só, na ordem lacuna > marca-texto > destaque. Cartões já importados não mudam.
+- **RF98**: Cada botão de cor tem nome acessível com a ação e a cor (“Marcar em verde”), funciona por teclado, tem foco visível e área de toque ≥ 44 px.
+- **RF99**: Nas telas do RF89, o trecho com marca-texto é exposto às tecnologias assistivas como texto marcado.
+
 ## Critérios de aceitação
 
 - **CA-01** (RF1–RF3, US1): Dado o formulário de novo cartão, quando o usuário digita uma Frente, um Verso e três parágrafos nas Notas e salva, então ao abrir o cartão na revisão os três parágrafos aparecem separados, e o campo Notas nunca exibiu barra de rolagem interna.
 - **CA-02** (RF4): Dado um cartão salvo pela tela de criação, então os campos ficam vazios e o foco volta para a Frente.
 - **CA-03** (RF5): Dado um cartão já revisado, quando o usuário edita o Verso e salva, então a data da próxima revisão e o número de revisões não mudam.
-- **CA-04** (RF6, RF12, US2): Dada a Frente “O mandato é de quatro anos” com “quatro” oculto, quando o cartão abre na revisão, então aparece “O mandato é de _____ anos”; ao tocar “Mostrar resposta”, “quatro” aparece com fundo sutil.
+- **CA-04** (RF6, RF12, US2): Dada a Frente “O mandato é de quatro anos” com “quatro” oculto, quando o cartão abre na revisão, então aparece “O mandato é de _____ anos”; ao tocar “Mostrar resposta”, “quatro” aparece com moldura âmbar sem preenchimento.
 - **CA-05** (RF6, RF11, US3): Dado “salvo” destacado na Frente, então ele aparece em negrito colorido antes e depois de revelar a resposta.
 - **CA-06** (RF6, RF13): Quando o usuário seleciona um trecho do Verso ou das Notas, então a barra oferece só “Destacar seleção” (nunca “Ocultar seleção”); na revisão, Verso e Notas aparecem inteiros, com o destaque em negrito colorido.
 - **CA-07** (RF9): Dada a Frente com “quatro” oculto, quando o usuário insere texto no início da frase, então a lacuna continua cobrindo “quatro”; quando apaga a palavra “quatro”, a lacuna desaparece.
@@ -274,6 +301,8 @@ Sem conta, os dados vivem só no IndexedDB, que o navegador pode apagar sozinho 
 - **CA-44** (RF79, US19): Com a revisão aberta, quando o navegador apaga os dados do site, então aparece um aviso que só oferece “Recarregar” e nenhuma revisão é gravada depois disso.
 - **CA-45** (RF80, US19): Depois de uma perda, ao recarregar, o app explica que os dados deste aparelho foram apagados pelo navegador; ao dispensar e recarregar de novo, o aviso não volta; num navegador que nunca abriu o app, o aviso não aparece.
 - **CA-46** (RF82): Ajustes → Armazenamento mostra “Protegido” ou explica que o navegador pode apagar os dados se faltar espaço, com o botão para pedir proteção.
+- **CA-47** (RF84, RF89, US20): Dado um trecho de cada campo marcado em amarelo, verde e rosa, com um toque cada depois da seleção, então na revisão o da Frente aparece antes de revelar e os do Verso e das Notas depois, com o texto em peso normal e na cor principal do texto.
+- **CA-48** (RF91, RF92): Nos dois temas, o texto sobre cada cor do marca-texto atinge ≥ 4,5:1, a moldura da lacuna atinge ≥ 3:1, e um trecho amarelo se distingue de uma lacuna revelada no mesmo cartão.
 
 ## Experiência do usuário
 

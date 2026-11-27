@@ -1,5 +1,6 @@
 import { computed, signal, type Signal } from '@angular/core';
-import { markAt, trimRange, type Mark, type Range } from '../../domain/text-marks';
+import type { Mark, Range } from '../../domain/text-marks';
+import { markAt, trimRange } from '../../domain/text-marks-selection';
 
 /** Estado de seleção do campo: a marca sob o cursor e a seleção ainda sem virar marca. */
 export class FieldSelection {

@@ -1,4 +1,5 @@
 import type { ParsedField } from './anki-char-stream';
+import { resolveFieldMarks } from './anki-marks';
 import type { CardContent } from './cards';
 import type { Marks } from './text-marks';
 
@@ -11,14 +12,12 @@ export interface Side {
   marks: Marks;
 }
 
-const NO_MARKS: Marks = { cloze: [], emphasis: [] };
-
 export function asSide(parsed: ParsedField): Side {
-  return { text: parsed.text, marks: { cloze: [], emphasis: parsed.emphasis } };
+  return { text: parsed.text, marks: resolveFieldMarks(parsed) };
 }
 
 export function emptyField(): ParsedField {
-  return { text: '', emphasis: [], clozes: [] };
+  return { text: '', emphasis: [], highlight: [], clozes: [] };
 }
 
 export interface DraftParts {
@@ -36,8 +35,8 @@ export function toDraft(parts: DraftParts): CardDraft {
     notes: parts.notes.text,
     marks: {
       front: parts.front.marks,
-      back: { cloze: [], emphasis: parts.back.marks.emphasis },
-      notes: { ...NO_MARKS, emphasis: parts.notes.emphasis },
+      back: { ...parts.back.marks, cloze: [] },
+      notes: resolveFieldMarks(parts.notes),
     },
     tags: parts.tags,
     notetypeId: parts.notetypeId,

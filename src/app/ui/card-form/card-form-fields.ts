@@ -5,7 +5,7 @@ import { charCounterLabel } from '../../domain/char-counter';
 import type { GalleryItem } from '../../domain/gallery-draft';
 import type { Marks } from '../../domain/text-marks';
 
-const EMPTY_MARKS: Marks = { cloze: [], emphasis: [] };
+const EMPTY_MARKS: Marks = { cloze: [], emphasis: [], highlight: [] };
 
 export class CardFormFields {
   readonly front = signal('');

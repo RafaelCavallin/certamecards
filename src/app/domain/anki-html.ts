@@ -1,4 +1,6 @@
 import { plainChars, toParsedField, type ParsedField, type StyledChar } from './anki-char-stream';
+import { backgroundColorOf, nearestHighlight } from './anki-css-color';
+import type { HighlightColor } from './highlight-colors';
 
 export const CLOZE_TAG = 'anki-cloze';
 export const CLOZE_NUMBER_ATTRIBUTE = 'data-n';
@@ -8,6 +10,8 @@ const WHITESPACE_PATTERN = /\s/;
 const BOLD_STYLE = /font-weight\s*:\s*(bold|bolder|[6-9]00)/i;
 const UNDERLINE_STYLE = /text-decoration(-line)?\s*:[^;]*underline/i;
 const EMPHASIS_TAGS = new Set(['b', 'strong', 'u']);
+const MARK_TAG = 'mark';
+const MARK_DEFAULT_COLOR: HighlightColor = 'yellow';
 const REMOVED_TAGS = new Set(['img', 'audio', 'video', 'script', 'style', 'object', 'iframe', 'svg']);
 const BLOCK_TAGS = new Set(['div', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'tr', 'ul', 'ol', 'blockquote', 'pre']);
 const CELL_TAGS = new Set(['td', 'th']);
@@ -20,12 +24,13 @@ const TEXT_NODE = 3;
 interface WalkContext {
   emphasis: boolean;
   cloze: number;
+  highlight: HighlightColor | null;
 }
 
 export function htmlToMarkedText(html: string): ParsedField {
   const doc = new DOMParser().parseFromString(html.replace(SOUND_PATTERN, ''), 'text/html');
   const stream: StyledChar[] = [];
-  walkChildren(doc.body, { emphasis: false, cloze: 0 }, stream);
+  walkChildren(doc.body, { emphasis: false, cloze: 0, highlight: null }, stream);
   return toParsedField(stream);
 }
 
@@ -69,13 +74,20 @@ function prefixOf(element: Element, tag: string): string {
 
 function childContext(element: Element, tag: string, context: WalkContext): WalkContext {
   const cloze = tag === CLOZE_TAG ? Number(element.getAttribute(CLOZE_NUMBER_ATTRIBUTE)) || 0 : context.cloze;
-  return { emphasis: context.emphasis || isEmphasis(element, tag), cloze };
+  const highlight = highlightOf(element, tag) ?? context.highlight;
+  return { emphasis: context.emphasis || isEmphasis(element, tag), cloze, highlight };
 }
 
 function isEmphasis(element: Element, tag: string): boolean {
   if (EMPHASIS_TAGS.has(tag)) return true;
   const style = element.getAttribute('style') ?? '';
   return BOLD_STYLE.test(style) || UNDERLINE_STYLE.test(style);
+}
+
+function highlightOf(element: Element, tag: string): HighlightColor | null {
+  const background = backgroundColorOf(element.getAttribute('style') ?? '');
+  const painted = background ? nearestHighlight(background) : null;
+  return painted ?? (tag === MARK_TAG ? MARK_DEFAULT_COLOR : null);
 }
 
 function pushText(stream: StyledChar[], text: string, context: WalkContext): void {

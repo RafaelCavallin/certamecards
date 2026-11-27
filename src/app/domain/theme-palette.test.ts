@@ -55,14 +55,6 @@ describe('paleta clara: pares compostos', () => {
     expect(contrastRatio(rgb(light, 'ink'), rgb(light, 'miss'))).toBeGreaterThanOrEqual(TEXT_MIN);
   });
 
-  it('text sobre a lacuna revelada (signal a 15% sobre surface)', () => {
-    expect(contrastRatio(rgb(light, 'text'), tinted(light, { name: 'signal', alpha: 0.15, backdrop: 'surface' }))).toBeGreaterThanOrEqual(TEXT_MIN);
-  });
-
-  it('signal sobre a lacuna no formulário (signal a 10% sobre surface)', () => {
-    expect(contrastRatio(rgb(light, 'signal'), tinted(light, { name: 'signal', alpha: 0.1, backdrop: 'surface' }))).toBeGreaterThanOrEqual(TEXT_MIN);
-  });
-
   it.each(['placeholder', 'placeholder-strong'].flatMap((token) => ['ink', 'surface'].map((bg) => [token, bg])))(
     '%s sobre %s',
     (token, background) => {

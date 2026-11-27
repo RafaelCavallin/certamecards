@@ -85,8 +85,9 @@ O tema claro vive em `src/styles/theme-light.css` (`:root[data-theme='light']`, 
 | `placeholder`, `placeholder-strong` (`placeholder:text-placeholder`) | texto de placeholder (antes `muted/40` e `muted/60`) | texto real |
 | `scrim` (`backdrop:bg-scrim`) | véu atrás de `<dialog>` e do menu ☰ (antes `bg-ink/60`) | `image-viewer`, que usa `viewer` |
 | `heat-0…3` (`fill-heat-N`) | níveis do heatmap, do vazio ao mais intenso | qualquer outro gráfico |
+| `highlight-yellow`, `highlight-green`, `highlight-pink` (`bg-highlight-*`) | fundo do marca-texto, sólido; o texto sobre ele usa sempre `text` | texto, bordas ou qualquer outro fundo |
 
-Não declare `color-scheme` e não use `dark:` do Tailwind: o tema muda só pelas variáveis. Todo token novo precisa de valor nos dois temas e de teste de contraste em `src/app/domain/theme-palette.test.ts`.
+Não declare `color-scheme` e não use `dark:` do Tailwind: o tema muda só pelas variáveis. Todo token novo precisa de valor nos dois temas e de teste de contraste em `src/app/domain/theme-palette.test.ts` (o marca-texto, em `theme-highlight.test.ts`).
 
 **Tipografia maior que no Lingo** — use sempre a escala semântica:
 

@@ -20,21 +20,32 @@ function commonSuffixLength(before: string, after: string, prefix: number): numb
  * estão, marcas depois andam junto, e marcas que o trecho alterado atravessa
  * são descartadas — o texto que elas marcavam não existe mais.
  */
-export function remapRanges(before: string, after: string, ranges: Range[]): Range[] {
+export function remapRanges<T extends Range>(before: string, after: string, ranges: T[]): T[] {
   if (before === after) return ranges;
   const prefix = commonPrefixLength(before, after);
   const changedEnd = before.length - commonSuffixLength(before, after, prefix);
   const delta = after.length - before.length;
   return ranges.flatMap((range) => {
     if (range.end <= prefix) return [range];
-    if (range.start >= changedEnd) return [{ start: range.start + delta, end: range.end + delta }];
+    if (range.start >= changedEnd) return [{ ...range, start: range.start + delta, end: range.end + delta }];
     return [];
   });
 }
 
+function isRange(value: unknown): value is Range {
+  if (typeof value !== 'object' || value === null) return false;
+  const item = value as Record<string, unknown>;
+  return typeof item['start'] === 'number' && typeof item['end'] === 'number';
+}
+
+function isRangeList(value: unknown): value is Range[] {
+  return Array.isArray(value) && value.every(isRange);
+}
+
 export function remapMarks(before: string, after: string, marks: Marks): Marks {
-  return {
-    cloze: remapRanges(before, after, marks.cloze),
-    emphasis: remapRanges(before, after, marks.emphasis),
-  };
+  const entries = Object.entries(marks).map(([key, value]): [string, unknown] => [
+    key,
+    isRangeList(value) ? remapRanges(before, after, value) : value,
+  ]);
+  return { cloze: [], emphasis: [], ...Object.fromEntries(entries) };
 }

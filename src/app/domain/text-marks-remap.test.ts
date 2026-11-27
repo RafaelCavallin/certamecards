@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { Marks } from './text-marks';
 import { remapMarks, remapRanges } from './text-marks-remap';
 
 const SENTENCE = 'O mandato e de quatro anos';
@@ -43,6 +44,16 @@ describe('remapRanges', () => {
   });
 });
 
+describe('remapRanges com cor', () => {
+  it('desloca o trecho preservando a cor', () => {
+    const after = 'Antigamente, o mandato e de quatro anos';
+
+    expect(remapRanges(SENTENCE, after, [{ ...QUATRO, color: 'pink' }])).toEqual([
+      { start: 28, end: 34, color: 'pink' },
+    ]);
+  });
+});
+
 describe('remapMarks', () => {
   it('remapeia lacunas e destaques na mesma passada', () => {
     const marks = { cloze: [QUATRO], emphasis: [MANDATO] };
@@ -51,6 +62,26 @@ describe('remapMarks', () => {
     expect(remapMarks(SENTENCE, after, marks)).toEqual({
       cloze: [{ start: 28, end: 34 }],
       emphasis: [{ start: 15, end: 22 }],
+    });
+  });
+
+  it('descarta o marca-texto atravessado pela edição e mantém os outros', () => {
+    const marks = { cloze: [], emphasis: [], highlight: [{ ...MANDATO, color: 'green' }, { ...QUATRO, color: 'pink' }] };
+    const after = 'O mand e de quatro anos';
+
+    expect(remapMarks(SENTENCE, after, marks).highlight).toEqual([{ start: 12, end: 18, color: 'pink' }]);
+  });
+
+  it('reposiciona uma lista desconhecida com início e fim e deixa o resto intacto', () => {
+    const marks = { cloze: [], emphasis: [], strike: [QUATRO], version: 3, label: 'x' } as unknown as Marks;
+    const after = 'Antigamente, o mandato e de quatro anos';
+
+    expect(remapMarks(SENTENCE, after, marks)).toEqual({
+      cloze: [],
+      emphasis: [],
+      strike: [{ start: 28, end: 34 }],
+      version: 3,
+      label: 'x',
     });
   });
 });

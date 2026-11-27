@@ -28,9 +28,9 @@ describe('convertNote', () => {
           back: 'a\nb',
           notes: 'comentário',
           marks: {
-            front: { cloze: [], emphasis: [{ start: 0, end: 6 }] },
-            back: { cloze: [], emphasis: [] },
-            notes: { cloze: [], emphasis: [] },
+            front: { cloze: [], emphasis: [{ start: 0, end: 6 }], highlight: [] },
+            back: { cloze: [], emphasis: [], highlight: [] },
+            notes: { cloze: [], emphasis: [], highlight: [] },
           },
           tags: ['cespe'],
           notetypeId: 'b',

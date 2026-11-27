@@ -83,7 +83,7 @@ describe('htmlToMarkedText — mídia e som', () => {
   it('remove som e imagem sem deixar resto', () => {
     const parsed = htmlToMarkedText('texto [sound:aula.mp3]<img src="x.png">');
 
-    expect(parsed).toEqual({ text: 'texto', emphasis: [], clozes: [] });
+    expect(parsed).toEqual({ text: 'texto', emphasis: [], highlight: [], clozes: [] });
   });
 
   it('devolve vazio para um campo só com imagem', () => {

@@ -90,7 +90,7 @@ scripts/           write-env.mjs, check-type-scale.mjs
 | `markable-field` | `MarkableField.tsx` | `allowCloze` (só `true` na Frente, como a tradução no Lingo); `model()` para `value` e `marks`; `minRows` (Notas = 6); autoaltura em `afterRenderEffect`; seleção lida por `selectionchange` (ver Riscos). |
 | `mark-backdrop` | `MarkBackdrop.tsx` | Idêntico; só moldura/fundo/sublinhado, nunca muda métrica do texto. |
 | `mark-actions` | `MarkActions.tsx` | Sem “transcrição fonética”; `mousedown.preventDefault` para manter a seleção. |
-| `marked-text` | `MarkedText.tsx` | `hideCloze` como no Lingo; lacuna revelada ganha fundo sutil (`bg-signal/15`). |
+| `marked-text` | `MarkedText.tsx` | `hideCloze` como no Lingo; lacuna revelada é só moldura (`ring-signal`, sem fundo) desde a F19; trecho com marca-texto vira `<mark>` com fundo `bg-highlight-*` e texto `text-text`. |
 | `card-form` | `CardForm.tsx` | Frente, Verso, Notas + contador perto do limite; sem geração por IA. |
 | `heatmap`, `due-badge`, `skeleton`, `deck-switcher`, `mobile-nav` | Mesmos nomes | `deck-switcher` e `mobile-nav` usam `<dialog>` nativo (Escape e foco de graça). |
 | `bar-chart` | `Progress.tsx` (Recharts) | SVG de 14 barras, sem dependência. |
@@ -240,9 +240,10 @@ type SyncReason = 'manual' | 'signin' | 'online' | 'boot' | 'session-end'
 | `front`, `back`, `notes` | `Marks` | sim (local) / não (remoto) | Chave ausente no remoto = sem marcas; `normalizeCardMarks` completa. |
 | `Marks.cloze` | `Range[]` | sim | Trechos ocultos. |
 | `Marks.emphasis` | `Range[]` | sim | Trechos destacados. |
+| `Marks.highlight` | `{ start, end, color }[]` | não (F19) | Marca-texto; `color` é `yellow`, `green` ou `pink`. Ausente em cartões anteriores à F19 (`normalizeCardMarks` completa com `[]`). Cor ou tipo de marca desconhecido é preservado e a cor é exibida como amarelo. |
 | `Range.start`, `Range.end` | `number` | sim | Offsets de caractere (UTF-16, como `String.prototype.slice`), `start < end`, sem sobreposição. |
 
-> **Semântica por campo:** só `front.cloze` existe — fica oculto até revelar a resposta e depois aparece com fundo sutil. `back.cloze` e `notes.cloze` são sempre `[]`: a UI não oferece “Ocultar” nesses campos e `normalizeCardMarks` descarta o que vier (import, pull, backup). `emphasis` vale nos três e é sempre visível.
+> **Semântica por campo:** só `front.cloze` existe — fica oculto até revelar a resposta e depois aparece só com uma moldura âmbar, sem fundo (F19). `back.cloze` e `notes.cloze` são sempre `[]`: a UI não oferece “Ocultar” nesses campos e `normalizeCardMarks` descarta o que vier (import, pull, backup). `emphasis` e `highlight` valem nos três e são sempre visíveis. Um trecho tem uma marca só (lacuna, destaque ou marca-texto); a importação do Anki resolve o conflito na ordem lacuna > marca-texto > destaque. Chaves de marca que esta versão não conhece passam por pull, edição, push e backup sem perda.
 
 #### `ReviewLog` — revisão (Dexie)
 
@@ -745,6 +746,7 @@ Roteiros executados à mão com a skill `agent-browser` contra `ng serve` (e Sup
 13. **Meta e lembrete (4 dias)** — meta (só cliente) primeiro; depois migration da Fase 2 (parte de push), Edge Function, VAPID, `pg_cron`, `.ics`.
 14. **Imagens nas Notas (5 dias)** — migration da Fase 2 (parte de imagens), Dexie v2, compressão, galeria, visualizador, sync de arquivos.
 15. **Backup e restauração (3 dias)** — por último, para já nascer cobrindo etiquetas, configurações e imagens.
+16. **Marca-texto (3 dias)** — F19, depois do backup e da importação do Anki, que ela estende: tipo de marca `highlight` com cor dentro do `marks jsonb` (sem migration), tokens `highlight-*`, lacuna só com moldura e fundo de cor do Anki. Detalhes em [prd-marca-texto](../prd-marca-texto/techspec.md).
 
 ### Dependências técnicas
 

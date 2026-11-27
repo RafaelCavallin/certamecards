@@ -6,7 +6,7 @@ import { EMPTY_CARD_MARKS, type CardMarks } from './text-marks';
 
 const marksWithEmphasis: CardMarks = {
   ...EMPTY_CARD_MARKS,
-  front: { cloze: [{ start: 0, end: 3 }], emphasis: [] },
+  front: { cloze: [{ start: 0, end: 3 }], emphasis: [], highlight: [] },
 };
 
 afterEach(resetDb);

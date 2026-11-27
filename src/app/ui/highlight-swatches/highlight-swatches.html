@@ -1,0 +1,13 @@
+<div class="flex gap-1" role="group" aria-label="Cor do marca-texto">
+  @for (color of colors(); track color) {
+    <button
+      type="button"
+      class="grid size-11 place-items-center rounded-full"
+      [attr.aria-label]="label(color)"
+      (mousedown)="keepSelection($event)"
+      (click)="pick.emit(color)"
+    >
+      <span class="size-7 rounded-full border border-edge" [class]="fillClass(color)"></span>
+    </button>
+  }
+</div>

@@ -1,9 +1,13 @@
-import { trimRange, type Range } from './text-marks';
+import { HIGHLIGHT_COLORS, type HighlightColor } from './highlight-colors';
+import { isFilled, runsOf, type Run } from './anki-runs';
+import type { HighlightRange, Range } from './text-marks';
+import { trimRange } from './text-marks-selection';
 
 export interface StyledChar {
   char: string;
   emphasis: boolean;
   cloze: number;
+  highlight: HighlightColor | null;
 }
 
 export interface ClozeRange {
@@ -14,26 +18,36 @@ export interface ClozeRange {
 export interface ParsedField {
   text: string;
   emphasis: Range[];
+  highlight: HighlightRange[];
   clozes: ClozeRange[];
 }
 
 const LINE_BREAK = '\n';
 const SPACE = ' ';
-const PLAIN: Omit<StyledChar, 'char'> = { emphasis: false, cloze: 0 };
+const PLAIN: Omit<StyledChar, 'char'> = { emphasis: false, cloze: 0, highlight: null };
 
 export function plainChars(text: string): StyledChar[] {
   return [...text].map((char) => ({ char, ...PLAIN }));
 }
 
+function highlightKey(styled: StyledChar): number {
+  return styled.highlight ? HIGHLIGHT_COLORS.indexOf(styled.highlight) + 1 : 0;
+}
+
+function trimmedRun(text: string, run: Run): Run {
+  return { n: run.n, range: trimRange(text, run.range) };
+}
+
 export function toParsedField(stream: readonly StyledChar[]): ParsedField {
   const chars = joinLines(collapseBlankLines(splitLines(stream).map(normalizeLine)));
   const text = chars.map((styled) => styled.char).join('');
+  const trimmed = (key: (styled: StyledChar) => number): Run[] =>
+    runsOf(chars, key).map((run) => trimmedRun(text, run)).filter((run) => isFilled(run.range));
   return {
     text,
-    emphasis: runsOf(chars, (styled) => (styled.emphasis ? 1 : 0)).map((run) => trimRange(text, run.range)).filter(isFilled),
-    clozes: runsOf(chars, (styled) => styled.cloze)
-      .map((run) => ({ n: run.n, range: trimRange(text, run.range) }))
-      .filter((cloze) => isFilled(cloze.range)),
+    emphasis: trimmed((styled) => (styled.emphasis ? 1 : 0)).map((run) => run.range),
+    highlight: trimmed(highlightKey).map((run) => ({ ...run.range, color: HIGHLIGHT_COLORS[run.n - 1] })),
+    clozes: trimmed((styled) => styled.cloze),
   };
 }
 
@@ -65,22 +79,6 @@ function joinLines(lines: readonly StyledChar[][]): StyledChar[] {
   return lines.flatMap((line, index) => (index === 0 ? line : [{ char: LINE_BREAK, ...PLAIN }, ...line]));
 }
 
-function runsOf(chars: readonly StyledChar[], keyOf: (styled: StyledChar) => number): ClozeRange[] {
-  const runs: ClozeRange[] = [];
-  chars.forEach((styled, index) => {
-    const n = keyOf(styled);
-    if (n === 0) return;
-    const last = runs[runs.length - 1];
-    if (last && last.n === n && last.range.end === index) last.range.end = index + 1;
-    else runs.push({ n, range: { start: index, end: index + 1 } });
-  });
-  return runs;
-}
-
 function isSpace(styled: StyledChar): boolean {
   return styled.char === SPACE;
-}
-
-function isFilled(range: Range): boolean {
-  return range.end > range.start;
 }

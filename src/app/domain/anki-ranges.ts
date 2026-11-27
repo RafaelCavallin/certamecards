@@ -1,19 +1,20 @@
-import { trimRange, type Range } from './text-marks';
+import { trimRange } from './text-marks-selection';
+import type { Range } from './text-marks';
 
-export function trimmedRanges(text: string, ranges: readonly Range[]): Range[] {
-  return ranges.map((range) => trimRange(text, range)).filter((range) => range.end > range.start);
+export function trimmedRanges<T extends Range>(text: string, ranges: readonly T[]): T[] {
+  return ranges.map((range) => ({ ...range, ...trimRange(text, range) })).filter((range) => range.end > range.start);
 }
 
-export function subtractRanges(ranges: readonly Range[], holes: readonly Range[]): Range[] {
+export function subtractRanges<T extends Range>(ranges: readonly T[], holes: readonly Range[]): T[] {
   return ranges.flatMap((range) =>
-    holes.reduce<Range[]>((pieces, hole) => pieces.flatMap((piece) => cut(piece, hole)), [range]),
+    holes.reduce<T[]>((pieces, hole) => pieces.flatMap((piece) => cut(piece, hole)), [range]),
   );
 }
 
-function cut(piece: Range, hole: Range): Range[] {
+function cut<T extends Range>(piece: T, hole: Range): T[] {
   if (hole.end <= piece.start || hole.start >= piece.end) return [piece];
-  const before = { start: piece.start, end: hole.start };
-  const after = { start: hole.end, end: piece.end };
+  const before = { ...piece, end: hole.start };
+  const after = { ...piece, start: hole.end };
   return [before, after].filter((range) => range.end > range.start);
 }
 

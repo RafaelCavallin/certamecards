@@ -3,6 +3,7 @@ import { getCard, type CardContent } from './cards';
 import { normalizeCardContent, sameCardContent } from './card-content';
 import { normalizeCaption, type GalleryItem } from './gallery-draft';
 import { EMPTY_CARD_MARKS } from './text-marks';
+import { normalizeCardMarks } from './text-marks-normalize';
 
 export interface CardDraft {
   content: CardContent;
@@ -20,7 +21,7 @@ export async function loadCardDraft(cardId: string): Promise<CardDraft | null> {
   if (!card) return null;
   const images = await galleryImages(cardId);
   const gallery = images.map(({ image, blob }): GalleryItem => ({ id: image.id, origin: 'saved', blob, caption: image.caption }));
-  return { content: { front: card.front, back: card.back, notes: card.notes, marks: card.marks, tags: card.tags }, gallery };
+  return { content: { front: card.front, back: card.back, notes: card.notes, marks: normalizeCardMarks(card.marks), tags: card.tags }, gallery };
 }
 
 export async function loadCardDraftState(cardId: string): Promise<DraftLoadState> {

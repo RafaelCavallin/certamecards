@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { resetDb } from '../../test/db-helpers';
 import { makeTaggedCard } from '../../test/card-fixtures';
+import { LEGACY_MARKS } from '../../test/marks-fixtures';
 import { makeCardImage, makeImageBlob } from '../../test/image-fixtures';
 import { newGalleryItem, savedGalleryItem } from '../../test/gallery-fixtures';
 import { emptyDraft, hasDraftChanges, loadCardDraft, loadCardDraftState, type CardDraft } from './card-draft';
@@ -104,5 +105,18 @@ describe('loadCardDraftState', () => {
     vi.spyOn(db.cards, 'get').mockRejectedValueOnce(new Error('Connection lost'));
     expect(await loadCardDraftState('c1')).toEqual({ status: 'failed' });
     vi.restoreAllMocks();
+  });
+});
+
+describe('cartão gravado antes do marca-texto', () => {
+  it('abre com as marcas normalizadas e sem alterações pendentes', async () => {
+    await db.cards.add(makeTaggedCard('c1', [], { front: 'Frente', back: 'Verso', marks: LEGACY_MARKS }));
+
+    const initial = await loadCardDraft('c1');
+    const reopened = await loadCardDraft('c1');
+
+    expect(initial?.content.marks.front).toEqual({ cloze: [{ start: 15, end: 21 }], emphasis: [{ start: 2, end: 9 }], highlight: [] });
+    expect(initial?.content.marks.notes.highlight).toEqual([]);
+    expect(hasDraftChanges(initial as CardDraft, reopened as CardDraft)).toBe(false);
   });
 });

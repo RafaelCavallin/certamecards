@@ -73,12 +73,12 @@ describe('parseManifest — registros soltos', () => {
   });
 
   it('remove lacuna do Verso e das Notas e mantém o resto do cartão', () => {
-    const marks = { ...EMPTY_CARD_MARKS, back: { cloze: [{ start: 0, end: 3 }], emphasis: [{ start: 4, end: 6 }] } };
+    const marks = { ...EMPTY_CARD_MARKS, back: { cloze: [{ start: 0, end: 3 }], emphasis: [{ start: 4, end: 6 }], highlight: [] } };
     const content = makeContent({ cards: [makeCard({ marks })], reviewLogs: [], images: [] });
 
     const parsed = parseManifest(manifestOf(content), PATHS);
 
-    expect(parsed.cards[0].marks.back).toEqual({ cloze: [], emphasis: [{ start: 4, end: 6 }] });
+    expect(parsed.cards[0].marks.back).toEqual({ cloze: [], emphasis: [{ start: 4, end: 6 }], highlight: [] });
     expect(parsed.cards[0].back).toBe('Art. 82, CF');
   });
 });

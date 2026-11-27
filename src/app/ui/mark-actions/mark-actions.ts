@@ -1,24 +1,23 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import type { MarkKind, Marks } from '../../domain/text-marks';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { displayHighlightColor, type HighlightColor } from '../../domain/highlight-colors';
+import type { MarkRequest } from '../../domain/mark-editing';
+import { markHint, summarizeMarks } from '../../domain/mark-summary';
+import type { Mark, MarkKind, Marks } from '../../domain/text-marks';
+import { HighlightSwatches } from '../highlight-swatches/highlight-swatches';
 
 const PILL =
   'rounded-full border border-edge px-3 py-1.5 font-mono text-label uppercase tracking-wider text-muted transition hover:border-signal hover:text-signal';
 
-function summarizeMarks(marks: Marks): string {
-  const parts: string[] = [];
-  if (marks.cloze.length)
-    parts.push(`${marks.cloze.length} ${marks.cloze.length === 1 ? 'lacuna' : 'lacunas'}`);
-  if (marks.emphasis.length) {
-    parts.push(
-      `${marks.emphasis.length} ${marks.emphasis.length === 1 ? 'destaque' : 'destaques'}`,
-    );
-  }
-  return parts.join(' e ');
-}
+const REMOVE_LABEL: Record<MarkKind, string> = {
+  cloze: 'Mostrar de novo',
+  emphasis: 'Tirar destaque',
+  highlight: 'Tirar marca-texto',
+};
 
 /** A barra só mostra o que há para fazer — seleção nova ou cursor numa marca — para não virar um paredão de botões. */
 @Component({
   selector: 'app-mark-actions',
+  imports: [HighlightSwatches],
   templateUrl: './mark-actions.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -26,11 +25,19 @@ export class MarkActions {
   readonly marks = input.required<Marks>();
   readonly allowCloze = input(true);
   readonly hasSelection = input(false);
-  readonly markedKind = input<MarkKind | null>(null);
-  readonly add = output<MarkKind>();
+  readonly markedMark = input<Mark | null>(null);
+  readonly add = output<MarkRequest>();
+  readonly recolor = output<HighlightColor>();
   readonly remove = output<void>();
 
   readonly pillClass = PILL;
+
+  readonly markedColor = computed<HighlightColor | null>(() => {
+    const mark = this.markedMark();
+    return mark?.kind === 'highlight' ? displayHighlightColor(mark.color) : null;
+  });
+
+  readonly removeLabel = computed(() => REMOVE_LABEL[this.markedMark()?.kind ?? 'emphasis']);
 
   keepSelection(event: Event): void {
     event.preventDefault();
@@ -38,9 +45,6 @@ export class MarkActions {
 
   hintLabel(): string {
     const summary = summarizeMarks(this.marks());
-    if (summary) return `${summary} · toque na marca para desfazer`;
-    return this.allowCloze()
-      ? 'Selecione um trecho para ocultar ou destacar'
-      : 'Selecione um trecho para destacar';
+    return summary ? `${summary} · toque na marca para desfazer` : markHint(this.allowCloze());
   }
 }
