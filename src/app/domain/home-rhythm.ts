@@ -44,7 +44,7 @@ export function reviewsLabel(count: number): string {
   return count === 1 ? '1 revisão' : `${count} revisões`;
 }
 
-function cardsLabel(count: number): string {
+export function cardsLabel(count: number): string {
   return `${count} ${count === 1 ? 'cartão' : 'cartões'}`;
 }
 

@@ -44,6 +44,7 @@ export class Home {
   readonly byDay = computed(() => this.snapshot()?.byDay ?? new Map<string, number>());
   readonly hasHistory = computed(() => this.byDay().size > 0);
   readonly rhythm = computed(() => (this.hasHistory() ? (this.snapshot()?.rhythm ?? null) : null));
+  readonly todayTotal = computed(() => this.snapshot()?.todayTotal ?? 0);
 
   constructor() {
     let lastDeckId: string | null = null;

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { BarChart } from '../../ui/bar-chart/bar-chart';
 import {
+  cardsLabel,
   forecastEmptyMessage,
   laterTodayLabel,
   retentionLabel,
@@ -19,6 +20,7 @@ import {
 export class RhythmPanel {
   readonly rhythm = input.required<HomeRhythm>();
   readonly deckName = input.required<string>();
+  readonly todayTotal = input.required<number>();
 
   readonly metrics = computed(() => {
     const rhythm = this.rhythm();
@@ -26,6 +28,7 @@ export class RhythmPanel {
       { label: 'Sequência', value: streakLabel(rhythm.streak) },
       { label: 'Retenção 30d', value: retentionLabel(rhythm.retention30) },
       { label: 'Hoje', value: reviewsLabel(rhythm.reviewedToday) },
+      { label: 'Para hoje', value: cardsLabel(this.todayTotal()) },
     ];
   });
   readonly laterToday = computed(() => laterTodayLabel(this.rhythm().laterToday));

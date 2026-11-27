@@ -78,7 +78,12 @@
         </section>
 
         @if (rhythm(); as r) {
-          <app-rhythm-panel class="mt-12 block xl:mt-0" [rhythm]="r" [deckName]="deckName()" />
+          <app-rhythm-panel
+            class="mt-12 block xl:mt-0"
+            [rhythm]="r"
+            [deckName]="deckName()"
+            [todayTotal]="todayTotal()"
+          />
         }
       </div>
     }

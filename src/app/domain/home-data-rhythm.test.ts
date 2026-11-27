@@ -37,4 +37,18 @@ describe('loadHomeSnapshot (ritmo)', () => {
     expect(rhythm.forecast[0].count).toBe(1);
     expect(rhythm.forecast.some((day) => day.day === 'hoje')).toBe(false);
   });
+
+  it('soma em todos os baralhos o que falta estudar hoje, não só o do baralho ativo', async () => {
+    await db.decks.bulkAdd([makeDeck('deck-1'), makeDeck('deck-2')]);
+    await db.cards.bulkAdd([
+      makeTaggedCard('a', [], { state: State.Review, due: NOW.getTime() - DAY, stability: 30 }),
+      makeTaggedCard('b', [], { deckId: 'deck-2', state: State.Review, due: NOW.getTime() - DAY, stability: 30 }),
+      makeTaggedCard('c', [], { deckId: 'deck-2', state: State.Learning, due: NOW.getTime() + 60_000 }),
+    ]);
+
+    const snapshot = await loadHomeSnapshot(makeDeck('deck-1'), []);
+
+    expect(snapshot.queueSize).toBe(1);
+    expect(snapshot.todayTotal).toBe(3);
+  });
 });

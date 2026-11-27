@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { State } from 'ts-fsrs';
 import { makeTaggedCard } from '../../test/card-fixtures';
 import { DAY } from './dates';
-import { countDueLaterToday, forecastEmptyMessage, laterTodayLabel, type HomeRhythm } from './home-rhythm';
+import {
+  cardsLabel,
+  countDueLaterToday,
+  forecastEmptyMessage,
+  laterTodayLabel,
+  type HomeRhythm,
+} from './home-rhythm';
 
 const NOW = new Date(2026, 10, 10, 15).getTime();
 const MINUTE = 60_000;
@@ -55,5 +61,13 @@ describe('forecastEmptyMessage', () => {
     const forecast = [{ day: '11/11', count: 0 }, { day: '12/11', count: 4 }];
 
     expect(forecastEmptyMessage(makeRhythm({ forecast, laterToday: 3 }))).toBeNull();
+  });
+});
+
+describe('cardsLabel', () => {
+  it('flexiona a contagem e mantém o zero', () => {
+    expect(cardsLabel(18)).toBe('18 cartões');
+    expect(cardsLabel(1)).toBe('1 cartão');
+    expect(cardsLabel(0)).toBe('0 cartões');
   });
 });

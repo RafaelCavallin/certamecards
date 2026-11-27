@@ -1,6 +1,6 @@
 import { Service, computed, inject, signal } from '@angular/core';
-import { createDeck, deleteDeck, ensureDefaultDeck, renameDeck } from '../domain/decks';
-import { db, type Deck } from '../domain/db';
+import { createDeck, deleteDeck, ensureDefaultDeck, liveDecks, renameDeck } from '../domain/decks';
+import type { Deck } from '../domain/db';
 import { totalQueueCount } from '../domain/queue';
 import { DueTick } from './due-tick';
 import { liveQuerySignal, liveQueryTicking } from './live-query';
@@ -26,10 +26,6 @@ function storeActiveDeckId(id: string): void {
 function resolveActiveDeck(decks: Deck[] | undefined, activeId: string | null): Deck | null | undefined {
   if (!decks) return undefined;
   return decks.find((deck) => deck.id === activeId) ?? decks[0] ?? null;
-}
-
-function liveDecks(): Promise<Deck[]> {
-  return db.decks.filter((deck) => deck.deletedAt === 0).sortBy('createdAt');
 }
 
 /** Lista de baralhos e o baralho ativo, com escrita delegada a `domain/decks.ts`. */

@@ -17,6 +17,10 @@ export function deckNameOrFallback(name: string): string {
   return clampDeckName(name) || FALLBACK_DECK_NAME;
 }
 
+export function liveDecks(): Promise<Deck[]> {
+  return db.decks.filter((deck) => deck.deletedAt === 0).sortBy('createdAt');
+}
+
 export function newDeckRecord(name: string): Deck {
   const now = Date.now();
   return {

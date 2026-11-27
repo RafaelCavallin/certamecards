@@ -8,6 +8,7 @@ import { computeStats } from './stats';
 import { summarizeTags } from './tag-catalog';
 import { countUntagged, withUntaggedOption } from './tag-filter';
 import type { TagSummary } from './tags';
+import { countTodayAcrossDecks } from './today-global';
 
 export interface HomeSnapshot {
   total: number;
@@ -18,6 +19,7 @@ export interface HomeSnapshot {
   existingKeys: Set<string>;
   filter: HomeFilterInfo | null;
   rhythm: HomeRhythm;
+  todayTotal: number;
 }
 
 export async function loadHomeSnapshot(deck: Deck, studyKeys: readonly string[]): Promise<HomeSnapshot> {
@@ -25,16 +27,18 @@ export async function loadHomeSnapshot(deck: Deck, studyKeys: readonly string[])
   const tags = withUntaggedOption(summarizeTags(cards), countUntagged(cards));
   const existingKeys = new Set(tags.map((tag) => tag.key));
   const activeKeys = studyKeys.filter((key) => existingKeys.has(key));
-  const [queue, stats, counts] = await Promise.all([
+  const now = Date.now();
+  const [queue, stats, counts, todayTotal] = await Promise.all([
     buildQueue(deck, { tagKeys: activeKeys }),
     computeStats(deck),
     tagQueueCounts(deck, [...existingKeys]),
+    countTodayAcrossDecks(now),
   ]);
   const options = tags.map((tag) => ({ ...tag, count: counts.get(tag.key) ?? 0 }));
   const filter = await describeFilter(deck, tags, activeKeys);
   const minutes = await estimateMinutes(queue.length);
-  const rhythm = homeRhythm(stats, cards, new Date());
-  return { total: cards.length, queueSize: queue.length, minutes, byDay: stats.byDay, options, existingKeys, filter, rhythm };
+  const rhythm = homeRhythm(stats, cards, new Date(now));
+  return { total: cards.length, queueSize: queue.length, minutes, byDay: stats.byDay, options, existingKeys, filter, rhythm, todayTotal };
 }
 
 async function describeFilter(
